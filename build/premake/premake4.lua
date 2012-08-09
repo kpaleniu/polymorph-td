@@ -1,4 +1,4 @@
-solution "dchat++"
+solution "polymorph-td"
 	configurations { "Debug", "Release" }
 	includedirs "../../include"
 
