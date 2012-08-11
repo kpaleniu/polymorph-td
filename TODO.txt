@@ -1,0 +1,12 @@
+
+TODO Everything :D
+
+(see also generated list by apidoc)
+
+
+- Finalize and complete the GDD
+- Determine 3rd party philisophy
+- Make R&D document and UI specification
+- Create some assets
+  - Audio???
+- Brew coffee
