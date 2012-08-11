@@ -19,7 +19,7 @@ solution "polymorph-td"
 	configuration "Release"
 		flags { "Optimize" }
 
-	-- Dchat server
+	-- Project for the actual game
 	project "PolyMorphTD"
 		kind "ConsoleApp"
 		language "C++"
@@ -29,7 +29,7 @@ solution "polymorph-td"
 		}
 		links { "event" }
 	
-	-- Dchat unit tests
+	-- Project for PolyMorphTD unit tests
 	project "PolyMorphTD-testrunner"
 		kind "ConsoleApp"
 		language "C++"
@@ -39,6 +39,6 @@ solution "polymorph-td"
 			"../../tst/*.cpp"
 		}
 		excludes {
-			"../../src/main-*.cpp"
+			"../../src/main.cpp"
 		}
 		links { "event", "cppunit" }
