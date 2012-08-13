@@ -6,7 +6,8 @@
 
 namespace PolyMorph {
 
-class RenderSystem {
+class RenderSystem
+{
 	std::vector<RenderData::ptr> _renderList;
 public:
 	void renderAll()

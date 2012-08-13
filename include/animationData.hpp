@@ -5,7 +5,8 @@
 
 namespace PolyMorph {
 
-class AnimationData {
+class AnimationData
+{
 public:
 	typedef boost::shared_ptr<AnimationData> ptr;
 

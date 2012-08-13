@@ -5,7 +5,8 @@
 
 namespace PolyMorph {
 
-class RenderData {
+class RenderData
+{
 public:
 	typedef boost::shared_ptr<RenderData> ptr;
 

@@ -6,7 +6,8 @@
 
 namespace PolyMorph {
 
-class AnimationSystem {
+class AnimationSystem
+{
 	std::vector<AnimationData::ptr> _animationList;
 public:
 	void animateAll()
