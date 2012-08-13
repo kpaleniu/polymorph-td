@@ -8,7 +8,7 @@ namespace PolyMorph {
 class AnimationData
 {
 public:
-	typedef boost::shared_ptr<AnimationData> ptr;
+	typedef boost::shared_ptr<AnimationData> ptr_type;
 
 	virtual ~AnimationData() {}
 	virtual void animate() = 0;

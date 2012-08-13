@@ -8,7 +8,7 @@ namespace PolyMorph {
 class RenderData
 {
 public:
-	typedef boost::shared_ptr<RenderData> ptr;
+	typedef boost::shared_ptr<RenderData> ptr_type;
 
 	virtual ~RenderData() {}
 	virtual void render() = 0;

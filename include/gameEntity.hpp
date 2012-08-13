@@ -17,8 +17,8 @@ namespace PolyMorph {
 class GameEntity
 {
 	long				_id;
-	RenderData::ptr		_renderData;
-	AnimationData::ptr	_animationData;
+	RenderData::ptr_type		_renderData;
+	AnimationData::ptr_type	_animationData;
 
 public:
 	GameEntity(long id) : _id(id) {}
