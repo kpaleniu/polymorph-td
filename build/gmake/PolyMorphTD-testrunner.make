@@ -72,6 +72,7 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
+	$(OBJDIR)/animationsystem_test.o \
 	$(OBJDIR)/common_test.o \
 	$(OBJDIR)/rendersystem_test.o \
 	$(OBJDIR)/testrunner.o \
@@ -139,6 +140,9 @@ endif
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 endif
 
+$(OBJDIR)/animationsystem_test.o: ../../tst/animationsystem_test.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
 $(OBJDIR)/common_test.o: ../../tst/common_test.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"

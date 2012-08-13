@@ -9,7 +9,16 @@ namespace PolyMorph {
 class RenderSystem {
 	std::vector<RenderData::ptr> _renderList;
 public:
-	void renderAll();
+	void renderAll()
+	{
+		for (std::vector<RenderData::ptr>::const_iterator iter
+				= _renderList.begin();
+			 iter != _renderList.end(); ++iter)
+		{
+			/* Note that *iter is a shared_ptr<AnimationData> */
+			(*iter)->render();
+		}
+	}
 
 	void addToRendering(RenderData::ptr const& data)
 	{

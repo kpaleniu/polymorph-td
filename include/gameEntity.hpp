@@ -15,13 +15,13 @@
 namespace PolyMorph {
 
 	class GameEntity {
-		long _id;
-		RenderData::ptr _renderData;
+		long				_id;
+		RenderData::ptr		_renderData;
+		AnimationData::ptr	_animationData;
 
 	public:
 		GameEntity(long id) : _id(id) {}
 		virtual ~GameEntity() {}
-
 	};
 } /* namespace PolyMorph */
 
