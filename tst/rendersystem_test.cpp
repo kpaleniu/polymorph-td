@@ -35,6 +35,8 @@
  * For more information, see cppunit documentation.
  */
 
+using namespace PolyMorph;
+
 class MockRenderData : public RenderData
 {
 public:

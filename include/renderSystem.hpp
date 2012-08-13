@@ -2,15 +2,9 @@
 #define POLYMORPH_RENDER_SYSTEM_HPP
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include "renderData.hpp"
 
-class RenderData {
-public:
-	typedef boost::shared_ptr<RenderData> ptr;
-
-	virtual ~RenderData() {}
-	virtual void render() = 0;
-};
+namespace PolyMorph {
 
 class RenderSystem {
 	std::vector<RenderData::ptr> _renderList;
@@ -38,5 +32,7 @@ public:
 		return it != _renderList.end() ? true : false;
 	}
 };
+
+} /* namespace PolyMorph */
 
 #endif /* POLYMORPH_RENDER_SYSTEM_HPP */
