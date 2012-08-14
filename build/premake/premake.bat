@@ -1,1 +1,1 @@
-FOR %%TARGET IN (gmake vs2010 xcode4) DO premake %TARGET%
+FOR %%T IN (gmake vs2010 xcode4) DO premake %T%
