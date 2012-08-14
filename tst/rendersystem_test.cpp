@@ -36,7 +36,7 @@ class RenderSystemTest : public CppUnit::TestFixture
 		 * and removed successfully.
 		 */
 		void CanAddAndRemoveRenderData() {
-			RenderData::ptr data(new MockRenderData);
+			RenderData::ptr_type data(new MockRenderData);
 
 			_rs.addToRendering(data);
 

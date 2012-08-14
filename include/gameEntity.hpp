@@ -14,15 +14,17 @@
 
 namespace PolyMorph {
 
-	class GameEntity {
-		long				_id;
-		RenderData::ptr		_renderData;
-		AnimationData::ptr	_animationData;
+class GameEntity
+{
+	long				_id;
+	RenderData::ptr_type		_renderData;
+	AnimationData::ptr_type	_animationData;
 
-	public:
-		GameEntity(long id) : _id(id) {}
-		virtual ~GameEntity() {}
-	};
+public:
+	GameEntity(long id) : _id(id) {}
+	virtual ~GameEntity() {}
+};
+
 } /* namespace PolyMorph */
 
 #endif /* POLYMORPH_GAMEOBJECT_HPP */

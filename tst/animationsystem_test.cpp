@@ -37,7 +37,7 @@ class AnimationSystemTest : public CppUnit::TestFixture
 		 */
 		void CanAddAndRemoveAnimationData()
 		{
-			AnimationData::ptr data(new MockAnimationData);
+			AnimationData::ptr_type data(new MockAnimationData);
 
 			_rs.addToAnimating(data);
 

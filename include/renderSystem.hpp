@@ -6,12 +6,13 @@
 
 namespace PolyMorph {
 
-class RenderSystem {
-	std::vector<RenderData::ptr> _renderList;
+class RenderSystem
+{
+	std::vector<RenderData::ptr_type> _renderList;
 public:
 	void renderAll()
 	{
-		for (std::vector<RenderData::ptr>::const_iterator iter
+		for (std::vector<RenderData::ptr_type>::const_iterator iter
 				= _renderList.begin();
 			 iter != _renderList.end(); ++iter)
 		{
@@ -20,12 +21,12 @@ public:
 		}
 	}
 
-	void addToRendering(RenderData::ptr const& data)
+	void addToRendering(RenderData::ptr_type const& data)
 	{
 		_renderList.push_back(data);
 	}
 
-	void removeFromRendering(RenderData::ptr& data)
+	void removeFromRendering(RenderData::ptr_type& data)
 	{
 		_renderList.erase(
 				std::remove(_renderList.begin(), _renderList.end(), data),
@@ -33,9 +34,9 @@ public:
 		);
 	}
 
-	bool isRendering(RenderData::ptr const& data) const
+	bool isRendering(RenderData::ptr_type const& data) const
 	{
-		std::vector<RenderData::ptr>::const_iterator it;
+		std::vector<RenderData::ptr_type>::const_iterator it;
 		it = std::find(_renderList.begin(), _renderList.end(), data);
 
 		return it != _renderList.end() ? true : false;
