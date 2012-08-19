@@ -8,6 +8,13 @@ solution "polymorph-td"
 	location ("../" .. _ACTION)
 	targetdir ("../../bin")
 
+	-- Boost includes and defines
+	links { "boost_thread",
+			"boost_chrono",
+			"boost_system", }
+	defines { "BOOST_THREAD_USE_LIB" }
+	includedirs { os.getenv("BOOST_HOME") .. "/include" }
+
 	configuration "macosx"
 		-- MacPorts default includes
 		includedirs { "/opt/local/include" }
@@ -22,13 +29,6 @@ solution "polymorph-td"
 		flags { "Optimize" }
 		defines { "NDEBUG" }
 		libdirs { "../../lib/Release" }
-
-	-- Boost includes and defines
-	links { "boost_thread",
-			"boost_chrono",
-			"boost_system", }
-	defines { "BOOST_THREAD_USE_LIB" }
-	includedirs { os.getenv("BOOST_HOME") .. "/include" }
 
 	-- Project for the actual game
 	project "PolyMorphTD"
