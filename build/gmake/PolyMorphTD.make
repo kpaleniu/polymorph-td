@@ -19,28 +19,20 @@ ifndef AR
   AR = ar
 endif
 
-ifndef RESCOMP
-  ifdef WINDRES
-    RESCOMP = $(WINDRES)
-  else
-    RESCOMP = windres
-  endif
-endif
-
 ifeq ($(config),debug)
-  OBJDIR     = obj/Debug/PolyMorphTD
+  OBJDIR     = ../../obj/gmake/Debug
   TARGETDIR  = ../../bin
-  TARGET     = $(TARGETDIR)/PolyMorphTD
-  DEFINES   += 
-  INCLUDES  += -I../../include -I/opt/local/include
+  TARGET     = $(TARGETDIR)/PolyMorphTD.exe
+  DEFINES   += -D_DEBUG -DBOOST_THREAD_USE_LIB
+  INCLUDES  += -I../../include -I../../../Boost/installed/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -L/opt/local/lib
+  LDFLAGS   += -mwindows -L../../lib/Debug
+  LIBS      += -lboost_thread -lboost_chrono -lboost_system
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
-  LIBS      += -levent
   LDDEPS    += 
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(RESOURCES) $(ARCH) $(LIBS) $(LDFLAGS)
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -50,19 +42,19 @@ ifeq ($(config),debug)
 endif
 
 ifeq ($(config),release)
-  OBJDIR     = obj/Release/PolyMorphTD
+  OBJDIR     = ../../obj/gmake/Release
   TARGETDIR  = ../../bin
-  TARGET     = $(TARGETDIR)/PolyMorphTD
-  DEFINES   += 
-  INCLUDES  += -I../../include -I/opt/local/include
+  TARGET     = $(TARGETDIR)/PolyMorphTD.exe
+  DEFINES   += -DNDEBUG -DBOOST_THREAD_USE_LIB
+  INCLUDES  += -I../../include -I../../../Boost/installed/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -O2
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -L/opt/local/lib -Wl,-x
+  LDFLAGS   += -s -mwindows -L../../lib/Release
+  LIBS      += -lboost_thread -lboost_chrono -lboost_system
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
-  LIBS      += -levent
   LDDEPS    += 
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(RESOURCES) $(ARCH) $(LIBS) $(LDFLAGS)
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -72,6 +64,8 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
+	$(OBJDIR)/win_main.o \
+	$(OBJDIR)/Thread_BOOST.o \
 
 RESOURCES := \
 
@@ -128,13 +122,15 @@ prelink:
 ifneq (,$(PCH))
 $(GCH): $(PCH)
 	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
 	-$(SILENT) cp $< $(OBJDIR)
-else
-	$(SILENT) xcopy /D /Y /Q "$(subst /,\,$<)" "$(subst /,\,$(OBJDIR))" 1>nul
-endif
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
+$(OBJDIR)/win_main.o: ../../src/win32/win_main.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Thread_BOOST.o: ../../src/boost/sys/Thread_BOOST.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)

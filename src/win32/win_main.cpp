@@ -4,7 +4,10 @@
  * Holds the definition of the main function for Windows OS.
  */
 
-#include <window.h>
+#include <windows.h>
+
+#include <iostream>
+using namespace std;
 
 /**
  * Windows main.
@@ -14,7 +17,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		LPSTR lpCmdLine,
 		int nShowCmd)
 {
-	// TODO Create window and call main of game.
+	cout << "Hello World!" << endl;
 
 	return 0;
 }

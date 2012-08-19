@@ -19,28 +19,20 @@ ifndef AR
   AR = ar
 endif
 
-ifndef RESCOMP
-  ifdef WINDRES
-    RESCOMP = $(WINDRES)
-  else
-    RESCOMP = windres
-  endif
-endif
-
 ifeq ($(config),debug)
-  OBJDIR     = obj/Debug/PolyMorphTD-testrunner
+  OBJDIR     = ../../obj/gmake/Debug/PolyMorphTD-testrunner
   TARGETDIR  = ../../bin
-  TARGET     = $(TARGETDIR)/PolyMorphTD-testrunner
-  DEFINES   += 
-  INCLUDES  += -I../../include -I/opt/local/include
+  TARGET     = $(TARGETDIR)/PolyMorphTD-testrunner.exe
+  DEFINES   += -D_DEBUG
+  INCLUDES  += -I../../include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -L/opt/local/lib
-  RESFLAGS  += $(DEFINES) $(INCLUDES) 
+  LDFLAGS   += -L../../lib/Debug
   LIBS      += -levent -lcppunit
+  RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += 
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(RESOURCES) $(ARCH) $(LIBS) $(LDFLAGS)
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -50,19 +42,19 @@ ifeq ($(config),debug)
 endif
 
 ifeq ($(config),release)
-  OBJDIR     = obj/Release/PolyMorphTD-testrunner
+  OBJDIR     = ../../obj/gmake/Release/PolyMorphTD-testrunner
   TARGETDIR  = ../../bin
-  TARGET     = $(TARGETDIR)/PolyMorphTD-testrunner
-  DEFINES   += 
-  INCLUDES  += -I../../include -I/opt/local/include
+  TARGET     = $(TARGETDIR)/PolyMorphTD-testrunner.exe
+  DEFINES   += -DNDEBUG
+  INCLUDES  += -I../../include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -O2
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -L/opt/local/lib -Wl,-x
-  RESFLAGS  += $(DEFINES) $(INCLUDES) 
+  LDFLAGS   += -s -L../../lib/Release
   LIBS      += -levent -lcppunit
+  RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += 
-  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(RESOURCES) $(ARCH) $(LIBS) $(LDFLAGS)
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
   define PREBUILDCMDS
   endef
   define PRELINKCMDS
@@ -132,25 +124,21 @@ prelink:
 ifneq (,$(PCH))
 $(GCH): $(PCH)
 	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
 	-$(SILENT) cp $< $(OBJDIR)
-else
-	$(SILENT) xcopy /D /Y /Q "$(subst /,\,$<)" "$(subst /,\,$(OBJDIR))" 1>nul
-endif
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
 $(OBJDIR)/animationsystem_test.o: ../../tst/animationsystem_test.cpp
 	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/common_test.o: ../../tst/common_test.cpp
 	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/rendersystem_test.o: ../../tst/rendersystem_test.cpp
 	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/testrunner.o: ../../tst/testrunner.cpp
 	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)

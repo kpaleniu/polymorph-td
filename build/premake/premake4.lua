@@ -1,12 +1,12 @@
 solution "polymorph-td"
 	configurations { "Debug", "Release" }
-	includedirs "../../include"
+	includedirs { "../../include" }
+	files {"../../src/game/**.cpp"}
+	objdir ("../../obj/" .. _ACTION)
 
 	-- Generate own directory for each target
 	location ("../" .. _ACTION)
 	targetdir ("../../bin")
-	-- My compiler defaults to llvm-gcc-4.2 :(
-	--buildoptions { "-std=c++0x" }
 
 	configuration "macosx"
 		-- MacPorts default includes
@@ -15,30 +15,38 @@ solution "polymorph-td"
 
 	configuration "Debug"
 		flags { "Symbols", "ExtraWarnings" }
+		defines { "_DEBUG" }
+		libdirs { "../../lib/Debug" }
 
 	configuration "Release"
 		flags { "Optimize" }
+		defines { "NDEBUG" }
+		libdirs { "../../lib/Release" }
 
 	-- Project for the actual game
 	project "PolyMorphTD"
-		kind "ConsoleApp"
+		kind "WindowedApp"
 		language "C++"
-		files {
-			"../../include/*.hpp",
-			"../../src/*.cpp"
-		}
-		links { "event" }
-	
+		files { "../../include/**.hpp",
+				"../../src/win32/**.cpp",
+				"../../src/boost/**.cpp" }
+		links { "boost_thread",
+				"boost_chrono",
+				"boost_system", }
+		defines { "BOOST_THREAD_USE_LIB" }
+		includedirs { os.getenv("BOOST_HOME") .. "/include" }
+
 	-- Project for PolyMorphTD unit tests
+	--[[
 	project "PolyMorphTD-testrunner"
 		kind "ConsoleApp"
 		language "C++"
 		files {
 			"../../include/*.hpp",
-			"../../src/*.cpp",
 			"../../tst/*.cpp"
 		}
 		excludes {
 			"../../src/main.cpp"
 		}
-		links { "event", "cppunit" }
+		links { "cppunit" }
+	--]]

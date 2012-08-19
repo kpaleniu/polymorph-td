@@ -6,7 +6,7 @@ ifndef config
 endif
 export config
 
-PROJECTS := PolyMorphTD PolyMorphTD-testrunner
+PROJECTS := PolyMorphTD
 
 .PHONY: all clean help $(PROJECTS)
 
@@ -16,13 +16,8 @@ PolyMorphTD:
 	@echo "==== Building PolyMorphTD ($(config)) ===="
 	@${MAKE} --no-print-directory -C . -f PolyMorphTD.make
 
-PolyMorphTD-testrunner: 
-	@echo "==== Building PolyMorphTD-testrunner ($(config)) ===="
-	@${MAKE} --no-print-directory -C . -f PolyMorphTD-testrunner.make
-
 clean:
 	@${MAKE} --no-print-directory -C . -f PolyMorphTD.make clean
-	@${MAKE} --no-print-directory -C . -f PolyMorphTD-testrunner.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -35,6 +30,5 @@ help:
 	@echo "   all (default)"
 	@echo "   clean"
 	@echo "   PolyMorphTD"
-	@echo "   PolyMorphTD-testrunner"
 	@echo ""
 	@echo "For more information, see http://industriousone.com/premake/quick-start"
