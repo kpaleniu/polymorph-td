@@ -23,6 +23,13 @@ solution "polymorph-td"
 		defines { "NDEBUG" }
 		libdirs { "../../lib/Release" }
 
+	-- Boost includes and defines
+	links { "boost_thread",
+			"boost_chrono",
+			"boost_system", }
+	defines { "BOOST_THREAD_USE_LIB" }
+	includedirs { os.getenv("BOOST_HOME") .. "/include" }
+
 	-- Project for the actual game
 	project "PolyMorphTD"
 		kind "WindowedApp"
@@ -30,11 +37,6 @@ solution "polymorph-td"
 		files { "../../include/**.hpp",
 				"../../src/win32/**.cpp",
 				"../../src/boost/**.cpp" }
-		links { "boost_thread",
-				"boost_chrono",
-				"boost_system", }
-		defines { "BOOST_THREAD_USE_LIB" }
-		includedirs { os.getenv("BOOST_HOME") .. "/include" }
 
 	-- Project for PolyMorphTD unit tests
 	--[[
@@ -49,4 +51,4 @@ solution "polymorph-td"
 			"../../src/main.cpp"
 		}
 		links { "cppunit" }
-	--]]
+	]]--
