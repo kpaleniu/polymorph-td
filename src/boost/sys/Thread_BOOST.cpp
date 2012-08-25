@@ -1,5 +1,5 @@
 /**
- * @file Thread.cpp
+ * @file Thread_BOOST.cpp
  *
  * Contains definition of class Thread using boost's thread class.
  */

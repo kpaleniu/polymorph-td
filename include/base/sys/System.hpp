@@ -1,6 +1,7 @@
 /**
  * @file System.hpp
  *
+ * Interface for systems.
  */
 
 #ifndef SYSTEM_HPP_
@@ -11,6 +12,9 @@
 
 namespace sys
 {
+	/**
+	 * Abstract base class for systems.
+	 */
 	class System : private Thread
 	{
 	public:
@@ -23,10 +27,14 @@ namespace sys
 		void start();
 		/**
 		 * Pauses the system.
+		 * If the system is already paused the
+		 * method returns without any actions.
 		 */
 		void pause();
 		/**
-		 * Un-pauses the system.
+		 * Resumes the system.
+		 * If the system is already running the
+		 * method returns without any actions.
 		 */
 		void resume();
 		/**
@@ -48,6 +56,5 @@ namespace sys
 		virtual void threadMain();
 	};
 }
-
 
 #endif /* SYSTEM_HPP_ */

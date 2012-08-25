@@ -1,7 +1,7 @@
 solution "polymorph-td"
 	configurations { "Debug", "Release" }
-	includedirs { "../../include" }
-	files {"../../src/game/**.cpp"}
+	includedirs { "../../include/base" }
+	files { "../../src/game/**.cpp", "../../src/base/**.cpp"}
 	objdir ("../../obj/" .. _ACTION)
 
 	-- Generate own directory for each target
@@ -11,7 +11,8 @@ solution "polymorph-td"
 	-- Boost includes and defines
 	links { "boost_thread",
 			"boost_chrono",
-			"boost_system", }
+			"boost_system",
+			"opengl32", }
 	defines { "BOOST_THREAD_USE_LIB" }
 	includedirs { os.getenv("BOOST_HOME") .. "/include" }
 
@@ -34,6 +35,7 @@ solution "polymorph-td"
 	project "PolyMorphTD"
 		kind "WindowedApp"
 		language "C++"
+		includedirs { "../../include/win32" }
 		files { "../../include/**.hpp",
 				"../../src/win32/**.cpp",
 				"../../src/boost/**.cpp" }
@@ -51,4 +53,5 @@ solution "polymorph-td"
 			"../../src/main.cpp"
 		}
 		links { "cppunit" }
-	]]--
+	--]]
+	

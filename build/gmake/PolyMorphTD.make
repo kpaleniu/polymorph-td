@@ -23,13 +23,13 @@ ifeq ($(config),debug)
   OBJDIR     = ../../obj/gmake/Debug
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD.exe
-  DEFINES   += -D_DEBUG -DBOOST_THREAD_USE_LIB
-  INCLUDES  += -I../../include -I../../../Boost/installed/include
+  DEFINES   += -DBOOST_THREAD_USE_LIB -D_DEBUG
+  INCLUDES  += -I../../include/base -I../../../Boost/installed/include -I../../include/win32
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -mwindows -L../../lib/Debug
-  LIBS      += -lboost_thread -lboost_chrono -lboost_system
+  LIBS      += -lboost_thread -lboost_chrono -lboost_system -lopengl32
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += 
   LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
@@ -45,13 +45,13 @@ ifeq ($(config),release)
   OBJDIR     = ../../obj/gmake/Release
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD.exe
-  DEFINES   += -DNDEBUG -DBOOST_THREAD_USE_LIB
-  INCLUDES  += -I../../include -I../../../Boost/installed/include
+  DEFINES   += -DBOOST_THREAD_USE_LIB -DNDEBUG
+  INCLUDES  += -I../../include/base -I../../../Boost/installed/include -I../../include/win32
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -O2
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -s -mwindows -L../../lib/Release
-  LIBS      += -lboost_thread -lboost_chrono -lboost_system
+  LIBS      += -lboost_thread -lboost_chrono -lboost_system -lopengl32
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += 
   LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
@@ -64,7 +64,10 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
+	$(OBJDIR)/System.o \
+	$(OBJDIR)/WorldSystem.o \
 	$(OBJDIR)/win_main.o \
+	$(OBJDIR)/Window_WIN.o \
 	$(OBJDIR)/Thread_BOOST.o \
 
 RESOURCES := \
@@ -126,7 +129,16 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
+$(OBJDIR)/System.o: ../../src/base/sys/System.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/WorldSystem.o: ../../src/base/sys/WorldSystem.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/win_main.o: ../../src/win32/win_main.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Window_WIN.o: ../../src/win32/gr/Window_WIN.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Thread_BOOST.o: ../../src/boost/sys/Thread_BOOST.cpp
