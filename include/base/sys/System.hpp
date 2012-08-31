@@ -7,7 +7,7 @@
 #ifndef SYSTEM_HPP_
 #define SYSTEM_HPP_
 
-#include "sys/time.hpp"
+#include "sys/Time.hpp"
 #include "sys/Thread.hpp"
 
 namespace sys
@@ -18,7 +18,7 @@ namespace sys
 	class System : private Thread
 	{
 	public:
-		System(time_t sync);
+		System(const TimeDuration &sync);
 		virtual ~System();
 
 		/**
@@ -50,7 +50,7 @@ namespace sys
 		virtual void update() = 0;
 
 	protected:
-		const time_t _sync;
+		const TimeDuration _sync;
 
 	private:
 		virtual void threadMain();

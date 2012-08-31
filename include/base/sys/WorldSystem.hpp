@@ -7,8 +7,9 @@
 #define WORLDSYSTEM_HPP_
 
 #include "sys/System.hpp"
+
 #include "gr/Renderer.hpp"
-#include "gr/Window.hpp"
+#include "sys/Window.hpp"
 
 namespace sys
 {
@@ -16,15 +17,15 @@ namespace sys
 	class WorldSystem : public System
 	{
 	public:
-		WorldSystem(gr::Window::ConstructionData &winData);
+		WorldSystem(sys::Window::ConstructionData &winData);
 		~WorldSystem();
 
 	protected:
 		void update();
 
 	private:
+		sys::Window _window;
 		gr::Renderer _renderer;
-		gr::Window _window;
 	};
 
 }

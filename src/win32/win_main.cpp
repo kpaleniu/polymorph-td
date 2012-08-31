@@ -6,37 +6,29 @@
 
 #include <sys/WorldSystem.hpp>
 
-#include "win32.hpp"
-
 #include <iostream>
 using namespace std;
-
-/*
- * struct Window::ConstructionData
- {
- HINSTANCE hInstance;
- HINSTANCE hPrevInstance;
- LPSTR lpCmdLine;
- int nShowCmd;
- };
- */
 
 /**
  * Windows main.
  */
 int APIENTRY WinMain(HINSTANCE hInstance,
-					 HINSTANCE hPrevInstance,
-					 LPSTR lpCmdLine,
-					 int nShowCmd)
+                     HINSTANCE hPrevInstance,
+                     LPSTR lpCmdLine,
+                     int nShowCmd)
 {
 	cout << "Hello World!" << endl;
 
-	gr::Window::ConstructionData winData = { hInstance,
-											 hPrevInstance,
-											 lpCmdLine,
-											 nShowCmd };
+	sys::Window::ConstructionData winData = { hInstance,
+	                                          hPrevInstance,
+	                                          lpCmdLine,
+	                                          nShowCmd };
 
 	sys::WorldSystem worldSystem(winData);
+
+	worldSystem.start();
+
+	sys::Thread::sleep(sys::TimeDuration::millis(5000));
 
 	return 0;
 }

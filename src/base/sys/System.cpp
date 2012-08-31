@@ -1,8 +1,7 @@
-/*
- * System.cpp
+/**
+ * @file System.cpp
  *
- *  Created on: 19 aug 2012
- *      Author: Jens Åkerblom
+ *
  */
 
 
@@ -10,7 +9,7 @@
 
 namespace sys
 {
-	System::System(time_t sync)
+	System::System(const TimeDuration &sync)
 	: _sync(sync)
 	{
 		//
@@ -38,7 +37,23 @@ namespace sys
 
 	void System::threadMain()
 	{
+		while (true)
+		{
+			TimeStamp t0 = TimeStamp::now();
 
+			update();
+
+			TimeDuration waitDuration = _sync - TimeDuration::between(t0, TimeStamp::now());
+
+			if (waitDuration.isPositive())
+			{
+				Thread::sleep(waitDuration);
+			}
+			else
+			{
+				// Should warn
+			}
+		}
 	}
 }
 

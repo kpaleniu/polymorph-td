@@ -1,12 +1,16 @@
+projPath = "../.."
+
 solution "polymorph-td"
 	configurations { "Debug", "Release" }
-	includedirs { "../../include/base" }
-	files { "../../src/game/**.cpp", "../../src/base/**.cpp"}
-	objdir ("../../obj/" .. _ACTION)
+	includedirs { projPath .. "/include/base",
+				  projPath .. "/include/game" }
+	files { projPath .. "/src/game/**.cpp", 
+			projPath .. "/src/base/**.cpp"}
+	objdir ( projPath .. "/obj/" .. _ACTION )
 
 	-- Generate own directory for each target
-	location ("../" .. _ACTION)
-	targetdir ("../../bin")
+	location (projPath .. "/build/" .. _ACTION)
+	targetdir (projPath .. "/bin")
 
 	-- Boost includes and defines
 	links { "boost_thread",
@@ -24,21 +28,26 @@ solution "polymorph-td"
 	configuration "Debug"
 		flags { "Symbols", "ExtraWarnings" }
 		defines { "_DEBUG" }
-		libdirs { "../../lib/Debug" }
+		libdirs { projPath .. "/lib/Debug" }
 
 	configuration "Release"
 		flags { "Optimize" }
 		defines { "NDEBUG" }
-		libdirs { "../../lib/Release" }
+		libdirs { projPath .. "/lib/Release" }
 
 	-- Project for the actual game
 	project "PolyMorphTD"
 		kind "WindowedApp"
 		language "C++"
-		includedirs { "../../include/win32" }
-		files { "../../include/**.hpp",
-				"../../src/win32/**.cpp",
-				"../../src/boost/**.cpp" }
+		includedirs { projPath .. "/include/win32",
+					  projPath .. "/include/opengl",
+					  projPath .. "/include/wgl",
+					  projPath .. "/include/boost" }
+		files { projPath .. "/src/win32/**.cpp",
+				projPath .. "/src/opengl/**.cpp",
+				projPath .. "/src/wgl/**.cpp",
+				projPath .. "/src/boost/**.cpp" }
+		defines { "WIN32_LEAN_AND_MEAN" }
 
 	-- Project for PolyMorphTD unit tests
 	--[[
