@@ -10,11 +10,6 @@
 
 namespace gr {
 
-class Renderer::PIMPL
-{
-
-};
-
 Renderer::Renderer(Surface &surface)
 : _surface(surface)
 {

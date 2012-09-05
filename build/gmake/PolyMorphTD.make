@@ -23,8 +23,8 @@ ifeq ($(config),debug)
   OBJDIR     = ../../obj/gmake/Debug
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD.exe
-  DEFINES   += -DBOOST_THREAD_USE_LIB -D_DEBUG
-  INCLUDES  += -I../../include/base -I../../../Boost/installed/include -I../../include/win32
+  DEFINES   += -DBOOST_THREAD_USE_LIB -D_DEBUG -DWIN32_LEAN_AND_MEAN
+  INCLUDES  += -I../../include/base -I../../include/game -I../../../Boost/installed/include -I../../include/win32 -I../../include/opengl -I../../include/wgl -I../../include/boost
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall
   CXXFLAGS  += $(CFLAGS) 
@@ -45,8 +45,8 @@ ifeq ($(config),release)
   OBJDIR     = ../../obj/gmake/Release
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD.exe
-  DEFINES   += -DBOOST_THREAD_USE_LIB -DNDEBUG
-  INCLUDES  += -I../../include/base -I../../../Boost/installed/include -I../../include/win32
+  DEFINES   += -DBOOST_THREAD_USE_LIB -DNDEBUG -DWIN32_LEAN_AND_MEAN
+  INCLUDES  += -I../../include/base -I../../include/game -I../../../Boost/installed/include -I../../include/win32 -I../../include/opengl -I../../include/wgl -I../../include/boost
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -O2
   CXXFLAGS  += $(CFLAGS) 
@@ -64,11 +64,15 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
-	$(OBJDIR)/System.o \
+	$(OBJDIR)/ThreadProfiler.o \
 	$(OBJDIR)/WorldSystem.o \
+	$(OBJDIR)/String.o \
 	$(OBJDIR)/win_main.o \
-	$(OBJDIR)/Window_WIN.o \
-	$(OBJDIR)/Thread_BOOST.o \
+	$(OBJDIR)/Window.o \
+	$(OBJDIR)/Renderer.o \
+	$(OBJDIR)/TextureManager_GL.o \
+	$(OBJDIR)/Surface.o \
+	$(OBJDIR)/Thread.o \
 
 RESOURCES := \
 
@@ -129,19 +133,31 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
-$(OBJDIR)/System.o: ../../src/base/sys/System.cpp
+$(OBJDIR)/ThreadProfiler.o: ../../src/base/profiler/ThreadProfiler.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/WorldSystem.o: ../../src/base/sys/WorldSystem.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/String.o: ../../src/base/text/String.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/win_main.o: ../../src/win32/win_main.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Window_WIN.o: ../../src/win32/gr/Window_WIN.cpp
+$(OBJDIR)/Window.o: ../../src/win32/sys/Window.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Thread_BOOST.o: ../../src/boost/sys/Thread_BOOST.cpp
+$(OBJDIR)/Renderer.o: ../../src/opengl/gr/Renderer.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/TextureManager_GL.o: ../../src/opengl/gr/TextureManager_GL.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Surface.o: ../../src/wgl/gr/Surface.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Thread.o: ../../src/boost/sys/Thread.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 

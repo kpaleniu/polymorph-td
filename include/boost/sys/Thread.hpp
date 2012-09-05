@@ -16,6 +16,8 @@ namespace sys {
 class Thread
 {
 public:
+	typedef boost::thread::id ID;
+
 	enum ThreadState
 	{
 		NOT_STARTED = 0, RUNNING, EXITED,
@@ -28,7 +30,7 @@ public:
 	/**
 	 * Queues this thread to run.
 	 */
-	void run();
+	void start();
 	/**
 	 * Requests this thread to quit.
 	 */
@@ -44,12 +46,16 @@ public:
 	 */
 	const ThreadState getThreadState() const;
 
+	const ID getID() const;
+
 public:
 	/**
 	 * Suspends thread the specified amount of time.
 	 * @param timeDuration time to suspend thread execution.
 	 */
 	static void sleep(TimeDuration timeDuration);
+
+	static const ID getCurrentID();
 
 protected:
 	/**

@@ -4,57 +4,70 @@
  * Interface for systems.
  */
 
-#ifndef SYSTEM_HPP_
-#define SYSTEM_HPP_
-
 #include "sys/Time.hpp"
 #include "sys/Thread.hpp"
 
-namespace sys
+#include "profiler/ThreadProfiler.hpp"
+
+namespace sys {
+
+/**
+ * Template for systems.
+ */
+template<typename Runner, typename Data>
+class System : public Thread
 {
-	/**
-	 * Abstract base class for systems.
-	 */
-	class System : private Thread
+public:
+	System(const TimeDuration &sync,
+	       Data runnerData)
+			: _sync(sync), _runnerData(runnerData)
 	{
-	public:
-		System(const TimeDuration &sync);
-		virtual ~System();
+		//
+	}
 
-		/**
-		 * Starts the system.
-		 */
-		void start();
-		/**
-		 * Pauses the system.
-		 * If the system is already paused the
-		 * method returns without any actions.
-		 */
-		void pause();
-		/**
-		 * Resumes the system.
-		 * If the system is already running the
-		 * method returns without any actions.
-		 */
-		void resume();
-		/**
-		 * Stops the system.
-		 * Once stopped the system cannot be resumed.
-		 */
-		void stop();
+	virtual ~System()
+	{
+		//
+	}
 
-	protected:
-		/**
-		 * System update method.
-		 */
-		virtual void update() = 0;
+protected:
+	TimeDuration _sync;
+	Data _runnerData;
 
-	protected:
-		const TimeDuration _sync;
+private:
+	void threadMain()
+	{
+		text::String sysName("System");
+		text::StringHash sysNameHash = sysName.intern();
 
-	private:
-		virtual void threadMain();
-	};
+		Runner runner(_runnerData);
+
+		while (true)
+		{
+			TimeStamp t0 = TimeStamp::now();
+
+			{
+				profiler::ThreadProfiler::Block frame(sysNameHash);
+				if (!runner.update())
+					return;
+			}
+
+			TimeDuration realDT = TimeDuration::between(t0,
+			                                            TimeStamp::now());
+			TimeDuration waitDuration = _sync
+			                            - realDT;
+
+			if (waitDuration.isPositive())
+			{
+				Thread::sleep(waitDuration);
+			}
+			else
+			{
+				// Should warn
+			}
+		}
+	}
+
+};
+
 }
-
-#endif /* SYSTEM_HPP_ */

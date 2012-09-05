@@ -20,11 +20,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	cout << "Hello World!" << endl;
 
 	sys::Window::ConstructionData winData = { hInstance,
-	                                          hPrevInstance,
-	                                          lpCmdLine,
-	                                          nShowCmd };
+	                                          {0, 0, 800, 600}};
 
-	sys::WorldSystem worldSystem(winData);
+	sys::WorldSystem worldSystem(sys::TimeDuration::millis(33), winData);
 
 	worldSystem.start();
 

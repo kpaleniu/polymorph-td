@@ -30,6 +30,7 @@ private:
 	sys::Window &_win;
 
 	HGLRC _glHandle;
+	HDC _deviceHandle;
 };
 
 }

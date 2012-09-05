@@ -15,15 +15,22 @@ namespace sys {
 class Window
 {
 public:
+	struct Rect
+	{
+		int left;
+		int top;
+		int w;
+		int h;
+	};
+
 	struct ConstructionData
 	{
 		HINSTANCE hInstance;
-		HINSTANCE hPrevInstance;
-		LPSTR lpCmdLine;
-		int nShowCmd;
+		const Rect winRect;
 	};
+
 public:
-	Window(ConstructionData &winData);
+	Window(ConstructionData &ctorData);
 
 	~Window();
 
@@ -31,6 +38,8 @@ public:
 	{
 		return _surface;
 	}
+
+	void handleEvents();
 
 public:
 	// Win32 specific methods.
@@ -47,7 +56,7 @@ private:
 	                                   LPARAM lParam);
 
 	HWND createWindowHandle(HINSTANCE hInstance,
-	                        LPCTSTR winClassName);
+	                        const Rect &winRect);
 
 private:
 	const HWND _windowHandle; // Must be before _surface.

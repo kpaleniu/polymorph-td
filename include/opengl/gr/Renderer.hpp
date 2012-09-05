@@ -1,7 +1,7 @@
 #ifndef RENDERER_HPP_
 #define RENDERER_HPP_
 
-#include "gr/TextureHandler.hpp"
+//#include "gr/TextureHandler.hpp"
 
 namespace gr
 {
@@ -10,8 +10,6 @@ namespace gr
 	class Renderer
 	{
 	public:
-		class PIMPL;
-
 		Renderer(Surface &surface);
 		~Renderer();
 
@@ -19,12 +17,12 @@ namespace gr
 
 		void clearBuffers();
 
-		TextureHandler &textures();
+		// TextureHandler &textures();
 
 	protected:
 
 	private:
-		TextureHandler _texHandler;
+		//TextureHandler _texHandler;
 
 		Surface &_surface;
 	};

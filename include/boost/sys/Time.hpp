@@ -70,6 +70,11 @@ public:
 		return timeDuration.is_negative();
 	}
 
+	long toMillis() const
+	{
+		return timeDuration.total_milliseconds();
+	}
+
 public:
 	/**
 	 * Gets the time duration between two time stamps.
@@ -89,7 +94,7 @@ public:
 	 *
 	 * @param ms the specified milliseconds.
 	 */
-	static TimeDuration millis(unsigned long ms)
+	static TimeDuration millis(long ms)
 	{
 		return TimeDuration(boost::posix_time::millisec(ms));
 	}

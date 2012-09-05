@@ -5,6 +5,8 @@
  */
 
 #include "gr/Surface.hpp"
+
+#include "gr/SurfaceException.hpp"
 #include "sys/Window.hpp"
 
 #include <windows.h>
@@ -19,7 +21,7 @@ Surface::Surface(sys::Window &win)
 {
 	HWND hwnd = win.getWindowHandle();
 
-	HDC hdc = GetDC(hwnd);
+	_deviceHandle = GetDC(hwnd);
 
 	//if (!_deviceHandle)
 	//		throw WindowException("Unable to create device context");
@@ -61,30 +63,30 @@ Surface::Surface(sys::Window &win)
 	// FIXME Throwing exception doesn't destroy window.
 
 	// choose best matching pixel format
-	if (!(pixelFormat = ChoosePixelFormat(hdc,
+	if (!(pixelFormat = ChoosePixelFormat(_deviceHandle,
 	                                      &pfd)))
 	{
-		// throw WindowException("Can't find an appropriate pixel format");
+		throw SurfaceException("Can't find an appropriate pixel format");
 	}
 
 	// set pixel format to device context
-	if (!SetPixelFormat(hdc,
+	if (!SetPixelFormat(_deviceHandle,
 	                    pixelFormat,
 	                    &pfd))
 	{
-		// throw WindowException("Unable to set pixel format");
+		throw SurfaceException("Unable to set pixel format");
 	}
 
 	// create the OpenGL rendering context
-	if (!(_glHandle = wglCreateContext(hdc)))
+	if (!(_glHandle = wglCreateContext(_deviceHandle)))
 	{
-		// throw WindowException("Unable to create OpenGL rendering context");
+		throw SurfaceException("Unable to create OpenGL rendering context");
 	}
 
 	// now make the rendering context the active one
-	if (!wglMakeCurrent(hdc, _glHandle))
+	if (!wglMakeCurrent(_deviceHandle, _glHandle))
 	{
-		// throw WindowException("Unable to activate OpenGL rendering context");
+		throw SurfaceException("Unable to activate OpenGL rendering context");
 	}
 }
 
@@ -93,9 +95,10 @@ Surface::~Surface()
 
 }
 
+
 void Surface::flipBuffers()
 {
-	// SwapBuffers(_deviceHandle);
+	SwapBuffers(_deviceHandle);
 }
 
 }

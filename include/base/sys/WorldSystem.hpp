@@ -13,21 +13,19 @@
 
 namespace sys
 {
-
-	class WorldSystem : public System
+	class WorldSystemRunner
 	{
 	public:
-		WorldSystem(sys::Window::ConstructionData &winData);
-		~WorldSystem();
+		WorldSystemRunner(sys::Window::ConstructionData &winData);
 
-	protected:
-		void update();
+		bool update();
 
 	private:
 		sys::Window _window;
 		gr::Renderer _renderer;
 	};
 
+	typedef System<WorldSystemRunner, sys::Window::ConstructionData &> WorldSystem;
 }
 
 #endif /* WORLDSYSTEM_HPP_ */

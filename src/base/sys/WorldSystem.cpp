@@ -11,20 +11,22 @@
 
 namespace sys {
 
-WorldSystem::WorldSystem(sys::Window::ConstructionData &winData)
-		: System(TimeDuration::millis(33)), _window(winData), _renderer(_window.surface())
+WorldSystemRunner::WorldSystemRunner(sys::Window::ConstructionData &winData)
+		: _window(winData),
+		  _renderer(_window.surface())
 {
 
 }
 
-WorldSystem::~WorldSystem()
+bool WorldSystemRunner::update()
 {
+	DEBUG_OUT("WorldSystem updateSystem");
 
-}
+	_renderer.clearBuffers();
+	_window.surface().flipBuffers();
+	_window.handleEvents();
 
-void WorldSystem::update()
-{
-	DEBUG_OUT("WorldSystem update");
+	return true;
 }
 
 }

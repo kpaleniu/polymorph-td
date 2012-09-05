@@ -6,11 +6,13 @@
 
 #include "sys/Window.hpp"
 
+#include "sys/WindowException.hpp"
+#include "BuildConfig.hpp"
+
 namespace sys {
 
-Window::Window(sys::Window::ConstructionData &winData)
-		: _windowHandle(createWindowHandle(winData.hInstance,
-		                                   "TEST WINDOW CLASS")),
+Window::Window(ConstructionData &ctorData)
+		: _windowHandle(createWindowHandle(ctorData.hInstance, ctorData.winRect)),
 		  _surface(*this)
 {
 	ShowWindow(_windowHandle, SW_SHOW);
@@ -20,6 +22,31 @@ Window::Window(sys::Window::ConstructionData &winData)
 
 Window::~Window()
 {
+
+}
+
+void Window::handleEvents()
+{
+	MSG msg;
+
+	while (PeekMessage(&msg,
+	                0,
+	                UINT(0),
+	                UINT(0),
+	                PM_REMOVE))
+	{
+		if (msg.message == WM_QUIT) // do we receive a WM_QUIT message?
+		{
+			/*_winEventQueue.push(WindowEvent(QUIT_REQUEST,
+			                                0,
+			                                0));*/
+		}
+		else
+		{
+			TranslateMessage(&msg); // translate and dispatch to event queue
+			DispatchMessage(&msg);
+		}
+	}
 
 }
 
@@ -126,8 +153,7 @@ LRESULT CALLBACK Window::windowProc(HWND hwnd,
 	                      lParam));
 }
 
-HWND Window::createWindowHandle(HINSTANCE hInstance,
-                                LPCTSTR winClassName)
+HWND Window::createWindowHandle(HINSTANCE hInstance, const Rect &winRect)
 {
 	WNDCLASSEX wc;
 
@@ -143,11 +169,11 @@ HWND Window::createWindowHandle(HINSTANCE hInstance,
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW); // default arrow
 	wc.hbrBackground = NULL; // no background needed
 	wc.lpszMenuName = NULL; // no menu
-	wc.lpszClassName = winClassName;
+	wc.lpszClassName = WIN32_WIN_CLASS_NAME;
 
 	if (!RegisterClassEx(&wc))
 	{
-		//throw WindowException("Unable to register the window class");
+		throw WindowException("Unable to register window class");
 	}
 
 	// get our instance handle
@@ -160,10 +186,10 @@ HWND Window::createWindowHandle(HINSTANCE hInstance,
 	// set up the window we're rendering to so that the top left corner is at (0,0)
 	// and the bottom right corner is (height,width)
 	RECT windowRect;
-	windowRect.left = LONG(0);
-	windowRect.right = LONG(800);		// FIXME
-	windowRect.top = LONG(0);
-	windowRect.bottom = LONG(600);		// FIXME
+	windowRect.left = LONG(winRect.left);
+	windowRect.right = LONG(winRect.left + winRect.w);		// FIXME
+	windowRect.top = LONG(winRect.top);
+	windowRect.bottom = LONG(winRect.top + winRect.h);		// FIXME
 
 	// change the size of the rect to account for borders, etc. set by the style
 	AdjustWindowRectEx(&windowRect,
@@ -173,11 +199,11 @@ HWND Window::createWindowHandle(HINSTANCE hInstance,
 
 	// class registered, so now create our window
 	HWND hwnd = CreateWindowEx(dwExStyle,// extended style
-	                           winClassName,// class name
-	                           "YO TITLE",// app name FIXME
+	                           WIN32_WIN_CLASS_NAME,// class name
+	                           WIN_TITLE,
 	                           dwStyle
 	                           | WS_CLIPCHILDREN
-	                           | WS_CLIPSIBLINGS,// using OpenGL
+	                           | WS_CLIPSIBLINGS,
 	                           0,
 	                           0,// x,y coordinate
 	                           windowRect.right
@@ -191,7 +217,7 @@ HWND Window::createWindowHandle(HINSTANCE hInstance,
 
 	if (!hwnd)
 	{
-		// TODO Should throw exception.
+		throw WindowException("Cannot create window.");
 	}
 
 	return hwnd;
