@@ -18,7 +18,7 @@ solution "polymorph-td"
 			"boost_system",
 			"opengl32", }
 	defines { "BOOST_THREAD_USE_LIB" }
-	includedirs { os.getenv("BOOST_HOME") .. "/include" }
+	includedirs { ( os.getenv("BOOST_HOME") or "" ) .. "/include" }
 
 	configuration "macosx"
 		-- MacPorts default includes
