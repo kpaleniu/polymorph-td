@@ -59,7 +59,7 @@ solution "polymorph-td"
 	
 		configuration "with-boost"
 			includedirs { projPath .. "/include/boost",
-						  os.getenv("BOOST_HOME") .. "/include" } 
+						  (os.getenv("BOOST_HOME") or "") .. "/include" } 
 			defines { "BOOST_THREAD_USE_LIB" }
 			links { "boost_thread",
 					"boost_chrono",
