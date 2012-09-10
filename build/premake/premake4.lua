@@ -15,13 +15,26 @@ projPath = "../.."
 
 solution "polymorph-td"
 	configurations { "Debug", "Release" }
+	objdir ( projPath .. "/obj/" .. _ACTION )
+	
+	-- Game and engine.
+	files { projPath .. "/src/game/**.cpp", 
+			projPath .. "/src/base/**.cpp" }
 	includedirs { projPath .. "/include/base",
 				  projPath .. "/include/game" }
-	objdir ( projPath .. "/obj/" .. _ACTION )
 
 	-- Generate own directory for each target
 	location (projPath .. "/build/" .. _ACTION)
 	targetdir (projPath .. "/bin")
+		
+	configuration "with-boost"
+		includedirs { projPath .. "/include/boost",
+					  (os.getenv("BOOST_HOME") or "") .. "/include" } 
+		defines { "BOOST_THREAD_USE_LIB" }
+		links { "boost_thread",
+				"boost_chrono",
+				"boost_system" }
+		files { projPath .. "/src/boost/**.cpp" }
 
 	-- From 'configurations'.
 	configuration "Debug"
@@ -40,9 +53,6 @@ solution "polymorph-td"
 		kind "WindowedApp"
 		language "C++"
 
-		files { projPath .. "/src/game/**.cpp", 
-				projPath .. "/src/base/**.cpp"}
-
 		configuration "with-opengl"
 			includedirs { projPath .. "/include/opengl" }
 			links { "opengl32" }
@@ -56,15 +66,6 @@ solution "polymorph-td"
 		configuration {"windows", "with-opengl"}
 			includedirs { projPath .. "/include/wgl" }
 			files { projPath .. "/src/wgl/**.cpp" }
-	
-		configuration "with-boost"
-			includedirs { projPath .. "/include/boost",
-						  (os.getenv("BOOST_HOME") or "") .. "/include" } 
-			defines { "BOOST_THREAD_USE_LIB" }
-			links { "boost_thread",
-					"boost_chrono",
-					"boost_system" }
-			files { projPath .. "/src/boost/**.cpp" }
 
 		configuration "macosx"
 			-- MacPorts default includes
@@ -76,6 +77,7 @@ solution "polymorph-td"
 		kind "ConsoleApp"
 		language "C++"
 		files { projPath .. "/test/**.cpp" }
+		includedirs { projPath .. "/mockup" }
 		links { "cppunit" }
 	
 	

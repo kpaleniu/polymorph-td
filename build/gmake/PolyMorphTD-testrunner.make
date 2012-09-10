@@ -24,7 +24,7 @@ ifeq ($(config),debug)
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD-testrunner.exe
   DEFINES   += -DBOOST_THREAD_USE_LIB -D_DEBUG
-  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/mockup
+  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../mockup
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall
   CXXFLAGS  += $(CFLAGS) 
@@ -46,7 +46,7 @@ ifeq ($(config),release)
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD-testrunner.exe
   DEFINES   += -DBOOST_THREAD_USE_LIB -DNDEBUG
-  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/mockup
+  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../mockup
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -O2
   CXXFLAGS  += $(CFLAGS) 
