@@ -1,12 +1,7 @@
 
-TODO Everything :D
-
-(see also generated list by apidoc)
+TODO (Almost) Everything :D
 
 
-- Finalize and complete the GDD
-- Determine 3rd party philisophy
-- Make R&D document and UI specification
-- Create some assets
-  - Audio???
-- Brew coffee
+- Make Unit tests
+- Create communication methods from System to Runner.
+	- I say we use a client-server approach.
