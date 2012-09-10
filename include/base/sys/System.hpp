@@ -6,8 +6,11 @@
 
 #include "sys/Time.hpp"
 #include "sys/Thread.hpp"
+#include "sys/Mutex.hpp"
 
 #include "profiler/ThreadProfiler.hpp"
+
+#include <iostream>
 
 namespace sys {
 
@@ -18,56 +21,94 @@ template<typename Runner, typename Data>
 class System : public Thread
 {
 public:
+	/**
+	 *
+	 */
 	System(const TimeDuration &sync,
-	       Data runnerData)
-			: _sync(sync), _runnerData(runnerData)
-	{
-		//
-	}
+	       Data runnerData);
 
-	virtual ~System()
-	{
-		//
-	}
+	/**
+	 *
+	 */
+	virtual ~System();
+
+	//std::ostream &toRunner();
 
 protected:
 	TimeDuration _sync;
 	Data _runnerData;
+	Runner *_runner;
+
+	//std::iostream &_toRunner;
+	//std::iostream &_toRunnerCache;
+
+	Mutex _writerMutex;
 
 private:
-	void threadMain()
+	/**
+	 * Calls runner's update method.
+	 */
+	void threadMain();
+};
+
+// Implementation
+
+template<typename Runner, typename Data>
+System<Runner, Data>::System(const TimeDuration &sync,
+                             Data runnerData)
+		: Thread(),
+		  _sync(sync),
+		  _runnerData(runnerData)
+{
+	//
+}
+
+template<typename Runner, typename Data>
+System<Runner, Data>::~System()
+{
+	if (getThreadState() != EXITED)
 	{
-		text::String sysName("System");
-		text::StringHash sysNameHash = sysName.intern();
+		interrupt();
+		join();
+	}
+}
 
-		Runner runner(_runnerData);
+template<typename Runner, typename Data>
+void System<Runner, Data>::threadMain()
+{
+	text::String sysName("System");
+	text::StringHash sysNameHash = sysName.intern();
 
-		while (true)
+	Runner runner(_runnerData);
+
+	// Main thread loop.
+	while (true)
+	{
+		TimeStamp t0 = TimeStamp::now();
+
 		{
-			TimeStamp t0 = TimeStamp::now();
+			profiler::ThreadProfiler::Block frame(sysNameHash);
 
-			{
-				profiler::ThreadProfiler::Block frame(sysNameHash);
-				if (!runner.update())
-					return;
-			}
+			MutexLockGuard lock(_writerMutex);
 
-			TimeDuration realDT = TimeDuration::between(t0,
-			                                            TimeStamp::now());
-			TimeDuration waitDuration = _sync
-			                            - realDT;
+			if (!runner.update())
+				return;
+		}
 
-			if (waitDuration.isPositive())
-			{
-				Thread::sleep(waitDuration);
-			}
-			else
-			{
-				// Should warn
-			}
+		TimeDuration realDT = TimeDuration::between(t0,
+		                                            TimeStamp::now());
+		TimeDuration waitDuration = _sync
+		                            - realDT;
+
+		if (waitDuration.isPositive())
+		{
+			Thread::sleep(waitDuration);
+		}
+		else
+		{
+			// Should warn and add interruption point.
 		}
 	}
-
-};
+}
 
 }

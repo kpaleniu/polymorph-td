@@ -60,7 +60,7 @@ Surface::Surface(sys::Window &win)
 
 	GLuint pixelFormat;
 
-	// FIXME Throwing exception doesn't destroy window.
+	// FIXME Throwing exception doesn't destroy surface.
 
 	// choose best matching pixel format
 	if (!(pixelFormat = ChoosePixelFormat(_deviceHandle,

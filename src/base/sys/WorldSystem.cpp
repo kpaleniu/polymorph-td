@@ -29,5 +29,17 @@ bool WorldSystemRunner::update()
 	return true;
 }
 
+
+//
+
+WorldSystem::WorldSystem(const TimeDuration &sync,
+                         sys::Window::ConstructionData &runnerData)
+		: System<WorldSystemRunner,
+		        sys::Window::ConstructionData &>(sync,
+		                                         runnerData)
+{
+
+}
+
 }
 

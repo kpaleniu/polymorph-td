@@ -20,11 +20,11 @@ ifndef AR
 endif
 
 ifeq ($(config),debug)
-  OBJDIR     = ../../obj/gmake/Debug
+  OBJDIR     = ../../obj/gmake/Debug/PolyMorphTD
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD.exe
   DEFINES   += -DBOOST_THREAD_USE_LIB -D_DEBUG -DWIN32_LEAN_AND_MEAN
-  INCLUDES  += -I../../include/base -I../../include/game -I../../../Boost/installed/include -I../../include/win32 -I../../include/opengl -I../../include/wgl -I../../include/boost
+  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/win32 -I../../include/opengl -I../../include/wgl
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall
   CXXFLAGS  += $(CFLAGS) 
@@ -42,11 +42,11 @@ ifeq ($(config),debug)
 endif
 
 ifeq ($(config),release)
-  OBJDIR     = ../../obj/gmake/Release
+  OBJDIR     = ../../obj/gmake/Release/PolyMorphTD
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD.exe
   DEFINES   += -DBOOST_THREAD_USE_LIB -DNDEBUG -DWIN32_LEAN_AND_MEAN
-  INCLUDES  += -I../../include/base -I../../include/game -I../../../Boost/installed/include -I../../include/win32 -I../../include/opengl -I../../include/wgl -I../../include/boost
+  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/win32 -I../../include/opengl -I../../include/wgl
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -O2
   CXXFLAGS  += $(CFLAGS) 
@@ -67,12 +67,14 @@ OBJECTS := \
 	$(OBJDIR)/ThreadProfiler.o \
 	$(OBJDIR)/WorldSystem.o \
 	$(OBJDIR)/String.o \
+	$(OBJDIR)/Mutex.o \
+	$(OBJDIR)/Thread.o \
+	$(OBJDIR)/Time.o \
 	$(OBJDIR)/win_main.o \
 	$(OBJDIR)/Window.o \
 	$(OBJDIR)/Renderer.o \
 	$(OBJDIR)/TextureManager_GL.o \
 	$(OBJDIR)/Surface.o \
-	$(OBJDIR)/Thread.o \
 
 RESOURCES := \
 
@@ -142,6 +144,15 @@ $(OBJDIR)/WorldSystem.o: ../../src/base/sys/WorldSystem.cpp
 $(OBJDIR)/String.o: ../../src/base/text/String.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Mutex.o: ../../src/boost/sys/Mutex.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Thread.o: ../../src/boost/sys/Thread.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Time.o: ../../src/boost/sys/Time.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/win_main.o: ../../src/win32/win_main.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
@@ -155,9 +166,6 @@ $(OBJDIR)/TextureManager_GL.o: ../../src/opengl/gr/TextureManager_GL.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Surface.o: ../../src/wgl/gr/Surface.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Thread.o: ../../src/boost/sys/Thread.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 

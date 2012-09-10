@@ -7,7 +7,13 @@
 
 namespace text {
 
-std::map<StringHash, const String *> String::_interned;
+std::map<StringHash, String> String::_interned;
+
+String::String()
+		: _str()
+{
+
+}
 
 String::String(const char *cStr)
 		: _str(cStr)
@@ -46,14 +52,14 @@ const StringHash String::intern() const
 {
 	const StringHash hashValue = hash();
 
-	_interned[hashValue] = this;
+	_interned[hashValue] = *this;
 
 	return hashValue;
 }
 
 const String &String::getInternedString(const StringHash hashValue)
 {
-	return *_interned[hashValue];
+	return _interned[hashValue];
 }
 
 }

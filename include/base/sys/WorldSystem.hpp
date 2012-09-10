@@ -11,21 +11,30 @@
 #include "gr/Renderer.hpp"
 #include "sys/Window.hpp"
 
-namespace sys
+namespace sys {
+
+class WorldSystemRunner
 {
-	class WorldSystemRunner
-	{
-	public:
-		WorldSystemRunner(sys::Window::ConstructionData &winData);
+public:
+	WorldSystemRunner(sys::Window::ConstructionData &winData);
 
-		bool update();
+	bool update();
 
-	private:
-		sys::Window _window;
-		gr::Renderer _renderer;
-	};
+private:
+	sys::Window _window;
+	gr::Renderer _renderer;
+};
 
-	typedef System<WorldSystemRunner, sys::Window::ConstructionData &> WorldSystem;
+class WorldSystem : public System<
+        WorldSystemRunner,
+        sys::Window::ConstructionData &>
+{
+public:
+	WorldSystem(const TimeDuration &sync,
+	            sys::Window::ConstructionData &runnerData);
+
+};
+
 }
 
 #endif /* WORLDSYSTEM_HPP_ */

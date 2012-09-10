@@ -5,3 +5,5 @@ gmake
 gmake
 .settings
 bin
+/.cproject
+/.project

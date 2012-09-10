@@ -187,9 +187,9 @@ HWND Window::createWindowHandle(HINSTANCE hInstance, const Rect &winRect)
 	// and the bottom right corner is (height,width)
 	RECT windowRect;
 	windowRect.left = LONG(winRect.left);
-	windowRect.right = LONG(winRect.left + winRect.w);		// FIXME
+	windowRect.right = LONG(winRect.left + winRect.w);
 	windowRect.top = LONG(winRect.top);
-	windowRect.bottom = LONG(winRect.top + winRect.h);		// FIXME
+	windowRect.bottom = LONG(winRect.top + winRect.h);
 
 	// change the size of the rect to account for borders, etc. set by the style
 	AdjustWindowRectEx(&windowRect,

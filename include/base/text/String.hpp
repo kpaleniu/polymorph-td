@@ -21,6 +21,7 @@ typedef long StringHash;
 class String
 {
 public:
+	String();
 	String(const char *cStr);
 
 	const char *c_str() const;
@@ -34,7 +35,7 @@ public:
 private:
 	std::string _str;
 
-	static std::map<StringHash, const String *> _interned;
+	static std::map<StringHash, String> _interned;
 };
 
 
