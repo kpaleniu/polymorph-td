@@ -6,6 +6,7 @@
 #ifndef MUTEX_HPP_
 #define MUTEX_HPP_
 
+#include "NonCopyable.hpp"
 #include "sys/Time.hpp"
 
 #include <boost/thread.hpp>
@@ -24,7 +25,7 @@ private:
 	boost::mutex _mutex;
 };
 
-class MutexLockGuard
+class MutexLockGuard : NonCopyable
 {
 public:
 	MutexLockGuard(Mutex &mutex)
