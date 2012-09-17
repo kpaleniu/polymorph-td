@@ -62,6 +62,7 @@ solution "polymorph-td"
 			includedirs { projPath .. "/include/win32" }
 			defines { "WIN32_LEAN_AND_MEAN" }
 			files { projPath .. "/src/win32/**.cpp" }
+			flags { "WinMain" }
 			
 		configuration {"windows", "with-opengl"}
 			includedirs { projPath .. "/include/wgl" }
