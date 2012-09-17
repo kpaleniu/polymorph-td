@@ -44,7 +44,7 @@ bool TimeDuration::isNegative() const
 	return timeDuration.is_negative();
 }
 
-long TimeDuration::toMillis() const
+TimeDuration::tick_type TimeDuration::toMillis() const
 {
 	return timeDuration.total_milliseconds();
 }
@@ -56,7 +56,7 @@ TimeDuration TimeDuration::between(const TimeStamp &t1,
 	                    - t1._timeStamp);
 }
 
-TimeDuration TimeDuration::millis(long ms)
+TimeDuration TimeDuration::millis(tick_type ms)
 {
 	return TimeDuration(boost::posix_time::millisec(ms));
 }
