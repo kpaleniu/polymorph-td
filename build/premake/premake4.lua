@@ -76,8 +76,9 @@ solution "polymorph-td"
 	project "PolyMorphTD-testrunner"
 		kind "ConsoleApp"
 		language "C++"
-		files { projPath .. "/test/**.cpp" }
-		includedirs { projPath .. "/mockup" }
-		links { "cppunit" }
+		files { projPath .. "/test/src/**.cpp" }
+		includedirs { projPath .. "/include/mockup",
+					  projPath .. "/test/include" }
+		--links { "cppunit" }
 	
 	
