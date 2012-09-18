@@ -5,13 +5,15 @@
  */
 
 #include "sys/Thread.hpp"
+#include "Exception.hpp"
 
 #include "Debug.hpp"
 
 namespace sys {
 
 Thread::Thread()
-		: _threadState(NOT_STARTED), _boostThread()
+		: _threadState(NOT_STARTED),
+		  _boostThread()
 {
 
 }
@@ -23,7 +25,8 @@ Thread::~Thread()
 
 void Thread::start()
 {
-	_boostThread = boost::thread(threadRunner, this);
+	_boostThread = boost::thread(threadRunner,
+	                             this);
 }
 
 void Thread::join()
@@ -66,9 +69,18 @@ void Thread::threadRunner(Thread *thiz)
 	{
 		// Normal exit.
 	}
+	catch (Exception &e)
+	{
+		DEBUG_OUT_UNIT(THREAD_UNIT,
+		               "Exception caught in thread " << boost::this_thread::get_id());
+		DEBUG_OUT_UNIT(THREAD_UNIT,
+		               "Message: " << e.what());
+
+	}
 	catch (...)
 	{
-		// TODO Handle error
+		DEBUG_OUT_UNIT(THREAD_UNIT,
+		               "Unknown exception caught in thread " << boost::this_thread::get_id());
 	}
 }
 
