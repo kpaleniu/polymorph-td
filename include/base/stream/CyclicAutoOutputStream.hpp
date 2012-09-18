@@ -6,6 +6,7 @@
 #ifndef CYCLIC_AUTO_OUTPUT_STREAM_HPP_
 #define CYCLIC_AUTO_OUTPUT_STREAM_HPP_
 
+#include "stream/AutoOutputStream.hpp"
 #include "stream/Buffer.hpp"
 
 namespace stream {
@@ -14,7 +15,7 @@ namespace stream {
  * Cyclic output stream containing data of any type.
  * The data is stored in a stream::Buffer.
  */
-class CyclicAutoOutputStream
+class CyclicAutoOutputStream : public AutoOutputStream
 {
 public:
 	/**
@@ -27,15 +28,6 @@ public:
 	 * Destructor.
 	 */
 	virtual ~CyclicAutoOutputStream();
-
-	/**
-	 * Public write operator.
-	 *
-	 * @param data	Data to write (note, data is copied by memcpy).
-	 * @returns		Reference to this stream.
-	 */
-	template<typename T>
-	CyclicAutoOutputStream &operator<<(const T &data);
 
 	/**
 	 * @returns		The current buffer writing offset.
@@ -59,15 +51,6 @@ protected:
 private:
 	size_t _writeOff;
 };
-
-// Template implementation
-
-template<typename T>
-CyclicAutoOutputStream &CyclicAutoOutputStream::operator<<(const T &data)
-{
-	write(&data, sizeof(data));
-	return *this;
-}
 
 }
 

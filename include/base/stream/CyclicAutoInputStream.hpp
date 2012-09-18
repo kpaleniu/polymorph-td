@@ -6,11 +6,12 @@
 #ifndef CYCLIC_AUTO_INPUT_STREAM_HPP_
 #define CYCLIC_AUTO_INPUT_STREAM_HPP_
 
+#include "stream/AutoInputStream.hpp"
 #include "stream/Buffer.hpp"
 
 namespace stream {
 
-class CyclicAutoInputStream
+class CyclicAutoInputStream : public AutoInputStream
 {
 public:
 	/**
@@ -23,15 +24,6 @@ public:
 	 * Destructor.
 	 */
 	virtual ~CyclicAutoInputStream();
-
-	/**
-	 * Reads an object from the stream.
-	 *
-	 * @param data	Object to write to.
-	 * @return		This.
-	 */
-	template<typename T>
-	CyclicAutoInputStream &operator>>(T &data);
 
 	/**
 	 * @returns		The current buffer reading offset.
@@ -55,15 +47,6 @@ private:
 
 	size_t _readOff;
 };
-
-// Template implementation
-
-template<typename T>
-CyclicAutoInputStream &CyclicAutoInputStream::operator>>(T &data)
-{
-	read(&data, sizeof(data));
-	return *this;
-}
 
 }
 

@@ -64,7 +64,7 @@ public:
 	/**
 	 * @returns	The size of the buffer.
 	 */
-	size_t size() const;
+	size_t getSize() const;
 
 private:
 	void *_begin;
