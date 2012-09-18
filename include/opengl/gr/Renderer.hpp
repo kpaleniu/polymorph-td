@@ -1,13 +1,14 @@
 #ifndef RENDERER_HPP_
 #define RENDERER_HPP_
 
+#include "NonCopyable.hpp"
 //#include "gr/TextureHandler.hpp"
 
 namespace gr
 {
 	class Surface;
 
-	class Renderer
+	class Renderer : NonCopyable
 	{
 	public:
 		Renderer(Surface &surface);

@@ -37,6 +37,11 @@ class TimeDuration
 public:
 
 	/**
+	 * An explicitly 64-bit type for millisecond TimeDurations.
+	 */
+	typedef int64_t tick_type;
+
+	/**
 	 * Gets the difference between another time durations.
 	 *
 	 * @param other the other time duration.
@@ -53,7 +58,7 @@ public:
 	 */
 	bool isNegative() const;
 
-	long toMillis() const;
+	tick_type toMillis() const;
 
 public:
 	/**
@@ -70,7 +75,7 @@ public:
 	 *
 	 * @param ms the specified milliseconds.
 	 */
-	static TimeDuration millis(long ms);
+	static TimeDuration millis(tick_type ms);
 
 public:
 	boost::posix_time::time_duration timeDuration;

@@ -88,7 +88,7 @@ void System<Runner, Data>::threadMain()
 	Runner runner(_runnerData);
 
 	// Main thread loop.
-	while (true)
+	for (;;)
 	{
 		TimeStamp t0 = TimeStamp::now();
 

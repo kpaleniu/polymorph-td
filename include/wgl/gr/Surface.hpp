@@ -10,6 +10,7 @@ namespace sys {
 class Window;
 }
 
+#include "NonCopyable.hpp"
 #include <windows.h>
 #include <wingdi.h>
 
@@ -18,7 +19,7 @@ namespace gr {
 /**
  *
  */
-class Surface
+class Surface : NonCopyable
 {
 public:
 	Surface(sys::Window &win);
