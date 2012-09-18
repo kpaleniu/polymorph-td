@@ -1,12 +1,13 @@
 /**
  * @file System.hpp
  *
- * Interface for systems.
+ * Template for systems.
  */
 
 #include "sys/Time.hpp"
 #include "sys/Thread.hpp"
 #include "sys/Mutex.hpp"
+#include "sys/SystemActionQueue.hpp"
 
 #include "profiler/ThreadProfiler.hpp"
 
@@ -16,6 +17,12 @@ namespace sys {
 
 /**
  * Template for systems.
+ *
+ * @param Runner	Type that updates the thread.
+ * 					Must implement method update(void) that returns true ifq
+ * 					system should continue running.
+ * @param Data		Type that is taken as first parameter for type Runner's constructor.
+ *
  */
 template<typename Runner, typename Data>
 class System : public Thread
@@ -25,24 +32,20 @@ public:
 	 *
 	 */
 	System(const TimeDuration &sync,
-	       Data runnerData);
+	       Data runnerData,
+	       size_t bufferSize);
 
 	/**
 	 *
 	 */
 	virtual ~System();
 
-	//std::ostream &toRunner();
-
 protected:
 	TimeDuration _sync;
 	Data _runnerData;
 	Runner *_runner;
 
-	//std::iostream &_toRunner;
-	//std::iostream &_toRunnerCache;
-
-	Mutex _writerMutex;
+	SystemActionQueue _actions;
 
 private:
 	/**
@@ -55,10 +58,13 @@ private:
 
 template<typename Runner, typename Data>
 System<Runner, Data>::System(const TimeDuration &sync,
-                             Data runnerData)
+                             Data runnerData,
+                             size_t bufferSize)
 		: Thread(),
 		  _sync(sync),
-		  _runnerData(runnerData)
+		  _runnerData(runnerData),
+		  _runner(0),
+		  _actions(bufferSize)
 {
 	//
 }
@@ -89,7 +95,8 @@ void System<Runner, Data>::threadMain()
 		{
 			profiler::ThreadProfiler::Block frame(sysNameHash);
 
-			MutexLockGuard lock(_writerMutex);
+			while (!_actions.isEmpty())
+				_actions.doAction();
 
 			if (!runner.update())
 				return;

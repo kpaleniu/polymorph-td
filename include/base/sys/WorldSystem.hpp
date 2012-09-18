@@ -11,6 +11,8 @@
 #include "gr/Renderer.hpp"
 #include "sys/Window.hpp"
 
+#include "stream/ArrayInputStream.hpp"
+
 namespace sys {
 
 class WorldSystemRunner
@@ -32,6 +34,13 @@ class WorldSystem : public System<
 public:
 	WorldSystem(const TimeDuration &sync,
 	            sys::Window::ConstructionData &runnerData);
+
+	// JUST FOR TESTING
+#warning "TESTING REMOVE LATER"
+	SystemActionQueue &actionQueue()
+	{
+		return _actions;
+	}
 
 };
 
