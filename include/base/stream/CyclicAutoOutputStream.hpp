@@ -34,15 +34,9 @@ public:
 	 */
 	size_t getWritePos() const;
 
-protected:
-	/**
-	 * Writes data to the buffer.
-	 *
-	 * @param data	Data to write.
-	 * @param size	Size in bytes of data.
-	 */
 	virtual void write(const void *data, size_t size);
 
+protected:
 	/**
 	 * Buffer storing the data.
 	 */

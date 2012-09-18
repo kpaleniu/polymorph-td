@@ -24,7 +24,6 @@ public:
 	size_t bytesUnread() const;
 	size_t getSize() const;
 
-protected:
 	virtual void write(const void *data, size_t size);
 	virtual void read(void *data, size_t size);
 

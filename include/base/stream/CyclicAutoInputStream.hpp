@@ -30,7 +30,6 @@ public:
 	 */
 	size_t getReadPos() const;
 
-protected:
 	/**
 	 * Reads data from the buffer.
 	 *
