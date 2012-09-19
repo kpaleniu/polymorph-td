@@ -26,7 +26,7 @@ public:
 	struct ConstructionData
 	{
 		HINSTANCE hInstance;
-		const Rect winRect;
+		Rect winRect;
 	};
 
 public:
