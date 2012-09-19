@@ -60,7 +60,7 @@ Surface::Surface(sys::Window &win)
 
 	// choose best matching pixel format
 	int pixelFormat = ChoosePixelFormat(_deviceHandle.get(), &pfd);
-	if (pixelFormat == 0 || SetPixelFormat(_deviceHandle.get(), pixelFormat, &pfd))
+	if (pixelFormat == 0 || !SetPixelFormat(_deviceHandle.get(), pixelFormat, &pfd))
 	{
 		throw SurfaceException("Unable to set pixel format for context");
 	}
