@@ -7,13 +7,16 @@
 #define WORLDACTION_HPP_
 
 #include "action/Action.hpp"
+#include "sys/WorldSystem.hpp"
 
 #include "Debug.hpp"
 
 namespace action {
 namespace world_action {
 
-class TestAction : public Action
+typedef Action<sys::WorldSystemRunner> WorldAction;
+
+class TestAction : public WorldAction
 {
 public:
 	struct Data
@@ -22,7 +25,7 @@ public:
 		int j;
 	};
 
-	void callAction(stream::AutoInputStream &in)
+	void callAction(sys::WorldSystemRunner &runner, stream::AutoInputStream &in)
 	{
 		Data data;
 		in >> data;

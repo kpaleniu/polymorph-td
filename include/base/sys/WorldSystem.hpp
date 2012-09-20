@@ -7,10 +7,10 @@
 #define WORLDSYSTEM_HPP_
 
 #include "sys/System.hpp"
-
-#include "gr/Renderer.hpp"
 #include "sys/Window.hpp"
 
+#include "gr/Renderer.hpp"
+#include "action/Action.hpp"
 #include "stream/ArrayInputStream.hpp"
 
 namespace sys {
@@ -27,6 +27,10 @@ private:
 	gr::Renderer _renderer;
 };
 
+}
+
+namespace sys {
+
 class WorldSystem : public System<
         WorldSystemRunner,
         sys::Window::ConstructionData &>
@@ -37,7 +41,8 @@ public:
 
 	// JUST FOR TESTING
 #warning "TESTING REMOVE LATER"
-	SystemActionQueue &actionQueue()
+	SystemActionQueue<
+	        action::Action<WorldSystemRunner> > &actionQueue()
 	{
 		return _actions;
 	}
