@@ -17,6 +17,7 @@
 
 namespace sys {
 
+template<typename ActionBase>
 class SystemActionQueue
 {
 public:
@@ -26,15 +27,17 @@ public:
 	 *
 	 */
 	template<typename ActionData>
-	void writeAction(const action::Action &action,
+	void writeAction(const ActionBase &action,
 	                 const ActionData &data);
 
 	/**
 	 * Pulls and performs an action from the queue.
 	 *
-	 * @returns true if more actions are in queue.
+	 * @param runner	Runner of the system.
+	 * @returns 		true if more actions are in queue.
 	 */
-	void doAction();
+	template<typename Runner>
+	void doAction(Runner &runner);
 
 	bool isEmpty() const;
 
@@ -45,8 +48,9 @@ private:
 
 // Implementation
 
+template<typename ActionBase>
 template<typename ActionData>
-void SystemActionQueue::writeAction(const action::Action &action,
+void SystemActionQueue<ActionBase>::writeAction(const ActionBase &action,
                                     const ActionData &data)
 {
 	sys::MutexLockGuard lock(_rwMutex);
@@ -71,6 +75,32 @@ void SystemActionQueue::writeAction(const action::Action &action,
 
 	_runnerInput << &action << data;
 }
+
+template<typename ActionBase>
+template<typename Runner>
+void SystemActionQueue<ActionBase>::doAction(Runner &runner)
+{
+	sys::MutexLockGuard lock(_rwMutex);
+
+	ActionBase *action;
+
+	_runnerInput >> action;
+	action->callAction(runner, _runnerInput);
+}
+
+template<typename ActionBase>
+SystemActionQueue<ActionBase>::SystemActionQueue(size_t bufferSize)
+: _runnerInput(bufferSize)
+{
+	//
+}
+
+template<typename ActionBase>
+bool SystemActionQueue<ActionBase>::isEmpty() const
+{
+	return _runnerInput.bytesUnread() == 0;
+}
+
 
 }
 
