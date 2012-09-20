@@ -8,6 +8,7 @@
 
 namespace action {
 
+template<typename SystemRunner>
 class Action
 {
 public:
@@ -15,7 +16,7 @@ public:
 	{
 	}
 
-	virtual void callAction(stream::AutoInputStream &) = 0;
+	virtual void callAction(SystemRunner &, stream::AutoInputStream &) = 0;
 };
 
 }

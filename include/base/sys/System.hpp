@@ -45,7 +45,7 @@ protected:
 	Data _runnerData;
 	Runner *_runner;
 
-	SystemActionQueue _actions;
+	SystemActionQueue<action::Action<Runner> > _actions;
 
 private:
 	/**
@@ -96,7 +96,7 @@ void System<Runner, Data>::threadMain()
 			profiler::ThreadProfiler::Block frame(sysNameHash);
 
 			while (!_actions.isEmpty())
-				_actions.doAction();
+				_actions.doAction(runner);
 
 			if (!runner.update())
 				return;

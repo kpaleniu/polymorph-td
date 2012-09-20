@@ -16,6 +16,7 @@ projPath = "../.."
 solution "polymorph-td"
 	configurations { "Debug", "Release" }
 	objdir ( projPath .. "/obj/" .. _ACTION )
+	buildoptions { "-std=c++0x" }
 	
 	-- Game and engine.
 	files { projPath .. "/src/game/**.cpp", 

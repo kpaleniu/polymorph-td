@@ -1,7 +1,26 @@
 
 TODO (Almost) Everything :D
 
+Systems
+- Create communication methods from system runner (queries).
+	- Could be done with yet not created Task class and some 
+	  not-so-dumb pointers or with another cyclic i/o stream if we
+	  want to avoid dynamic allocation (per query).
+- Input system needs to be implemented.
+- Systems need to notify when runner is allocated.
+	- This requires extending the current thread api with
+	  wait-for-event methods.
 
-- Make Unit tests
-- Create communication methods from System to Runner.
-	- I say we use a client-server approach.
+Profiler
+- Current profiler is lacking implementation and output methods.
+	- We should also profile System communication since the
+	  underlying buffer shouldn't be resized if not needed
+	  (that is, we need to find a good buffer size depending on
+	  system framerates, the read-rate, and action write-rate).
+
+Testing
+- Make unit tests
+
+Misc
+- Game object model needs to be determined
+	- Animation handler
