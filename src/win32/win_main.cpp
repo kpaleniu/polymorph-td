@@ -6,8 +6,12 @@
 
 #include <sys/WorldSystem.hpp>
 
+#include <action/WorldAction.hpp>
+
 #include <iostream>
 using namespace std;
+
+#include <Debug.hpp>
 
 /**
  * Windows main.
@@ -20,13 +24,41 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	cout << "Hello World!" << endl;
 
 	sys::Window::ConstructionData winData = { hInstance,
-	                                          {0, 0, 800, 600}};
+	                                          { 0,
+	                                            0,
+	                                            800,
+	                                            600 } };
 
-	sys::WorldSystem worldSystem(sys::TimeDuration::millis(33), winData);
+	sys::WorldSystem worldSystem(sys::TimeDuration::millis(33),
+	                             winData);
 
 	worldSystem.start();
 
-	sys::Thread::sleep(sys::TimeDuration::millis(5000));
+	sys::Thread::sleep(sys::TimeDuration::millis(2500));
 
+	DEBUG_OUT("Writing actions");
+
+	int errs = 0;
+
+	for (int i = 0; i < 500; ++i)
+	{
+		try
+		{
+			action::world_action::TestAction::Data data = { i,
+			                                                i
+			                                                + 1 };
+			worldSystem.actionQueue().writeAction(action::world_action::TestAction,
+			                                      data);
+		}
+		catch (stream::StreamException &e)
+		{
+			cout << e.what() << endl;
+			sys::Thread::sleep(sys::TimeDuration::millis(10));
+			++errs;
+		}
+
+	}
+
+	cout << "Exceptions: " << errs << endl;
 	return 0;
 }
