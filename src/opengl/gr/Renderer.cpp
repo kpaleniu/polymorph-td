@@ -31,4 +31,9 @@ void Renderer::clearBuffers()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void Renderer::flipBuffers()
+{
+	_surface.flipBuffers();
+}
+
 }
