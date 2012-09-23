@@ -25,9 +25,7 @@ private:
 	gr::Renderer &_renderer;
 };
 
-class WorldSystem : public System<
-        WorldSystemRunner,
-        gr::Renderer&>
+class WorldSystem : public System<WorldSystemRunner>
 {
 public:
 	WorldSystem(gr::Renderer &renderer, const TimeDuration &sync);

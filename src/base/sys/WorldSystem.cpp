@@ -30,7 +30,7 @@ bool WorldSystemRunner::update()
 //
 
 WorldSystem::WorldSystem(gr::Renderer& renderer, const TimeDuration &sync)
-	: System(sync, renderer, 256)
+	: System(sync, 256, renderer)
 {
 
 }

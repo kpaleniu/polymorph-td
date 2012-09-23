@@ -23,19 +23,21 @@ namespace sys {
  * @param Runner	Type that updates the thread.
  * 					Must implement method update(void) that returns true ifq
  * 					system should continue running.
- * @param Data		Type that is taken as first parameter for type Runner's constructor.
  *
  */
-template<typename Runner, typename Data>
+template<typename Runner>
 class System : public concurrency::Thread
 {
 public:
+
 	/**
 	 *
 	 */
-	System(const TimeDuration &sync,
-	       Data runnerData,
-	       size_t bufferSize);
+	template <typename T1>
+	System(const TimeDuration &sync, size_t bufferSize, T1&& arg1);
+
+	//template <typename ...Args>
+	//System(const TimeDuration &sync, size_t bufferSize, Args&& ...args);
 
 	/**
 	 *
@@ -46,7 +48,7 @@ public:
 
 protected:
 	TimeDuration _sync;
-	Data _runnerData;
+	Runner _runner;
 
 	SystemActionQueue<action::Action<Runner> > _actions;
 
@@ -62,13 +64,14 @@ private:
 
 // Implementation
 
-template<typename Runner, typename Data>
-System<Runner, Data>::System(const TimeDuration &sync,
-                             Data runnerData,
-                             size_t bufferSize)
+template<typename Runner>
+template<typename T1>
+System<Runner>::System(const TimeDuration &sync,
+                             size_t bufferSize,
+							 T1&& arg1)
 		: Thread(),
 		  _sync(sync),
-		  _runnerData(runnerData),
+		  _runner(std::forward<T1>(arg1)),
 		  _actions(bufferSize),
 		  _started(false),
 		  _startupCond()
@@ -76,8 +79,22 @@ System<Runner, Data>::System(const TimeDuration &sync,
 	//
 }
 
-template<typename Runner, typename Data>
-System<Runner, Data>::~System()
+/*template<typename Runner>
+template<typename ...Args>
+System<Runner>::System(const TimeDuration &sync,
+                             size_t bufferSize,
+							 Args&& ...args)
+		: Thread(),
+		  _sync(sync),
+		  _runner(std::forward<Args>(args)...),
+		  _actions(bufferSize),
+		  _started(false),
+		  _startupCond()
+{
+}*/
+
+template<typename Runner>
+System<Runner>::~System()
 {
 	if (getThreadState() != EXITED)
 	{
@@ -86,20 +103,18 @@ System<Runner, Data>::~System()
 	}
 }
 
-template<typename Runner, typename Data>
-void System<Runner, Data>::waitForStartup()
+template<typename Runner>
+void System<Runner>::waitForStartup()
 {
 	_startupCond.waitUntil( [this]() -> bool {return this->_started;} );
 }
 
-template<typename Runner, typename Data>
-void System<Runner, Data>::threadMain()
+template<typename Runner>
+void System<Runner>::threadMain()
 {
 	text::String sysName("System"); // TODO Get real name for system.
 
 	text::StringHash sysNameHash = sysName.intern();
-
-	Runner runner(_runnerData);
 
 	{
 		concurrency::MutexLockGuard lock(_startupCond.mutex());
@@ -116,16 +131,14 @@ void System<Runner, Data>::threadMain()
 			profiler::ThreadProfiler::Block frame(sysNameHash);
 
 			while (!_actions.isEmpty())
-				_actions.doAction(runner);
+				_actions.doAction(_runner);
 
-			if (!runner.update())
+			if (!_runner.update())
 				return;
 		}
 
-		TimeDuration realDT = TimeDuration::between(t0,
-		                                            TimeStamp::now());
-		TimeDuration waitDuration = _sync
-		                            - realDT;
+		TimeDuration realDT = TimeDuration::between(t0, TimeStamp::now());
+		TimeDuration waitDuration = _sync - realDT;
 
 		if (waitDuration.isPositive())
 		{
