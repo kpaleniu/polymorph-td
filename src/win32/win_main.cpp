@@ -4,12 +4,10 @@
  * Holds the definition of the main function for Windows OS.
  */
 
-#include <sys/WorldSystem.hpp>
-
 #include <action/WorldAction.hpp>
-
-#include <iostream>
-using namespace std;
+#include <gr/Renderer.hpp>
+#include <sys/Window.hpp>
+#include <sys/WorldSystem.hpp>
 
 #include <Debug.hpp>
 
@@ -21,46 +19,38 @@ int APIENTRY WinMain(HINSTANCE hInstance,
                      LPSTR lpCmdLine,
                      int nShowCmd)
 {
-	cout << "Hello World!" << endl;
+	DEBUG_OUT("Hello World!");
 
-	sys::Window::ConstructionData winData = { hInstance,
-	                                          { 0,
-	                                            0,
-	                                            800,
-	                                            600 } };
+	sys::Window::ConstructionData winData = { hInstance, { 64, 64, 800, 600 } };
+	sys::Window window(winData);
+	window.show();
 
-	sys::WorldSystem worldSystem(sys::TimeDuration::millis(33),
-	                             winData);
+	gr::Renderer renderer(window.surface());
+	sys::WorldSystem worldSystem(renderer, sys::TimeDuration::millis(33));
 
 	worldSystem.start();
-
 	worldSystem.waitForStartup();
-
-	concurrency::Thread::sleep(sys::TimeDuration::millis(2500));
-
+	
 	DEBUG_OUT("Writing actions");
-
-	int errs = 0;
-
-	for (int i = 0; i < 500; ++i)
+	
+	int index = 0, errs = 0;
+	while (window.handleEvents())
 	{
 		try
 		{
-			action::world_action::TestAction::Data data = { i,
-			                                                i
-			                                                + 1 };
+			action::world_action::TestAction::Data data = { index, index + 1 };
 			worldSystem.actionQueue().writeAction(action::world_action::TestAction,
 			                                      data);
+			++index;
 		}
 		catch (stream::StreamException &e)
 		{
-			cout << e.what() << endl;
+			DEBUG_OUT(e.what());
 			concurrency::Thread::sleep(sys::TimeDuration::millis(10));
 			++errs;
 		}
-
 	}
 
-	cout << "Exceptions: " << errs << endl;
+	DEBUG_OUT("Exceptions: " << errs);
 	return 0;
 }
