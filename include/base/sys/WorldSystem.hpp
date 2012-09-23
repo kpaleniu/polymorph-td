@@ -39,8 +39,7 @@ public:
 	WorldSystem(const TimeDuration &sync,
 	            sys::Window::ConstructionData &runnerData);
 
-	// JUST FOR TESTING
-#warning "TESTING REMOVE LATER"
+	// TODO: JUST FOR TESTING
 	SystemActionQueue<
 	        action::Action<WorldSystemRunner> > &actionQueue()
 	{
