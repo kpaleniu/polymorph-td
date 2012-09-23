@@ -40,7 +40,7 @@ void rc_deleter::operator()(HGLRC rc)
 
 Surface::Surface(sys::Window &win)
 	: _win(win),
-	  _deviceHandle(GetDC(win.getWindowHandle()), detail::dc_deleter(win.getWindowHandle())),
+	  _deviceHandle(GetDC(win.nativeHandle()), detail::dc_deleter(win.nativeHandle())),
 	  _glHandle()
 {
 	if (!_deviceHandle)
