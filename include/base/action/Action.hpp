@@ -6,6 +6,11 @@
 #ifndef ACTION_HPP_
 #define ACTION_HPP_
 
+
+namespace stream {
+	class AutoInputStream;
+}
+
 namespace action {
 
 template<typename SystemRunner>
