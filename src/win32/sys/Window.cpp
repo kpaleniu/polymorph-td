@@ -93,6 +93,13 @@ Window::Window(const ConstructionData &ctorData) :
 _windowHandle(createWindow(ctorData, this)),
 _surface(*this)
 {
+	// get raw input data from the mouse/pointer device
+	RAWINPUTDEVICE rid;
+	rid.usUsagePage = 0x01;
+	rid.usUsage     = 0x02;
+	rid.dwFlags     = RIDEV_INPUTSINK;
+	rid.hwndTarget  = _windowHandle.get();
+	RegisterRawInputDevices(&rid, 1, sizeof(rid));
 }
 
 gr::Surface& Window::surface()
