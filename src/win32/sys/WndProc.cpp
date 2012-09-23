@@ -52,8 +52,8 @@ bool handleMouseInput(HWND window, const RAWMOUSE& mouse)
 	const USHORT DOWN_MASK = RI_MOUSE_BUTTON_1_DOWN | RI_MOUSE_BUTTON_2_DOWN;
 	const USHORT UP_MASK   = RI_MOUSE_BUTTON_1_UP   | RI_MOUSE_BUTTON_2_UP;
 
-	if ((mouse.usFlags & MOUSE_MOVE_RELATIVE) &&
-		(mouse.lLastX || mouse.lLastY))
+	// NOTE: MOUSE_MOVE_RELATIVE == 0x0
+	if (!mouse.usFlags && (mouse.lLastX || mouse.lLastY))
 		; // TODO: handle relative mouse movement
 
 	if (mouse.usButtonFlags & DOWN_MASK)
