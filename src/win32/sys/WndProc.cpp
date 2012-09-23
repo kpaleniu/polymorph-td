@@ -14,12 +14,14 @@ class Window;
 
 namespace {
 
-// NOTE: return type of GetWindowLongPtr() macro alias
-// is dependant on target architecture (64-bit or 32-bit).
+// NOTE: return type and user data index macro of GetWindowLongPtr()
+// are dependant on target architecture (64-bit or 32-bit).
 #ifdef _WIN64
-    typedef LONG_PTR user_data;
+	#define USERDATA GWLP_USERDATA
+	typedef LONG_PTR user_data;
 #else
-    typedef LONG user_data;
+	#define USERDATA GWL_USERDATA
+	typedef LONG user_data;
 #endif
 
 template <typename T>
@@ -33,7 +35,7 @@ template <typename T>
 void setUserData(HWND window, T ud)
 {
 	SetLastError(0);
-	user_data old = SetWindowLongPtr(window, GWL_USERDATA, reinterpret_cast<user_data>(ud));
+	user_data old = SetWindowLongPtr(window, USERDATA, reinterpret_cast<user_data>(ud));
 	if (old == 0 && GetLastError())
 		throw sys::WindowException("Unable to set window user data");
 }
