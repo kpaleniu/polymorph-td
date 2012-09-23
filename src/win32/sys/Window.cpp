@@ -7,6 +7,7 @@
 #include "sys/Window.hpp"
 #include "sys/WindowException.hpp"
 #include "sys/WndProc.hpp"
+#include "Assert.hpp"
 #include "BuildConfig.hpp"
 
 
@@ -39,9 +40,10 @@ ATOM registerClass(HINSTANCE hInstance)
 void recalculateRect(Window::Rect& rect, DWORD exStyle, DWORD style)
 {
 	RECT rc = { rect.left, rect.top, rect.left + rect.w, rect.top + rect.h };
-	AdjustWindowRectEx(&rc, style, FALSE, exStyle);
+	VERIFY(AdjustWindowRectEx(&rc, style, FALSE, exStyle));
 
-	// TODO: normalize rectangle?
+	ASSERT(rc.right >= rc.left && rc.bottom >= rc.top,
+		"window rectangle is not normalized");
 
 	rect.left = rc.left;
 	rect.top  = rc.top;
@@ -83,7 +85,7 @@ namespace detail {
 
 void window_deleter::operator()(HWND window)
 {
-	DestroyWindow(window);
+	VERIFY(DestroyWindow(window));
 }
 
 }	// namespace detail
@@ -99,7 +101,7 @@ _surface(*this)
 	rid.usUsage     = 0x02;
 	rid.dwFlags     = RIDEV_INPUTSINK;
 	rid.hwndTarget  = _windowHandle.get();
-	RegisterRawInputDevices(&rid, 1, sizeof(rid));
+	VERIFY(RegisterRawInputDevices(&rid, 1, sizeof(rid)));
 }
 
 gr::Surface& Window::surface()
@@ -111,7 +113,7 @@ bool Window::show(bool show)
 {
 	BOOL wasVisible = ShowWindow(_windowHandle.get(), show ? SW_SHOW : SW_HIDE);
 	if (show)
-		UpdateWindow(_windowHandle.get());
+		VERIFY(UpdateWindow(_windowHandle.get()));
 	return !!wasVisible;
 }
 
