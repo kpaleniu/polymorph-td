@@ -43,6 +43,11 @@ public:
 	 * Clears all activated buffers.
 	 */
 	void clearBuffers();
+
+	/** 
+	 * Swap frame buffers (assumes at least double buffering).
+	 */
+	void flipBuffers();
 };
 
 }
@@ -70,6 +75,11 @@ void Renderer::setClearColor(float,
 }
 
 void Renderer::clearBuffers()
+{
+	//
+}
+
+void Renderer::flipBuffers()
 {
 	//
 }
