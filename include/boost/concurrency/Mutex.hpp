@@ -12,7 +12,7 @@
 #include <boost/thread.hpp>
 
 
-namespace sys {
+namespace concurrency {
 
 class Mutex
 {
@@ -20,6 +20,9 @@ public:
 	void lock();
 	bool tryLock();
 	void unlock();
+
+public:
+	boost::mutex &boostMutex();
 
 private:
 	boost::mutex _mutex;

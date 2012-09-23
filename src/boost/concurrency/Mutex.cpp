@@ -3,9 +3,9 @@
  *
  */
 
-#include "sys/Mutex.hpp"
+#include "concurrency/Mutex.hpp"
 
-namespace sys {
+namespace concurrency {
 
 void Mutex::lock()
 {
@@ -20,6 +20,11 @@ bool Mutex::tryLock()
 void Mutex::unlock()
 {
 	_mutex.unlock();
+}
+
+boost::mutex &Mutex::boostMutex()
+{
+	return _mutex;
 }
 
 }

@@ -5,13 +5,15 @@
  */
 
 #include "sys/Time.hpp"
-#include "sys/Thread.hpp"
-#include "sys/Mutex.hpp"
 #include "sys/SystemActionQueue.hpp"
+
+#include "concurrency/Thread.hpp"
+#include "concurrency/Mutex.hpp"
+#include "concurrency/Condition.hpp"
 
 #include "profiler/ThreadProfiler.hpp"
 
-#include <iostream>
+#include "Debug.hpp"
 
 namespace sys {
 
@@ -25,7 +27,7 @@ namespace sys {
  *
  */
 template<typename Runner, typename Data>
-class System : public Thread
+class System : public concurrency::Thread
 {
 public:
 	/**
@@ -40,14 +42,18 @@ public:
 	 */
 	virtual ~System();
 
+	void waitForStartup();
+
 protected:
 	TimeDuration _sync;
 	Data _runnerData;
-	Runner *_runner;
 
 	SystemActionQueue<action::Action<Runner> > _actions;
 
 private:
+	bool _started;
+	concurrency::Condition _startupCond;
+
 	/**
 	 * Calls runner's update method.
 	 */
@@ -63,8 +69,9 @@ System<Runner, Data>::System(const TimeDuration &sync,
 		: Thread(),
 		  _sync(sync),
 		  _runnerData(runnerData),
-		  _runner(0),
-		  _actions(bufferSize)
+		  _actions(bufferSize),
+		  _started(false),
+		  _startupCond()
 {
 	//
 }
@@ -80,12 +87,25 @@ System<Runner, Data>::~System()
 }
 
 template<typename Runner, typename Data>
+void System<Runner, Data>::waitForStartup()
+{
+	_startupCond.waitUntil( [this]() -> bool {return this->_started;} );
+}
+
+template<typename Runner, typename Data>
 void System<Runner, Data>::threadMain()
 {
-	text::String sysName("System");
+	text::String sysName("System"); // TODO Get real name for system.
+
 	text::StringHash sysNameHash = sysName.intern();
 
 	Runner runner(_runnerData);
+
+	{
+		concurrency::MutexLockGuard lock(_startupCond.mutex());
+		_started = true;
+	}
+	_startupCond.notifyAll();
 
 	// Main thread loop.
 	for (;;)

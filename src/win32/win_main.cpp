@@ -34,7 +34,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	worldSystem.start();
 
-	sys::Thread::sleep(sys::TimeDuration::millis(2500));
+	worldSystem.waitForStartup();
+
+	concurrency::Thread::sleep(sys::TimeDuration::millis(2500));
 
 	DEBUG_OUT("Writing actions");
 
@@ -53,7 +55,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		catch (stream::StreamException &e)
 		{
 			cout << e.what() << endl;
-			sys::Thread::sleep(sys::TimeDuration::millis(10));
+			concurrency::Thread::sleep(sys::TimeDuration::millis(10));
 			++errs;
 		}
 

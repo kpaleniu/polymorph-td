@@ -7,7 +7,7 @@
 #define THREAD_PROFILER_HPP_
 
 #include "text/String.hpp"
-#include "sys/Thread.hpp"
+#include "concurrency/Thread.hpp"
 
 #include <map>
 #include <stack>
@@ -24,13 +24,13 @@ public:
 		~Block();
 
 	private:
-		sys::Thread::ID _tid;
+		concurrency::Thread::ID _tid;
 	};
 
 public:
 	friend class Block;
 
-	static ThreadProfiler &profilerFor(sys::Thread::ID tid);
+	static ThreadProfiler &profilerFor(concurrency::Thread::ID tid);
 	static void dumpAll();
 	static void shutdown();
 
@@ -42,7 +42,7 @@ private:
 
 
 
-	static std::map<sys::Thread::ID,
+	static std::map<concurrency::Thread::ID,
 	        ThreadProfiler *> _threadProfilers;
 
 };

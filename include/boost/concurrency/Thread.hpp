@@ -11,7 +11,7 @@
 
 #include <boost/thread.hpp>
 
-namespace sys {
+namespace concurrency {
 
 class Thread
 {
@@ -53,10 +53,9 @@ public:
 	 * Suspends thread the specified amount of time.
 	 * @param timeDuration time to suspend thread execution.
 	 */
-	static void sleep(TimeDuration timeDuration);
+	static void sleep(sys::TimeDuration timeDuration);
 
 	static const ID getCurrentID();
-
 protected:
 	/**
 	 * Method to run by this thread.

@@ -7,10 +7,10 @@
 
 namespace profiler {
 
-std::map<sys::Thread::ID, ThreadProfiler *> ThreadProfiler::_threadProfilers;
+std::map<concurrency::Thread::ID, ThreadProfiler *> ThreadProfiler::_threadProfilers;
 
 ThreadProfiler::Block::Block(text::StringHash blockName)
-		: _tid(sys::Thread::getCurrentID())
+		: _tid(concurrency::Thread::getCurrentID())
 {
 	ThreadProfiler::profilerFor(_tid).enterBlock(blockName);
 }
@@ -37,7 +37,7 @@ void ThreadProfiler::exitBlock()
 	// TODO
 }
 
-ThreadProfiler &ThreadProfiler::profilerFor(sys::Thread::ID tid)
+ThreadProfiler &ThreadProfiler::profilerFor(concurrency::Thread::ID tid)
 {
 	ThreadProfiler *rProfiler;
 

@@ -11,7 +11,7 @@
 
 #include "action/Action.hpp"
 
-#include "sys/Mutex.hpp"
+#include "concurrency/Mutex.hpp"
 
 #include "Debug.hpp"
 
@@ -43,7 +43,7 @@ public:
 
 private:
 	stream::CyclicAutoIOStream _runnerInput;
-	Mutex _rwMutex;
+	concurrency::Mutex _rwMutex;
 };
 
 // Implementation
@@ -53,7 +53,7 @@ template<typename ActionData>
 void SystemActionQueue<ActionBase>::writeAction(const ActionBase &action,
                                     const ActionData &data)
 {
-	sys::MutexLockGuard lock(_rwMutex);
+	concurrency::MutexLockGuard lock(_rwMutex);
 
 	if (_runnerInput.getSize()
 	    - _runnerInput.bytesUnread()
@@ -80,7 +80,7 @@ template<typename ActionBase>
 template<typename Runner>
 void SystemActionQueue<ActionBase>::doAction(Runner &runner)
 {
-	sys::MutexLockGuard lock(_rwMutex);
+	concurrency::MutexLockGuard lock(_rwMutex);
 
 	ActionBase *action;
 
