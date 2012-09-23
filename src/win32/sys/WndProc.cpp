@@ -97,6 +97,8 @@ bool handleRawInput(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 }	// anonymous namespace
 
 
+// TODO: implement a timeout for the event loop so move/resize events
+// don't starve routines running on the same thread
 bool handleEvents(HWND window)
 {
 	MSG msg;
