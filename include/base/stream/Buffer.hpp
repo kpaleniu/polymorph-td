@@ -7,7 +7,7 @@
 #ifndef BUFFER_HPP
 #define BUFFER_HPP
 
-#include "StreamException.hpp"
+#include "stream/StreamException.hpp"
 
 namespace stream {
 
@@ -46,6 +46,7 @@ public:
 	 *
 	 * @param target	Target to write data to.
 	 * @param size		Number of bytes to read.
+	 * @param offset	The specified offset.
 	 * @return			The offset past the read data.
 	 *
 	 * @throws StreamException	If offset is too high.

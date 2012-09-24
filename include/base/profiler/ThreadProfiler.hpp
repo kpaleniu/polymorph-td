@@ -1,6 +1,7 @@
 /**
- * @file SystemProfiler.hpp
+ * @file ThreadProfiler.hpp
  *
+ * Contains interface for class ThreadProfiler.
  */
 
 #ifndef THREAD_PROFILER_HPP_

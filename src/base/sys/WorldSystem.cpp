@@ -24,7 +24,7 @@ bool WorldSystemRunner::update()
 
 	_renderer.clearBuffers();
 	_window.surface().flipBuffers();
-	_window.handleEvents();
+	_window.handleEvents(); // Can this be done in InputSystem?
 
 	return true;
 }

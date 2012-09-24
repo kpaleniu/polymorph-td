@@ -2,8 +2,9 @@
 obj
 lib
 gmake
-gmake
 .settings
 bin
 /.cproject
 /.project
+/apidoc/html
+/apidoc/latex

@@ -27,6 +27,8 @@ Window::~Window()
 
 void Window::handleEvents()
 {
+	// Thread messages
+
 	MSG msg;
 
 	while (PeekMessage(&msg,
