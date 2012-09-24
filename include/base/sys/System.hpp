@@ -15,14 +15,18 @@
 
 #include "Debug.hpp"
 
+#include <functional>
+
+
 namespace sys {
 
 /**
  * Template for systems.
  *
  * @param Runner	Type that updates the thread.
- * 					Must implement method update(void) that returns true ifq
- * 					system should continue running.
+ * 					Runner must be move constructable and it must implement
+ * 					method update(void) that returns true if system should
+ * 					continue running.
  *
  */
 template<typename Runner>
@@ -36,8 +40,14 @@ public:
 	template <typename T1>
 	System(const TimeDuration &sync, size_t bufferSize, T1&& arg1);
 
-	//template <typename ...Args>
-	//System(const TimeDuration &sync, size_t bufferSize, Args&& ...args);
+	/** 
+	 * NOTE: due to a defect in the C++ standard(!!) implementing this function is not
+	 * possible by simply using lambda '[&] { return Runner(std::forward<Args>(args)...); }'
+	 * to construct the _factory member.
+	 * http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#904
+	 */
+	//template <typename ... Args>
+	//System(const TimeDuration &sync, size_t bufferSize, Args&& args);
 
 	/**
 	 *
@@ -48,7 +58,7 @@ public:
 
 protected:
 	TimeDuration _sync;
-	Runner _runner;
+	std::function<Runner ()> _factory;
 
 	SystemActionQueue<action::Action<Runner> > _actions;
 
@@ -71,27 +81,16 @@ System<Runner>::System(const TimeDuration &sync,
 							 T1&& arg1)
 		: Thread(),
 		  _sync(sync),
-		  _runner(std::forward<T1>(arg1)),
+		  _factory(),
 		  _actions(bufferSize),
 		  _started(false),
 		  _startupCond()
 {
-	//
+	// NOTE: due to a limitation in the VC++11's implementation of
+	// lambdas the template parameter is not visible inside the lambda
+	// if used inside the initializer list ...
+	_factory = [&] { return Runner(std::forward<T1>(arg1)); };
 }
-
-/*template<typename Runner>
-template<typename ...Args>
-System<Runner>::System(const TimeDuration &sync,
-                             size_t bufferSize,
-							 Args&& ...args)
-		: Thread(),
-		  _sync(sync),
-		  _runner(std::forward<Args>(args)...),
-		  _actions(bufferSize),
-		  _started(false),
-		  _startupCond()
-{
-}*/
 
 template<typename Runner>
 System<Runner>::~System()
@@ -116,6 +115,8 @@ void System<Runner>::threadMain()
 
 	text::StringHash sysNameHash = sysName.intern();
 
+	Runner runner = _factory();
+
 	{
 		concurrency::MutexLockGuard lock(_startupCond.mutex());
 		_started = true;
@@ -131,9 +132,9 @@ void System<Runner>::threadMain()
 			profiler::ThreadProfiler::Block frame(sysNameHash);
 
 			while (!_actions.isEmpty())
-				_actions.doAction(_runner);
+				_actions.doAction(runner);
 
-			if (!_runner.update())
+			if (!runner.update())
 				return;
 		}
 
