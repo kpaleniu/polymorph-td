@@ -18,7 +18,7 @@ class Thread
 public:
 	typedef boost::thread::id ID;
 
-	enum ThreadState
+	enum class ThreadState
 	{
 		NOT_STARTED = 0, RUNNING, EXITED,
 	};

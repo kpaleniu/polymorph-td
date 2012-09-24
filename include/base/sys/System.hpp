@@ -95,7 +95,7 @@ System<Runner>::System(const TimeDuration &sync,
 template<typename Runner>
 System<Runner>::~System()
 {
-	if (getThreadState() != EXITED)
+	if (getThreadState() != ThreadState::EXITED)
 	{
 		interrupt();
 		join();

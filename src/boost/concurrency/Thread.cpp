@@ -12,7 +12,7 @@
 namespace concurrency {
 
 Thread::Thread()
-		: _threadState(NOT_STARTED),
+		: _threadState(ThreadState::NOT_STARTED),
 		  _boostThread()
 {
 

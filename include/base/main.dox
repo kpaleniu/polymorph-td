@@ -1,0 +1,27 @@
+/**
+ * @mainpage PolyMorph TD
+ *
+ * @section intro_sec Introduction
+ * 
+ * This is the API documentation for <i>PolyMorph TD</i>, 
+ * a game made by <b>Antti Alho</b>, <b>Kari Palenius</b> 
+ * and <b>Jens Åkerblom</b>. The documentation for 
+ * the game itself can be found in the <i>doc/game</i> folder.
+ *
+ * A higher level documentation is available in folder
+ * <i>doc/architecture</i>.
+ *
+ * @section build_sec Building
+ * 
+ * The build system uses premake4 to generate the desired
+ * build files. To build the source, install premake4 and
+ * then use the script in <i>build/premake</i> to generate the
+ * files (note, current folder should be <i>build/premake</i>).
+ * After you've built with premake, use the toolchain you
+ * built for to build the game itself. Note that any 
+ * third-party depedency is not in the repo so you need
+ * libraries like boost already installed and setup.
+ *
+ * The final executable file or package is in the <i>bin</i> folder.
+ * 
+ */

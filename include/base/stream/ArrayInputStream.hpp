@@ -1,5 +1,5 @@
 /**
- * @file ByteArrayInputStream.hpp
+ * @file ArrayInputStream.hpp
  *
  */
 

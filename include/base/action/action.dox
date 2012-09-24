@@ -1,0 +1,7 @@
+/**
+ * @namespace action
+ * 
+ * Namespace for actions.
+ * 
+ * These are used to communicate to systems.
+ */

@@ -11,6 +11,12 @@ newoption
 	description = "Uses Boost libraries."
 }
 
+newoption
+{
+	trigger		= "use-mingw",
+	description	= "Building for MinGW requires some hacks"
+}
+
 projPath = "../.."
 boostDir = os.getenv("BOOST_HOME") or ""
 
@@ -52,7 +58,7 @@ solution "polymorph-td"
 	
 	-- boost libraries need to be explicitly linked on 
 	-- platforms not supporting #pragma comment
-	configuration "with-boost and not vs*"
+	configuration { "with-boost", "not vs*" }
 		defines { "BOOST_THREAD_USE_LIB" }
 		links { "boost_thread",
 				"boost_chrono",
@@ -73,6 +79,10 @@ solution "polymorph-td"
 			defines { "WIN32_LEAN_AND_MEAN" }
 			files { projPath .. "/src/win32/**.cpp" }
 			flags { "WinMain" }
+		
+		configuration "use-mingw"
+			defines { "WINVER=0x0601",
+					  "_WIN32_WINNT=0x0601" }
 		
 		configuration {"windows", "with-opengl"}
 			includedirs { projPath .. "/include/wgl" }
