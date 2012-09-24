@@ -23,12 +23,12 @@ ifeq ($(config),debug)
   OBJDIR     = ../../obj/gmake/Debug/PolyMorphTD
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD.exe
-  DEFINES   += -DBOOST_THREAD_USE_LIB -D_DEBUG -DWIN32_LEAN_AND_MEAN
+  DEFINES   += -D_DEBUG -DBOOST_THREAD_USE_LIB -DWIN32_LEAN_AND_MEAN
   INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/opengl -I../../include/win32 -I../../include/wgl
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall -std=c++0x
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -mwindows -L../../lib/Debug
+  LDFLAGS   += -mwindows -L../../lib/Debug -L../../../Boost/installed/lib
   LIBS      += -lboost_thread -lboost_chrono -lboost_system -lopengl32
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += 
@@ -45,12 +45,56 @@ ifeq ($(config),release)
   OBJDIR     = ../../obj/gmake/Release/PolyMorphTD
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD.exe
-  DEFINES   += -DBOOST_THREAD_USE_LIB -DNDEBUG -DWIN32_LEAN_AND_MEAN
+  DEFINES   += -DNDEBUG -DBOOST_THREAD_USE_LIB -DWIN32_LEAN_AND_MEAN
   INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/opengl -I../../include/win32 -I../../include/wgl
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -O2
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -O2 -std=c++0x
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -s -mwindows -L../../lib/Release
+  LDFLAGS   += -s -mwindows -L../../lib/Release -L../../../Boost/installed/lib
+  LIBS      += -lboost_thread -lboost_chrono -lboost_system -lopengl32
+  RESFLAGS  += $(DEFINES) $(INCLUDES) 
+  LDDEPS    += 
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
+  define PREBUILDCMDS
+  endef
+  define PRELINKCMDS
+  endef
+  define POSTBUILDCMDS
+  endef
+endif
+
+ifeq ($(config),debug64)
+  OBJDIR     = ../../obj/gmake/x64/Debug/PolyMorphTD
+  TARGETDIR  = ../../bin
+  TARGET     = $(TARGETDIR)/PolyMorphTD.exe
+  DEFINES   += -D_DEBUG -DBOOST_THREAD_USE_LIB -DWIN32_LEAN_AND_MEAN
+  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/opengl -I../../include/win32 -I../../include/wgl
+  CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall -m64 -std=c++0x
+  CXXFLAGS  += $(CFLAGS) 
+  LDFLAGS   += -mwindows -m64 -L/usr/lib64 -L../../lib/Debug -L../../../Boost/installed/lib
+  LIBS      += -lboost_thread -lboost_chrono -lboost_system -lopengl32
+  RESFLAGS  += $(DEFINES) $(INCLUDES) 
+  LDDEPS    += 
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
+  define PREBUILDCMDS
+  endef
+  define PRELINKCMDS
+  endef
+  define POSTBUILDCMDS
+  endef
+endif
+
+ifeq ($(config),release64)
+  OBJDIR     = ../../obj/gmake/x64/Release/PolyMorphTD
+  TARGETDIR  = ../../bin
+  TARGET     = $(TARGETDIR)/PolyMorphTD.exe
+  DEFINES   += -DNDEBUG -DBOOST_THREAD_USE_LIB -DWIN32_LEAN_AND_MEAN
+  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/opengl -I../../include/win32 -I../../include/wgl
+  CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -O2 -m64 -std=c++0x
+  CXXFLAGS  += $(CFLAGS) 
+  LDFLAGS   += -s -mwindows -m64 -L/usr/lib64 -L../../lib/Release -L../../../Boost/installed/lib
   LIBS      += -lboost_thread -lboost_chrono -lboost_system -lopengl32
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += 
@@ -65,8 +109,13 @@ endif
 
 OBJECTS := \
 	$(OBJDIR)/ThreadProfiler.o \
+	$(OBJDIR)/Buffer.o \
+	$(OBJDIR)/CyclicAutoInputStream.o \
+	$(OBJDIR)/CyclicAutoIOStream.o \
+	$(OBJDIR)/CyclicAutoOutputStream.o \
 	$(OBJDIR)/WorldSystem.o \
 	$(OBJDIR)/String.o \
+	$(OBJDIR)/Condition.o \
 	$(OBJDIR)/Mutex.o \
 	$(OBJDIR)/Thread.o \
 	$(OBJDIR)/Time.o \
@@ -74,6 +123,7 @@ OBJECTS := \
 	$(OBJDIR)/TextureManager_GL.o \
 	$(OBJDIR)/win_main.o \
 	$(OBJDIR)/Window.o \
+	$(OBJDIR)/WndProc.o \
 	$(OBJDIR)/Surface.o \
 
 RESOURCES := \
@@ -138,16 +188,31 @@ endif
 $(OBJDIR)/ThreadProfiler.o: ../../src/base/profiler/ThreadProfiler.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Buffer.o: ../../src/base/stream/Buffer.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/CyclicAutoInputStream.o: ../../src/base/stream/CyclicAutoInputStream.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/CyclicAutoIOStream.o: ../../src/base/stream/CyclicAutoIOStream.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/CyclicAutoOutputStream.o: ../../src/base/stream/CyclicAutoOutputStream.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/WorldSystem.o: ../../src/base/sys/WorldSystem.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/String.o: ../../src/base/text/String.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Mutex.o: ../../src/boost/sys/Mutex.cpp
+$(OBJDIR)/Condition.o: ../../src/boost/concurrency/Condition.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Thread.o: ../../src/boost/sys/Thread.cpp
+$(OBJDIR)/Mutex.o: ../../src/boost/concurrency/Mutex.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Thread.o: ../../src/boost/concurrency/Thread.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Time.o: ../../src/boost/sys/Time.cpp
@@ -163,6 +228,9 @@ $(OBJDIR)/win_main.o: ../../src/win32/win_main.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Window.o: ../../src/win32/sys/Window.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/WndProc.o: ../../src/win32/sys/WndProc.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Surface.o: ../../src/wgl/gr/Surface.cpp

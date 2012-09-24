@@ -23,13 +23,13 @@ ifeq ($(config),debug)
   OBJDIR     = ../../obj/gmake/Debug/PolyMorphTD-testrunner
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD-testrunner.exe
-  DEFINES   += -DBOOST_THREAD_USE_LIB -D_DEBUG
-  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../mockup
+  DEFINES   += -D_DEBUG -DBOOST_THREAD_USE_LIB
+  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/mockup -I../../test/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall -std=c++0x
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -L../../lib/Debug
-  LIBS      += -lboost_thread -lboost_chrono -lboost_system -lcppunit
+  LDFLAGS   += -L../../lib/Debug -L../../../Boost/installed/lib
+  LIBS      += -lboost_thread -lboost_chrono -lboost_system
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += 
   LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
@@ -45,13 +45,57 @@ ifeq ($(config),release)
   OBJDIR     = ../../obj/gmake/Release/PolyMorphTD-testrunner
   TARGETDIR  = ../../bin
   TARGET     = $(TARGETDIR)/PolyMorphTD-testrunner.exe
-  DEFINES   += -DBOOST_THREAD_USE_LIB -DNDEBUG
-  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../mockup
+  DEFINES   += -DNDEBUG -DBOOST_THREAD_USE_LIB
+  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/mockup -I../../test/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -O2
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -O2 -std=c++0x
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -s -L../../lib/Release
-  LIBS      += -lboost_thread -lboost_chrono -lboost_system -lcppunit
+  LDFLAGS   += -s -L../../lib/Release -L../../../Boost/installed/lib
+  LIBS      += -lboost_thread -lboost_chrono -lboost_system
+  RESFLAGS  += $(DEFINES) $(INCLUDES) 
+  LDDEPS    += 
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
+  define PREBUILDCMDS
+  endef
+  define PRELINKCMDS
+  endef
+  define POSTBUILDCMDS
+  endef
+endif
+
+ifeq ($(config),debug64)
+  OBJDIR     = ../../obj/gmake/x64/Debug/PolyMorphTD-testrunner
+  TARGETDIR  = ../../bin
+  TARGET     = $(TARGETDIR)/PolyMorphTD-testrunner.exe
+  DEFINES   += -D_DEBUG -DBOOST_THREAD_USE_LIB
+  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/mockup -I../../test/include
+  CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -g -Wall -m64 -std=c++0x
+  CXXFLAGS  += $(CFLAGS) 
+  LDFLAGS   += -m64 -L/usr/lib64 -L../../lib/Debug -L../../../Boost/installed/lib
+  LIBS      += -lboost_thread -lboost_chrono -lboost_system
+  RESFLAGS  += $(DEFINES) $(INCLUDES) 
+  LDDEPS    += 
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
+  define PREBUILDCMDS
+  endef
+  define PRELINKCMDS
+  endef
+  define POSTBUILDCMDS
+  endef
+endif
+
+ifeq ($(config),release64)
+  OBJDIR     = ../../obj/gmake/x64/Release/PolyMorphTD-testrunner
+  TARGETDIR  = ../../bin
+  TARGET     = $(TARGETDIR)/PolyMorphTD-testrunner.exe
+  DEFINES   += -DNDEBUG -DBOOST_THREAD_USE_LIB
+  INCLUDES  += -I../../include/base -I../../include/game -I../../include/boost -I../../../Boost/installed/include -I../../include/mockup -I../../test/include
+  CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -O2 -m64 -std=c++0x
+  CXXFLAGS  += $(CFLAGS) 
+  LDFLAGS   += -s -m64 -L/usr/lib64 -L../../lib/Release -L../../../Boost/installed/lib
+  LIBS      += -lboost_thread -lboost_chrono -lboost_system
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += 
   LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
@@ -65,12 +109,16 @@ endif
 
 OBJECTS := \
 	$(OBJDIR)/ThreadProfiler.o \
+	$(OBJDIR)/Buffer.o \
+	$(OBJDIR)/CyclicAutoInputStream.o \
+	$(OBJDIR)/CyclicAutoIOStream.o \
+	$(OBJDIR)/CyclicAutoOutputStream.o \
 	$(OBJDIR)/WorldSystem.o \
 	$(OBJDIR)/String.o \
+	$(OBJDIR)/Condition.o \
 	$(OBJDIR)/Mutex.o \
 	$(OBJDIR)/Thread.o \
 	$(OBJDIR)/Time.o \
-	$(OBJDIR)/ArrayInputStream_test.o \
 	$(OBJDIR)/testrunner.o \
 
 RESOURCES := \
@@ -135,25 +183,37 @@ endif
 $(OBJDIR)/ThreadProfiler.o: ../../src/base/profiler/ThreadProfiler.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Buffer.o: ../../src/base/stream/Buffer.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/CyclicAutoInputStream.o: ../../src/base/stream/CyclicAutoInputStream.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/CyclicAutoIOStream.o: ../../src/base/stream/CyclicAutoIOStream.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/CyclicAutoOutputStream.o: ../../src/base/stream/CyclicAutoOutputStream.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/WorldSystem.o: ../../src/base/sys/WorldSystem.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/String.o: ../../src/base/text/String.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Mutex.o: ../../src/boost/sys/Mutex.cpp
+$(OBJDIR)/Condition.o: ../../src/boost/concurrency/Condition.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Thread.o: ../../src/boost/sys/Thread.cpp
+$(OBJDIR)/Mutex.o: ../../src/boost/concurrency/Mutex.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Thread.o: ../../src/boost/concurrency/Thread.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Time.o: ../../src/boost/sys/Time.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/ArrayInputStream_test.o: ../../test/base/ArrayInputStream_test.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/testrunner.o: ../../test/base/testrunner.cpp
+$(OBJDIR)/testrunner.o: ../../test/src/testrunner.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 

@@ -18,6 +18,8 @@ namespace gr
 
 		void clearBuffers();
 
+		void flipBuffers();
+
 		// TextureHandler &textures();
 
 	protected:

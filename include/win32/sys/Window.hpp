@@ -7,12 +7,24 @@
 #define WINDOW_HPP_
 
 #include "gr/Surface.hpp"
-
+#include <memory>
 #include <windows.h>
 
-namespace sys {
 
-class Window
+namespace sys {
+namespace detail {
+
+/**
+ * Custom deleter type to for HWND__ pointers.
+ */
+struct window_deleter {
+	void operator()(HWND window);
+};
+
+}
+
+
+class Window : NonCopyable
 {
 public:
 	struct Rect
@@ -30,36 +42,37 @@ public:
 	};
 
 public:
-	Window(ConstructionData &ctorData);
 
-	~Window();
+	/**
+	 * 
+	 */
+	Window(const ConstructionData& desc);
 
-	gr::Surface &surface()
-	{
-		return _surface;
-	}
+	/**
+	 * TODO: detach from sys::Window ?
+	 */
+	gr::Surface& surface();
 
-	void handleEvents();
+	/**
+	 * Handles all pending window events.
+	 * @return true if WM_QUIT was not encountered while processing messages
+	 */
+	bool handleEvents();
 
-public:
-	// Win32 specific methods.
+	/**
+	 * Shows or hides the window.
+	 * @return true if the window was visible previously
+	 */
+	bool show(bool show = true);
 
-	const HWND getWindowHandle()
-	{
-		return _windowHandle;
-	}
+	/**
+	 * @return A handle to the underlying native window
+	 */
+	HWND nativeHandle();
 
-private:
-	static LRESULT CALLBACK windowProc(HWND hwnd,
-	                                   UINT msg,
-	                                   WPARAM wParam,
-	                                   LPARAM lParam);
+private:	// NOTE: surface has to be destroyed before the window
 
-	HWND createWindowHandle(HINSTANCE hInstance,
-	                        const Rect &winRect);
-
-private:
-	const HWND _windowHandle; // Must be before _surface.
+	std::unique_ptr<HWND__, detail::window_deleter> _windowHandle;
 	gr::Surface _surface;
 };
 

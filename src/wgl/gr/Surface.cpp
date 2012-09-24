@@ -5,13 +5,11 @@
  */
 
 #include "gr/Surface.hpp"
-
 #include "gr/SurfaceException.hpp"
 #include "sys/Window.hpp"
+#include "Assert.hpp"
 
 #include <windows.h>
-#include <wingdi.h>
-
 #include <gl/gl.h>
 
 
@@ -25,14 +23,14 @@ dc_deleter::dc_deleter(HWND window)
 
 void dc_deleter::operator()(HDC dc)
 {
-	ReleaseDC(_window, dc);
+	VERIFY(ReleaseDC(_window, dc));
 }
 
 void rc_deleter::operator()(HGLRC rc)
 {
 	// NOTE: if the rendering context is active in some other thread,
 	// wglDeleteContext() will produce an error
-	wglDeleteContext(rc);
+	VERIFY(wglDeleteContext(rc));
 }
 
 }	// namespace detail
@@ -40,7 +38,7 @@ void rc_deleter::operator()(HGLRC rc)
 
 Surface::Surface(sys::Window &win)
 	: _win(win),
-	  _deviceHandle(GetDC(win.getWindowHandle()), detail::dc_deleter(win.getWindowHandle())),
+	  _deviceHandle(GetDC(win.nativeHandle()), detail::dc_deleter(win.nativeHandle())),
 	  _glHandle()
 {
 	if (!_deviceHandle)
@@ -96,7 +94,7 @@ void Surface::activate(bool activate)
 
 void Surface::flipBuffers()
 {
-	SwapBuffers(_deviceHandle.get());
+	VERIFY(SwapBuffers(_deviceHandle.get()));
 }
 
 }

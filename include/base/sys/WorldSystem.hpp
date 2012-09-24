@@ -7,7 +7,6 @@
 #define WORLDSYSTEM_HPP_
 
 #include "sys/System.hpp"
-#include "sys/Window.hpp"
 
 #include "gr/Renderer.hpp"
 #include "action/Action.hpp"
@@ -18,29 +17,20 @@ namespace sys {
 class WorldSystemRunner
 {
 public:
-	WorldSystemRunner(sys::Window::ConstructionData &winData);
+	WorldSystemRunner(gr::Renderer &renderer);
 
 	bool update();
 
 private:
-	sys::Window _window;
-	gr::Renderer _renderer;
+	gr::Renderer &_renderer;
 };
 
-}
-
-namespace sys {
-
-class WorldSystem : public System<
-        WorldSystemRunner,
-        sys::Window::ConstructionData &>
+class WorldSystem : public System<WorldSystemRunner>
 {
 public:
-	WorldSystem(const TimeDuration &sync,
-	            sys::Window::ConstructionData &runnerData);
+	WorldSystem(gr::Renderer &renderer, const TimeDuration &sync);
 
-	// JUST FOR TESTING
-#warning "TESTING REMOVE LATER"
+	// TODO: JUST FOR TESTING
 	SystemActionQueue<
 	        action::Action<WorldSystemRunner> > &actionQueue()
 	{
