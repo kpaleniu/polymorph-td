@@ -24,7 +24,11 @@ public:
 	String();
 	String(const char *cStr);
 
+	bool empty() const;
+
 	const char *c_str() const;
+
+	String& append(const text::String& string);
 
 	const StringHash hash() const;
 

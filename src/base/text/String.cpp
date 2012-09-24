@@ -21,9 +21,20 @@ String::String(const char *cStr)
 	//
 }
 
+bool String::empty() const
+{
+	return _str.empty();
+}
+
 const char *String::c_str() const
 {
 	return _str.c_str();
+}
+
+String& String::append(const text::String& string)
+{
+	_str.append(string._str);
+	return *this;
 }
 
 const StringHash String::hash() const
