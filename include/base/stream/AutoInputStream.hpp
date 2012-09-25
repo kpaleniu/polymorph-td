@@ -6,6 +6,7 @@
 #ifndef AUTOINPUTSTREAM_HPP_
 #define AUTOINPUTSTREAM_HPP_
 
+#include "NonCopyable.hpp"
 #include <cstddef>
 
 namespace stream {
@@ -13,7 +14,7 @@ namespace stream {
 /**
  * Base class for input streams that reads any type of data.
  */
-class AutoInputStream
+class AutoInputStream : NonCopyable
 {
 public:
 	virtual ~AutoInputStream() {};
