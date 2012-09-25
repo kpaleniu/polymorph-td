@@ -6,15 +6,15 @@
 #ifndef WORLDSYSTEM_HPP_
 #define WORLDSYSTEM_HPP_
 
-#include "sys/System.hpp"
-
-#include "gr/Renderer.hpp"
+#include "NonCopyable.hpp"
 #include "action/Action.hpp"
+#include "gr/Renderer.hpp"
 #include "stream/ArrayInputStream.hpp"
+#include "sys/System.hpp"
 
 namespace sys {
 
-class WorldSystemRunner
+class WorldSystemRunner : NonCopyable
 {
 public:
 	WorldSystemRunner(gr::Renderer &renderer);
