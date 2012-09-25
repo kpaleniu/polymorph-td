@@ -28,16 +28,22 @@ public:
 
 	/**
 	 * @param code Platorm specific error code.
-	 * @param msg Additional error message (prepended to system error message).
+	 * @param msg Additional error message.
 	 */
-	explicit SystemException(error_type code, const char* msg = "");
+	explicit SystemException(error_type code, const char* msg = "") throw();
+
+	virtual ~SystemException() throw() {};
 
 	/**
 	 * @return Error code given to constructor.
 	 */
 	error_type code() const { return _code; }
 
-	virtual const char* what() const;
+	/**
+	 * @return Additional error message passed in constructor prepended
+	 *   to the error message associated with the error code.
+	 */
+	virtual const char* what() const throw();
 
 private:
 	error_type _code;

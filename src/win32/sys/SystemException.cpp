@@ -41,10 +41,7 @@ text::String getWin32Message(DWORD error)
 		NULL);
 
 	if (ret == 0)
-	{
-		DWORD err = GetLastError();
 		return "Unknown error";
-	}
 
 	ScopedLocalFree localfree(buffer);
 	return text::String(static_cast<LPCSTR>(buffer));
@@ -55,8 +52,8 @@ text::String getWin32Message(DWORD error)
 
 SystemException::SystemException(error_type code, const char* message) :
 	Exception(message),
-	_error(),	// lazy initialization in what()
-	_code(code)
+	_code(code),
+	_error()	// lazy initialization in what()
 {
 }
 
