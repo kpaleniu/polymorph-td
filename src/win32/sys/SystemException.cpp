@@ -50,14 +50,14 @@ text::String getWin32Message(DWORD error)
 }	// anonymous namespace
 
 
-SystemException::SystemException(error_type code, const char* message) :
+SystemException::SystemException(error_type code, const char* message) throw() :
 	Exception(message),
 	_code(code),
 	_error()	// lazy initialization in what()
 {
 }
 
-const char* SystemException::what() const
+const char* SystemException::what() const throw()
 {
 	if (_error.empty())
 	{
