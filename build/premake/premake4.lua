@@ -11,12 +11,6 @@ newoption
 	description = "Uses Boost libraries."
 }
 
-newoption
-{
-	trigger		= "use-mingw",
-	description	= "Building for MinGW requires some hacks"
-}
-
 projPath = "../.."
 boostDir = os.getenv("BOOST_HOME") or ""
 
@@ -76,13 +70,11 @@ solution "polymorph-td"
 		
 		configuration "windows"
 			includedirs { projPath .. "/include/win32" }
-			defines { "WIN32_LEAN_AND_MEAN" }
+			defines { "WIN32_LEAN_AND_MEAN",
+					  "WINVER=0x0501",
+					  "_WIN32_WINNT=0x0501"
 			files { projPath .. "/src/win32/**.cpp" }
 			flags { "WinMain" }
-		
-		configuration "use-mingw"
-			defines { "WINVER=0x0601",
-					  "_WIN32_WINNT=0x0601" }
 		
 		configuration {"windows", "with-opengl"}
 			includedirs { projPath .. "/include/wgl" }
