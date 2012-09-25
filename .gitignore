@@ -2,6 +2,7 @@
 obj
 lib
 gmake
+vs2010
 .settings
 bin
 /.cproject
