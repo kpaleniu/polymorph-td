@@ -17,6 +17,11 @@ WorldSystemRunner::WorldSystemRunner(gr::Renderer& renderer)
 
 }
 
+WorldSystemRunner::WorldSystemRunner(WorldSystemRunner&& system)
+	: _renderer(system._renderer)
+{
+}
+
 bool WorldSystemRunner::update()
 {
 	DEBUG_OUT("WorldSystem updateSystem");

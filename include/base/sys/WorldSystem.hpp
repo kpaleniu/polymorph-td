@@ -18,6 +18,7 @@ class WorldSystemRunner : NonCopyable
 {
 public:
 	WorldSystemRunner(gr::Renderer &renderer);
+	WorldSystemRunner(WorldSystemRunner&& system);
 
 	bool update();
 
