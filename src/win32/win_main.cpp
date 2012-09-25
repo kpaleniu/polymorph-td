@@ -15,9 +15,9 @@
  * Windows main.
  */
 int APIENTRY WinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPSTR lpCmdLine,
-                     int nShowCmd)
+                     HINSTANCE,
+                     LPSTR /*lpCmdLine*/,
+                     int /*nShowCmd*/)
 {
 	DEBUG_OUT("Hello World!");
 

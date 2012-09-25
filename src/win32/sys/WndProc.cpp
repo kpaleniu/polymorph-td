@@ -40,7 +40,7 @@ void setUserData(HWND window, T ud)
 		throw sys::WindowException("Unable to set window user data");
 }
 
-bool handleKeyInput(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
+bool handleKeyInput(HWND /*window*/, UINT, WPARAM /*wParam*/, LPARAM)
 {
 	// Window* thiz = getUserData<Window*>(window);
 	// auto key = convertKeyCode(wParam);
@@ -48,15 +48,15 @@ bool handleKeyInput(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 	return true;
 }
 
-bool handleMouseInput(HWND window, const RAWMOUSE& mouse)
+bool handleMouseInput(HWND /*window*/, const RAWMOUSE& mouse)
 {
 	// mouse button up/down masks
 	const USHORT DOWN_MASK = RI_MOUSE_BUTTON_1_DOWN | RI_MOUSE_BUTTON_2_DOWN;
 	const USHORT UP_MASK   = RI_MOUSE_BUTTON_1_UP   | RI_MOUSE_BUTTON_2_UP;
 
 	// NOTE: MOUSE_MOVE_RELATIVE == 0x0
-	if (!mouse.usFlags && (mouse.lLastX || mouse.lLastY))
-		; // TODO: handle relative mouse movement
+	//if (!mouse.usFlags && (mouse.lLastX || mouse.lLastY))
+		// TODO: handle relative mouse movement
 
 	if (mouse.usButtonFlags & DOWN_MASK)
 	{
@@ -77,7 +77,7 @@ bool handleMouseInput(HWND window, const RAWMOUSE& mouse)
 	return true;
 }
 
-bool handleRawInput(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
+bool handleRawInput(HWND window, UINT, WPARAM wParam, LPARAM lParam)
 {
 	// only process input when the application is on the foreground
 	if (wParam != RIM_INPUT)

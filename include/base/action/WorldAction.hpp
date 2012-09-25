@@ -25,7 +25,7 @@ public:
 		int j;
 	};
 
-	void callAction(sys::WorldSystemRunner &runner, stream::AutoInputStream &in)
+	void callAction(sys::WorldSystemRunner &/*runner*/, stream::AutoInputStream &in)
 	{
 		Data data;
 		in >> data;

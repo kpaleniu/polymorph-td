@@ -65,7 +65,7 @@ void Thread::threadRunner(Thread *thiz)
 	{
 		thiz->threadMain();
 	}
-	catch (boost::thread_interrupted &e)
+	catch (boost::thread_interrupted &/*e*/)
 	{
 		// Normal exit.
 	}

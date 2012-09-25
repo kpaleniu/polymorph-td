@@ -25,7 +25,7 @@ TextureHandler::~TextureHandler()
 
 }
 
-void TextureHandler::bindTexture(const Texture &tex)
+void TextureHandler::bindTexture(const Texture &/*tex*/)
 {
 	//glBindTexture(GL_TEXTURE_2D, tex.texId);
 }

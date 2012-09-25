@@ -27,7 +27,7 @@ ThreadProfiler::ThreadProfiler()
 
 }
 
-void ThreadProfiler::enterBlock(text::StringHash blockName)
+void ThreadProfiler::enterBlock(text::StringHash /*blockName*/)
 {
 	// TODO
 }
