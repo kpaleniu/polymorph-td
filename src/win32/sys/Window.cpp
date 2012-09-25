@@ -10,6 +10,10 @@
 #include "Assert.hpp"
 #include "BuildConfig.hpp"
 
+// Windows XP is the minimum requirement for using raw input
+static_assert(_WIN32_WINNT >= 0x0501,
+	"Windows target version not supported (_WIN32_WINNT < 0x0501)");
+
 
 namespace sys {
 namespace {
