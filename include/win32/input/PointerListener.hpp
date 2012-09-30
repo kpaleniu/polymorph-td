@@ -8,7 +8,7 @@
 
 namespace input {
 
-typedef int pointer_button;
+typedef unsigned short pointer_button;
 typedef int pointer_id;
 
 class PointerListener

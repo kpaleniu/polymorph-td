@@ -16,7 +16,7 @@ public:
 	virtual void onResize(int w, int h) = 0;
 	virtual void onShow() = 0;
 	virtual void onHide() = 0;
-	virtual void onDestroy() = 0;
+	virtual void onQuit() = 0;
 };
 
 }

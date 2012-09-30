@@ -46,7 +46,7 @@ protected:
 	void notifyResize(int w, int h);
 	void notifyShow();
 	void notifyHide();
-	void notifyDestroy();
+	void notifyQuit();
 
 	void notifyKeyDown(key_type key);
 	void notifyKeyUp(key_type key);

@@ -123,13 +123,13 @@ void InputSource::notifyHide()
 	              });
 }
 
-void InputSource::notifyDestroy()
+void InputSource::notifyQuit()
 {
 	std::for_each(_surfaceListeners.begin(),
 	              _surfaceListeners.end(),
 	              [](SurfaceListener* listener)
 	              {
-		              listener->onDestroy();
+		              listener->onQuit();
 	              });
 }
 

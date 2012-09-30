@@ -6,7 +6,6 @@
 
 #include "sys/Window.hpp"
 #include "sys/WindowException.hpp"
-#include "sys/WndProc.hpp"
 #include "Assert.hpp"
 #include "BuildConfig.hpp"
 
@@ -24,7 +23,7 @@ ATOM registerClass(HINSTANCE hInstance)
 
 	wc.cbSize = sizeof(wc);
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wc.lpfnWndProc = sys::handler;
+	wc.lpfnWndProc = input::handler;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance  = hInstance;
@@ -94,10 +93,10 @@ void window_deleter::operator()(HWND window)
 
 }	// namespace detail
 
-
 Window::Window(const ConstructionData &ctorData) :
-_windowHandle(createWindow(ctorData, this)),
-_surface(*this)
+		_windowHandle(createWindow(ctorData, this)),
+		_surface(*this),
+		_inputSource(_windowHandle.get())
 {
 	// get raw input data from the mouse/pointer device
 	RAWINPUTDEVICE rid;
@@ -121,9 +120,9 @@ bool Window::show(bool show)
 	return !!wasVisible;
 }
 
-bool Window::handleEvents()
+input::WindowInputSource& Window::inputSource()
 {
-	return sys::handleEvents(_windowHandle.get());
+	return _inputSource;
 }
 
 HWND Window::nativeHandle()

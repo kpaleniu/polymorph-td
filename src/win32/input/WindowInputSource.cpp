@@ -1,16 +1,18 @@
 /**
- * @file WndProc.cpp
+ * @file WindowInputSource.cpp
  *
- * MS Windows implementation of class Window.
  */
 
-#include "sys/WndProc.hpp"
+#include "input/WindowInputSource.hpp"
 #include "sys/WindowException.hpp"
-#include <windows.h>
 
+#include "sys/Window.hpp"
 
 namespace sys {
 class Window;
+}
+
+namespace input {
 
 namespace {
 
@@ -45,35 +47,13 @@ bool handleKeyInput(HWND /*window*/, UINT, WPARAM /*wParam*/, LPARAM)
 	// Window* thiz = getUserData<Window*>(window);
 	// auto key = convertKeyCode(wParam);
 	// thiz->_winEventQueue.push(KeyEvent(key));
+	// TODO Remove this function and call WindowInputSource::keyboardInput directly.
 	return true;
 }
 
 bool handleMouseInput(HWND /*window*/, const RAWMOUSE& mouse)
 {
-	// mouse button up/down masks
-	const USHORT DOWN_MASK = RI_MOUSE_BUTTON_1_DOWN | RI_MOUSE_BUTTON_2_DOWN;
-	const USHORT UP_MASK   = RI_MOUSE_BUTTON_1_UP   | RI_MOUSE_BUTTON_2_UP;
-
-	// NOTE: MOUSE_MOVE_RELATIVE == 0x0
-	//if (!mouse.usFlags && (mouse.lLastX || mouse.lLastY))
-		// TODO: handle relative mouse movement
-
-	if (mouse.usButtonFlags & DOWN_MASK)
-	{
-		// TODO: handle mouse button down events
-		//auto key = convertMouseKey(mouse.usButtonFlags);
-	}
-	else if (mouse.usButtonFlags & UP_MASK)
-	{
-		// TODO: handle mouse button up events
-		//auto key = convertMouseKey(mouse.usButtonFlags);
-	}
-	else if (mouse.usButtonFlags & RI_MOUSE_WHEEL)
-	{
-		// TODO: handle mouse wheel
-		//auto delta = static_cast<SHORT>(mouse.usButtonData);
-	}
-
+	// TODO Remove this function and call WindowInputSource::mouseInput directly.
 	return true;
 }
 
@@ -169,13 +149,15 @@ LRESULT CALLBACK handler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_CHAR:
-		if (handleKeyInput(hwnd, msg, wParam, lParam))
-			return 0;
-
+	{
+		sys::Window* thiz = getUserData<sys::Window*>(hwnd);
+		thiz->inputSource().keyboardInput(msg, wParam, lParam);
+		return 0;
+	}
 	case WM_INPUT:
 		if (handleRawInput(hwnd, msg, wParam, lParam))
 			return 0;
-
+		break;
 	default:
 		break;
 	}
@@ -184,4 +166,66 @@ LRESULT CALLBACK handler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-}	// namespace sys
+
+WindowInputSource::WindowInputSource(HWND window)
+: _window(window)
+{
+}
+
+bool WindowInputSource::handleInput()
+{
+	MSG msg;
+	if (PeekMessage(&msg, _window, 0, 0, PM_REMOVE))
+	{
+		if (msg.message == WM_QUIT)
+		{
+			notifyQuit();
+			return true;
+		}
+
+		TranslateMessage(&msg); // translate and dispatch to event queue
+		DispatchMessage(&msg);
+
+		return true; // More messages might be in queue.
+	}
+
+	return false;
+}
+
+void WindowInputSource::mouseInput(const RAWMOUSE& mouse)
+{
+    // TODO Implement
+
+	// mouse button up/down masks
+	const USHORT DOWN_MASK = RI_MOUSE_BUTTON_1_DOWN | RI_MOUSE_BUTTON_2_DOWN;
+	const USHORT UP_MASK   = RI_MOUSE_BUTTON_1_UP   | RI_MOUSE_BUTTON_2_UP;
+
+	// NOTE: MOUSE_MOVE_RELATIVE == 0x0
+	//if (!mouse.usFlags && (mouse.lLastX || mouse.lLastY))
+		// TODO: handle relative mouse movement
+
+	if (mouse.usButtonFlags & DOWN_MASK)
+	{
+		//pointer_button key = convertMouseKey(mouse.usButtonFlags);
+		//notifyPointerDown(0, key, int(mouse.lLstX), int(mouse.lLastY))
+	}
+	else if (mouse.usButtonFlags & UP_MASK)
+	{
+		//pointer_button key = convertMouseKey(mouse.usButtonFlags);
+		//notifyPointerUp(0, key, int(mouse.lLastX), int(mouse.lLastY));
+	}
+	else if (mouse.usButtonFlags & RI_MOUSE_WHEEL)
+	{
+		//auto delta = static_cast<SHORT>(mouse.usButtonData);
+		//notifyPointerZoom(int(delta));
+	}
+}
+
+void WindowInputSource::keyboardInput(UINT unsignedInt,
+                                      WPARAM unsignedInt1,
+                                      LPARAM longInt)
+{
+    // TODO Implement
+}
+
+}	// namespace input
