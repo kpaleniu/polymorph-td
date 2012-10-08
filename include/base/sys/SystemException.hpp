@@ -7,8 +7,7 @@
 #define SYSTEM_EXCEPTION_HPP_
 
 #include "Exception.hpp"
-#include "text/String.hpp"
-
+#include <string>
 
 namespace sys {
 
@@ -47,7 +46,7 @@ public:
 
 private:
 	error_type _code;
-	mutable text::String _error;
+	mutable std::string _error;
 };
 
 }	// namespace sys

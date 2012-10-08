@@ -7,30 +7,27 @@
 #define EXCEPTION_HPP_
 
 #include <exception>
-
-#include "text/String.hpp"
+#include <string>
 
 class Exception : public std::exception
 {
 public:
-	Exception(text::String msg) throw ()
+	Exception(std::string msg) throw ()
 			: std::exception(), _msg(msg)
 	{
-		//
 	}
 
 	virtual ~Exception() throw ()
 	{
-		//
 	}
 
-	virtual const char *what() const throw ()
+	virtual const char* what() const throw ()
 	{
 		return _msg.c_str();
 	}
 
 private:
-	text::String _msg;
+	std::string _msg;
 };
 
 #endif /* EXCEPTION_HPP_ */

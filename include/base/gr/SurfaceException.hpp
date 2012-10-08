@@ -11,10 +11,9 @@
 class SurfaceException : public Exception
 {
 public:
-	SurfaceException(text::String msg) throw()
+	SurfaceException(std::string msg) throw()
 	: Exception(msg)
 	{
-		//
 	}
 };
 

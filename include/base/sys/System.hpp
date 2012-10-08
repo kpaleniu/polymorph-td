@@ -111,9 +111,7 @@ void System<Runner>::waitForStartup()
 template<typename Runner>
 void System<Runner>::threadMain()
 {
-	text::String sysName("System"); // TODO Get real name for system.
-
-	text::StringHash sysNameHash = sysName.intern();
+	static text::string_hash sysID = text::intern("System"); // TODO Get real name for system.
 
 	Runner runner = _factory();
 
@@ -129,7 +127,7 @@ void System<Runner>::threadMain()
 		TimeStamp t0 = TimeStamp::now();
 
 		{
-			profiler::ThreadProfiler::Block frame(sysNameHash);
+			//profiler::ThreadProfiler::Block frame(sysNameHash);
 
 			while (!_actions.isEmpty())
 				_actions.doAction(runner);

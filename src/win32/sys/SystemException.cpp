@@ -23,7 +23,7 @@ private:
  * A helper function for composing error messages associated with
  * Win32 error codes (from GetLastError()).
  */
-text::String getWin32Message(DWORD error)
+std::string getWin32Message(DWORD error)
 {
 	LPVOID buffer = NULL;
 
@@ -44,7 +44,7 @@ text::String getWin32Message(DWORD error)
 		return "Unknown error";
 
 	ScopedLocalFree localfree(buffer);
-	return text::String(static_cast<LPCSTR>(buffer));
+	return std::string(static_cast<LPCSTR>(buffer));
 }
 
 }	// anonymous namespace

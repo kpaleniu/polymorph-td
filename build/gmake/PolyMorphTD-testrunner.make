@@ -108,13 +108,15 @@ ifeq ($(config),release64)
 endif
 
 OBJECTS := \
+	$(OBJDIR)/InputSource.o \
 	$(OBJDIR)/ThreadProfiler.o \
 	$(OBJDIR)/Buffer.o \
 	$(OBJDIR)/CyclicAutoInputStream.o \
 	$(OBJDIR)/CyclicAutoIOStream.o \
 	$(OBJDIR)/CyclicAutoOutputStream.o \
+	$(OBJDIR)/UISystem.o \
 	$(OBJDIR)/WorldSystem.o \
-	$(OBJDIR)/String.o \
+	$(OBJDIR)/util.o \
 	$(OBJDIR)/Condition.o \
 	$(OBJDIR)/Mutex.o \
 	$(OBJDIR)/Thread.o \
@@ -180,6 +182,9 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
+$(OBJDIR)/InputSource.o: ../../src/base/input/InputSource.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/ThreadProfiler.o: ../../src/base/profiler/ThreadProfiler.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
@@ -195,10 +200,13 @@ $(OBJDIR)/CyclicAutoIOStream.o: ../../src/base/stream/CyclicAutoIOStream.cpp
 $(OBJDIR)/CyclicAutoOutputStream.o: ../../src/base/stream/CyclicAutoOutputStream.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/UISystem.o: ../../src/base/sys/UISystem.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/WorldSystem.o: ../../src/base/sys/WorldSystem.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/String.o: ../../src/base/text/String.cpp
+$(OBJDIR)/util.o: ../../src/base/text/util.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Condition.o: ../../src/boost/concurrency/Condition.cpp

@@ -13,10 +13,9 @@ namespace sys {
 class WindowException : public Exception
 {
 public:
-	WindowException(text::String msg) throw ()
+	WindowException(std::string msg) throw ()
 			: Exception(msg)
 	{
-		//
 	}
 };
 
