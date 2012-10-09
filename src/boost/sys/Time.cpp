@@ -28,10 +28,30 @@ TimeDuration::TimeDuration(const boost::posix_time::time_duration &_timeDuration
 	//
 }
 
-TimeDuration TimeDuration::operator -(const TimeDuration &other) const
+TimeDuration TimeDuration::operator-(const TimeDuration &other) const
 {
 	return TimeDuration(timeDuration
 	                    - other.timeDuration);
+}
+
+bool sys::TimeDuration::operator==(const TimeDuration& other) const
+{
+	return timeDuration == other.timeDuration;
+}
+
+bool sys::TimeDuration::operator!=(const TimeDuration& other) const
+{
+	return timeDuration != other.timeDuration;
+}
+
+bool sys::TimeDuration::operator<(const TimeDuration& other) const
+{
+	return timeDuration < other.timeDuration;
+}
+
+bool sys::TimeDuration::operator>(const TimeDuration& other) const
+{
+	return timeDuration > other.timeDuration;
 }
 
 bool TimeDuration::isPositive() const
@@ -62,3 +82,5 @@ TimeDuration TimeDuration::millis(tick_type ms)
 }
 
 }
+
+

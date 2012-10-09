@@ -15,30 +15,30 @@
 
 class TestSurfaceListener : public input::SurfaceListener
 {
-	public:
-		TestSurfaceListener()
+public:
+	TestSurfaceListener()
 			: quitRequested(false)
-		{
-		}
+	{
+	}
 
-		virtual void onResize(int w, int h)
-		{
+	virtual void onResize(int w, int h)
+	{
 
-		}
-		virtual void onShow()
-		{
+	}
+	virtual void onShow()
+	{
 
-		}
-		virtual void onHide()
-		{
+	}
+	virtual void onHide()
+	{
 
-		}
-		virtual void onQuit()
-		{
-			quitRequested = true;
-		}
+	}
+	virtual void onQuit()
+	{
+		quitRequested = true;
+	}
 
-		bool quitRequested;
+	bool quitRequested;
 };
 
 /**
@@ -52,13 +52,10 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	DEBUG_OUT("Hello World!");
 
 	sys::Window::ConstructionData winData = { hInstance,
-		{
-			64,
-			64,
-			800,
-			600
-		}
-	};
+	                                          { 64,
+	                                            64,
+	                                            800,
+	                                            600 } };
 	sys::Window window(winData);
 	window.show();
 
@@ -79,14 +76,13 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 		while (!surfaceListener.quitRequested)
 		{
-			for (; window.inputSource().handleInput(););
+			for (; window.inputSource().handleInput(); );
 
 			try
 			{
 				action::world_action::TestAction::Data data = { index,
-				        index
-				        + 1
-				                                              };
+				                                                index
+				                                                + 1 };
 				worldSystem.actionQueue().writeAction(action::world_action::TestAction,
 				                                      data);
 				++index;
@@ -101,6 +97,10 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 		DEBUG_OUT("Exceptions: " << errs);
 	}
+
+	profiler::ThreadProfiler::dumpAll(std::cout);
+	profiler::ThreadProfiler::shutdown();
+	text::clearInterned();
 
 	return 0;
 }
