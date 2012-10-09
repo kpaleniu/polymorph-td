@@ -5,6 +5,9 @@
 
 #include "text/util.hpp"
 
+#include "Debug.hpp"
+#include "Assert.hpp"
+
 #include <map>
 
 namespace text {
@@ -32,6 +35,14 @@ string_hash intern(std::string str)
 		f *= prime;
 	}
 
+#ifdef _DEBUG
+	if (interned.count(rHash) != 0)
+	{
+		ASSERT(interned[rHash] != str, "Hash collision");
+		DEBUG_OUT("WARNING, re-hashing string.");
+	}
+#endif
+
 	interned[rHash] = str;
 
 	return rHash;
@@ -39,7 +50,7 @@ string_hash intern(std::string str)
 
 const std::string& get(string_hash hash)
 {
-	// TODO Add assert.
+	ASSERT(interned.count(hash) != 0, "No string with that hash");
 
 	return interned[hash];
 }
