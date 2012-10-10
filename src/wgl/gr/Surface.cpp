@@ -73,6 +73,13 @@ Surface::Surface(sys::Window &win)
 	activate(true);
 }
 
+Surface::Surface(Surface&& surface)
+: _win(surface._win),
+  _deviceHandle(std::move(surface._deviceHandle)),
+  _glHandle(std::move(surface._glHandle))
+{
+}
+
 Surface::~Surface()
 {
 }

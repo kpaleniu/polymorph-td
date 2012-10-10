@@ -4,10 +4,10 @@
  * Holds the definition of the main function for Windows OS.
  */
 
-#include <action/WorldAction.hpp>
+#include <action/GraphicsAction.hpp>
 #include <gr/Renderer.hpp>
 #include <sys/Window.hpp>
-#include <sys/WorldSystem.hpp>
+#include <sys/GraphicsSystem.hpp>
 
 #include <Debug.hpp>
 
@@ -59,12 +59,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	sys::Window window(winData);
 	window.show();
 
-	gr::Renderer renderer(window.surface());
-	sys::WorldSystem worldSystem(renderer,
-	                             sys::TimeDuration::millis(33));
+	sys::GraphicsSystem graphicsSystem(window,
+	                                   sys::TimeDuration::millis(33));
 
-	worldSystem.start();
-	worldSystem.waitForStartup();
+	graphicsSystem.start();
+	graphicsSystem.waitForStartup();
 
 	{
 		TestSurfaceListener surfaceListener;
@@ -76,14 +75,16 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 		while (!surfaceListener.quitRequested)
 		{
-			for (; window.inputSource().handleInput(); );
+			while (window.inputSource().handleInput())
+			{
+			}
 
 			try
 			{
-				action::world_action::TestAction::Data data = { index,
+				action::graphics_action::TestAction::Data data = { index,
 				                                                index
 				                                                + 1 };
-				worldSystem.actionQueue().writeAction(action::world_action::TestAction,
+				graphicsSystem.actionQueue().writeAction(action::graphics_action::TestAction,
 				                                      data);
 				++index;
 			}

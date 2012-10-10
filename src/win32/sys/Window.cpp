@@ -95,7 +95,6 @@ void window_deleter::operator()(HWND window)
 
 Window::Window(const ConstructionData &ctorData) :
 		_windowHandle(createWindow(ctorData, this)),
-		_surface(*this),
 		_inputSource(_windowHandle.get())
 {
 	// get raw input data from the mouse/pointer device
@@ -105,11 +104,6 @@ Window::Window(const ConstructionData &ctorData) :
 	rid.dwFlags     = RIDEV_INPUTSINK;
 	rid.hwndTarget  = _windowHandle.get();
 	VERIFY(RegisterRawInputDevices(&rid, 1, sizeof(rid)));
-}
-
-gr::Surface& Window::surface()
-{
-	return _surface;
 }
 
 bool Window::show(bool show)

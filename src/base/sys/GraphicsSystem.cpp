@@ -3,7 +3,7 @@
  *
  */
 
-#include "sys/WorldSystem.hpp"
+#include "sys/GraphicsSystem.hpp"
 
 #include "gr/Surface.hpp"
 
@@ -11,14 +11,14 @@
 
 namespace sys {
 
-GraphiscSystemRunner::GraphiscSystemRunner(gr::Renderer& renderer)
-	: _renderer(renderer)
+GraphiscSystemRunner::GraphiscSystemRunner(Window& win)
+	: _surface(win), _renderer(_surface)
 {
 
 }
 
 GraphiscSystemRunner::GraphiscSystemRunner(GraphiscSystemRunner&& system)
-	: _renderer(system._renderer)
+	: _surface(std::move(system._surface)), _renderer(std::move(system._renderer))
 {
 }
 
@@ -34,8 +34,8 @@ bool GraphiscSystemRunner::update()
 
 //
 
-GraphicsSystem::GraphicsSystem(gr::Renderer& renderer, const TimeDuration &sync)
-	: System(sync, 256, renderer)
+GraphicsSystem::GraphicsSystem(Window& window, const TimeDuration &sync)
+	: System(sync, 256, window)
 {
 
 }

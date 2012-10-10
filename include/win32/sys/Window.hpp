@@ -50,12 +50,6 @@ public:
 	 *
 	 */
 	Window(const ConstructionData& desc);
-
-	/**
-	 * TODO: detach from sys::Window ?
-	 */
-	gr::Surface& surface();
-
 	/**
 	 * Shows or hides the window.
 	 * @return true if the window was visible previously
@@ -76,7 +70,6 @@ public:
 private:	// NOTE: surface has to be destroyed before the window
 
 	std::unique_ptr<HWND__, detail::window_deleter> _windowHandle;
-	gr::Surface _surface;
 	input::WindowInputSource _inputSource;
 };
 
