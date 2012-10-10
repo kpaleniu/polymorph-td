@@ -11,18 +11,18 @@
 
 namespace sys {
 
-WorldSystemRunner::WorldSystemRunner(gr::Renderer& renderer)
+GraphiscSystemRunner::GraphiscSystemRunner(gr::Renderer& renderer)
 	: _renderer(renderer)
 {
 
 }
 
-WorldSystemRunner::WorldSystemRunner(WorldSystemRunner&& system)
+GraphiscSystemRunner::GraphiscSystemRunner(GraphiscSystemRunner&& system)
 	: _renderer(system._renderer)
 {
 }
 
-bool WorldSystemRunner::update()
+bool GraphiscSystemRunner::update()
 {
 	DEBUG_OUT("WorldSystem updateSystem");
 
@@ -34,7 +34,7 @@ bool WorldSystemRunner::update()
 
 //
 
-WorldSystem::WorldSystem(gr::Renderer& renderer, const TimeDuration &sync)
+GraphicsSystem::GraphicsSystem(gr::Renderer& renderer, const TimeDuration &sync)
 	: System(sync, 256, renderer)
 {
 

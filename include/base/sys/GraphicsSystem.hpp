@@ -14,11 +14,11 @@
 
 namespace sys {
 
-class WorldSystemRunner : NonCopyable
+class GraphiscSystemRunner : NonCopyable
 {
 public:
-	WorldSystemRunner(gr::Renderer &renderer);
-	WorldSystemRunner(WorldSystemRunner&& system);
+	GraphiscSystemRunner(gr::Renderer &renderer);
+	GraphiscSystemRunner(GraphiscSystemRunner&& system);
 
 	bool update();
 
@@ -26,14 +26,14 @@ private:
 	gr::Renderer &_renderer;
 };
 
-class WorldSystem : public System<WorldSystemRunner>
+class GraphicsSystem : public System<GraphiscSystemRunner>
 {
 public:
-	WorldSystem(gr::Renderer &renderer, const TimeDuration &sync);
+	GraphicsSystem(gr::Renderer &renderer, const TimeDuration &sync);
 
 	// TODO: JUST FOR TESTING
 	SystemActionQueue<
-	        action::Action<WorldSystemRunner> > &actionQueue()
+	        action::Action<GraphiscSystemRunner> > &actionQueue()
 	{
 		return _actions;
 	}
