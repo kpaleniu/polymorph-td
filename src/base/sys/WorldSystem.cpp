@@ -11,11 +11,15 @@
 
 namespace sys {
 
-WorldSystemRunner::WorldSystemRunner(sys::Window::ConstructionData &winData)
-		: _window(winData),
-		  _renderer(_window.surface())
+WorldSystemRunner::WorldSystemRunner(gr::Renderer& renderer)
+	: _renderer(renderer)
 {
 
+}
+
+WorldSystemRunner::WorldSystemRunner(WorldSystemRunner&& system)
+	: _renderer(system._renderer)
+{
 }
 
 bool WorldSystemRunner::update()
@@ -23,20 +27,15 @@ bool WorldSystemRunner::update()
 	DEBUG_OUT("WorldSystem updateSystem");
 
 	_renderer.clearBuffers();
-	_window.surface().flipBuffers();
-	_window.handleEvents();
+	_renderer.flipBuffers();
 
 	return true;
 }
 
 //
 
-WorldSystem::WorldSystem(const TimeDuration &sync,
-                         sys::Window::ConstructionData &runnerData)
-		: System<WorldSystemRunner,
-		        sys::Window::ConstructionData &>(sync,
-		                                         runnerData,
-		                                         256)
+WorldSystem::WorldSystem(gr::Renderer& renderer, const TimeDuration &sync)
+	: System(sync, 256, renderer)
 {
 
 }

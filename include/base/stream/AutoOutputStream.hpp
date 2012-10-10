@@ -6,11 +6,12 @@
 #ifndef AUTOOUTPUTSTREAM_HPP_
 #define AUTOOUTPUTSTREAM_HPP_
 
+#include "NonCopyable.hpp"
 #include <cstddef>
 
 namespace stream {
 
-class AutoOutputStream
+class AutoOutputStream : NonCopyable
 {
 public:
 	virtual ~AutoOutputStream() {}

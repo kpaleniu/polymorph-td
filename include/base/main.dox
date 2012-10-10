@@ -1,0 +1,74 @@
+/**
+ * @mainpage PolyMorph TD
+ *
+ * @section intro_sec Introduction
+ * 
+ * This is the API documentation for <i>PolyMorph TD</i>, 
+ * a game made by <b>Antti Alho</b>, <b>Kari Palenius</b> 
+ * and <b>Jens Åkerblom</b>. The documentation for 
+ * the game itself can be found in the <i>doc/game</i> folder.
+ *
+ * A higher level documentation is available in folder
+ * <i>doc/architecture</i>.
+ *
+ * @section build_sec Building
+ * 
+ * The build system uses premake4 to generate the desired
+ * build files. To build the source, install premake4 and
+ * then use the script in <i>build/premake</i> to generate the
+ * files (note, current folder should be <i>build/premake</i>).
+ * After you've built with premake, use the toolchain you
+ * built for to build the game itself. Note that any 
+ * third-party depedency is not in the repo so you need
+ * libraries like boost already installed and setup.
+ *
+ * The final executable file or package is in the <i>bin</i> folder.
+ * 
+ * @section code_design Code Design
+ * 
+ * This section describes the source code design (under construction).
+ * 
+ * @subsection code_design_files Source Files
+ * 
+ * Source files are placed in a subfolder depending on their
+ * platform specification. Platform specific files are put in the
+ * folder with the name of the platform or, as in case of boost, the
+ * 3rd party library they wrap. Non-platform specific files are 
+ * placed in the <i>base</i> folder.
+ * 
+ * If the source file is in a namespace the file should be put in
+ * a subfolder of the namespace name. 
+ * 
+ * Headers are put in root folder <i>include</i> and must end with .hpp.
+ * Source files are put in root folder <i>src</i> and must end with .cpp.
+ * 
+ * If the header has platform specific declarations, a copy stripped of
+ * the platform specific declarations should be put in <i>include/mockup</i>
+ * 
+ * Only non-platform specific headers and mockups need full public 
+ * documentation.
+ * 
+ * @subsection code_design_naming Naming Convention
+ * 
+ * <b>Files</b> are named the same way the class the implement / declare is,
+ * with the needed file-extension. If the file contains multiple classes it
+ * should be named after the "most useful" (see Mutex.hpp).
+ * 
+ * <b>Classes</b> and <b>structs</b> are named with leading capital 
+ * for each word (like 'MyClass'). <b>Typedef</b>:s for integral types are 
+ * named with all characters in lower-case with '_' seperating words 
+ * (like 'error_code').
+ * 
+ * <b>Variables</b> are named in lower-case for first
+ * word. Other words have leading capital (like 'myVar'). <b>Private
+ * member variables</b> have a '_' prefix.
+ * 
+ * <b>Public members</b> and functions follow the same naming style as variables 
+ * (with the obvious exception of WinMain).
+ * 
+ * All <b>blocks</b>, with the exception of the ones made by the namespace
+ * keyword, are started on a new line and the content is indented (with the
+ * exception of the visibility keywords).
+ * 
+ * <b>Pointers and references (&, *)</b> TO BE DETERMINED
+ */

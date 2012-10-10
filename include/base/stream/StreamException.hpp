@@ -13,10 +13,9 @@ namespace stream {
 class StreamException : public Exception
 {
 public:
-	StreamException(text::String msg) throw ()
+	StreamException(std::string msg) throw ()
 			: Exception(msg)
 	{
-		//
 	}
 };
 

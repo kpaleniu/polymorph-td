@@ -4,15 +4,15 @@
  * Contains definition of class Thread using boost's thread class.
  */
 
-#include "sys/Thread.hpp"
+#include "concurrency/Thread.hpp"
 #include "Exception.hpp"
 
 #include "Debug.hpp"
 
-namespace sys {
+namespace concurrency {
 
 Thread::Thread()
-		: _threadState(NOT_STARTED),
+		: _threadState(ThreadState::NOT_STARTED),
 		  _boostThread()
 {
 
@@ -49,9 +49,14 @@ const Thread::ID Thread::getID() const
 	return _boostThread.get_id();
 }
 
-void Thread::sleep(TimeDuration timeDuration)
+void Thread::sleep(sys::TimeDuration timeDuration)
 {
 	boost::this_thread::sleep(timeDuration.timeDuration);
+}
+
+void Thread::interruptionPoint()
+{
+	boost::this_thread::interruption_point();
 }
 
 const Thread::ID Thread::getCurrentID()
@@ -65,7 +70,7 @@ void Thread::threadRunner(Thread *thiz)
 	{
 		thiz->threadMain();
 	}
-	catch (boost::thread_interrupted &e)
+	catch (boost::thread_interrupted &/*e*/)
 	{
 		// Normal exit.
 	}

@@ -1,6 +1,9 @@
 #ifndef TEXTURE_HANDLER_HPP_
 #define TEXTURE_HANDLER_HPP_
 
+#include "Scoped.hpp"
+
+
 namespace gr {
 
 class Texture;
@@ -10,16 +13,19 @@ struct TextureParams;
 class TextureHandler
 {
 public:
-	class BindLock;
+	typedef Scoped BindLock;
 
 	TextureHandler();
 	~TextureHandler();
 
 	void bindTexture(const Texture &tex);
 	void unbindTexture();
+
 	BindLock bindLock(const Texture &tex)
 	{
-		return BindLock(*this, tex);
+		return BindLock(
+			[&] { bindTexture(tex); },
+			[&] { unbindTexture();  });
 	}
 
 	Texture &createTexture(Image &source,
@@ -27,25 +33,6 @@ public:
 	void destroyTexture(Texture &tex);
 
 public:
-	class BindLock
-	{
-	private:
-		friend class TextureHandler;
-
-		BindLock(TextureHandler &handler,
-				 const Texture &tex)
-				: _handler(handler)
-		{
-			_handler.bindTexture(tex);
-		}
-
-		~BindLock()
-		{
-			_handler.unbindTexture();
-		}
-	private:
-		TextureHandler &_handler;
-	};
 
 	struct TextureParams
 	{

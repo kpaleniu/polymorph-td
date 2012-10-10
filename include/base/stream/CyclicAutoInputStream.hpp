@@ -1,5 +1,5 @@
 /**
- * @file AutoInputStream.hpp
+ * @file CyclicAutoInputStream.hpp
  *
  */
 

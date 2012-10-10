@@ -46,7 +46,12 @@ public:
 	 *
 	 * @param other the other time duration.
 	 */
-	TimeDuration operator-(const TimeDuration &other) const;
+	TimeDuration operator-(const TimeDuration& other) const;
+
+	bool operator==(const TimeDuration& other) const;
+	bool operator!=(const TimeDuration& other) const;
+	bool operator<(const TimeDuration& other) const;
+	bool operator>(const TimeDuration& other) const;
 
 	/**
 	 * Checks if time duration is positive.
@@ -84,6 +89,12 @@ private:
 	TimeDuration(const boost::posix_time::time_duration &_timeDuration);
 
 };
+
+inline std::ostream& operator<<(std::ostream& out, const TimeDuration& duration)
+{
+	out << duration.toMillis() << " ms";
+	return out;
+}
 
 }
 

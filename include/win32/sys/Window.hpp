@@ -7,12 +7,27 @@
 #define WINDOW_HPP_
 
 #include "gr/Surface.hpp"
+#include "input/InputSource.hpp"
+#include "input/WindowInputSource.hpp"
 
+#include <memory>
 #include <windows.h>
 
-namespace sys {
 
-class Window
+namespace sys {
+namespace detail {
+
+/**
+ * Custom deleter type to for HWND__ pointers.
+ */
+struct window_deleter
+{
+	void operator()(HWND window);
+};
+
+}
+
+class Window : NonCopyable
 {
 public:
 	struct Rect
@@ -26,41 +41,43 @@ public:
 	struct ConstructionData
 	{
 		HINSTANCE hInstance;
-		const Rect winRect;
+		Rect winRect;
 	};
 
 public:
-	Window(ConstructionData &ctorData);
 
-	~Window();
+	/**
+	 *
+	 */
+	Window(const ConstructionData& desc);
 
-	gr::Surface &surface()
-	{
-		return _surface;
-	}
+	/**
+	 * TODO: detach from sys::Window ?
+	 */
+	gr::Surface& surface();
 
-	void handleEvents();
+	/**
+	 * Shows or hides the window.
+	 * @return true if the window was visible previously
+	 */
+	bool show(bool show = true);
 
-public:
-	// Win32 specific methods.
+	/**
+	 * Access to window input.
+	 * @return	Reference to the input source active on this window.
+	 */
+	input::WindowInputSource& inputSource();
 
-	const HWND getWindowHandle()
-	{
-		return _windowHandle;
-	}
+	/**
+	 * @return A handle to the underlying native window
+	 */
+	HWND nativeHandle();
 
-private:
-	static LRESULT CALLBACK windowProc(HWND hwnd,
-	                                   UINT msg,
-	                                   WPARAM wParam,
-	                                   LPARAM lParam);
+private:	// NOTE: surface has to be destroyed before the window
 
-	HWND createWindowHandle(HINSTANCE hInstance,
-	                        const Rect &winRect);
-
-private:
-	const HWND _windowHandle; // Must be before _surface.
+	std::unique_ptr<HWND__, detail::window_deleter> _windowHandle;
 	gr::Surface _surface;
+	input::WindowInputSource _inputSource;
 };
 
 }

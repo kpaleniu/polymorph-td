@@ -5,13 +5,18 @@
  */
 
 #include "sys/Time.hpp"
-#include "sys/Thread.hpp"
-#include "sys/Mutex.hpp"
 #include "sys/SystemActionQueue.hpp"
+
+#include "concurrency/Thread.hpp"
+#include "concurrency/Mutex.hpp"
+#include "concurrency/Condition.hpp"
 
 #include "profiler/ThreadProfiler.hpp"
 
-#include <iostream>
+#include "Debug.hpp"
+
+#include <functional>
+
 
 namespace sys {
 
@@ -19,35 +24,48 @@ namespace sys {
  * Template for systems.
  *
  * @param Runner	Type that updates the thread.
- * 					Must implement method update(void) that returns true ifq
- * 					system should continue running.
- * @param Data		Type that is taken as first parameter for type Runner's constructor.
+ * 					Runner must be move constructable and it must implement
+ * 					method update(void) that returns true if system should
+ * 					continue running.
  *
  */
-template<typename Runner, typename Data>
-class System : public Thread
+template<typename Runner>
+class System : public concurrency::Thread
 {
 public:
+
 	/**
 	 *
 	 */
-	System(const TimeDuration &sync,
-	       Data runnerData,
-	       size_t bufferSize);
+	template <typename T1>
+	System(const TimeDuration &sync, size_t bufferSize, T1&& arg1);
+
+	/** 
+	 * NOTE: due to a defect in the C++ standard(!!) implementing this function is not
+	 * possible by simply using lambda '[&] { return Runner(std::forward<Args>(args)...); }'
+	 * to construct the _factory member.
+	 * http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#904
+	 */
+	//template <typename ... Args>
+	//System(const TimeDuration &sync, size_t bufferSize, Args&& args);
 
 	/**
 	 *
 	 */
 	virtual ~System();
 
+	void waitForStartup();
+
 protected:
 	TimeDuration _sync;
-	Data _runnerData;
-	Runner *_runner;
+	std::function<Runner ()> _factory;
 
 	SystemActionQueue<action::Action<Runner> > _actions;
 
 private:
+	bool _started;
+	concurrency::Condition _startupCond;
+
 	/**
 	 * Calls runner's update method.
 	 */
@@ -56,36 +74,52 @@ private:
 
 // Implementation
 
-template<typename Runner, typename Data>
-System<Runner, Data>::System(const TimeDuration &sync,
-                             Data runnerData,
-                             size_t bufferSize)
+template<typename Runner>
+template<typename T1>
+System<Runner>::System(const TimeDuration &sync,
+                             size_t bufferSize,
+							 T1&& arg1)
 		: Thread(),
 		  _sync(sync),
-		  _runnerData(runnerData),
-		  _runner(0),
-		  _actions(bufferSize)
+		  _factory(),
+		  _actions(bufferSize),
+		  _started(false),
+		  _startupCond()
 {
-	//
+	// NOTE: due to a limitation in the VC++11's implementation of
+	// lambdas the template parameter is not visible inside the lambda
+	// if used inside the initializer list ...
+	_factory = [&] { return Runner(std::forward<T1>(arg1)); };
 }
 
-template<typename Runner, typename Data>
-System<Runner, Data>::~System()
+template<typename Runner>
+System<Runner>::~System()
 {
-	if (getThreadState() != EXITED)
+	if (getThreadState() != ThreadState::EXITED)
 	{
 		interrupt();
 		join();
 	}
 }
 
-template<typename Runner, typename Data>
-void System<Runner, Data>::threadMain()
+template<typename Runner>
+void System<Runner>::waitForStartup()
 {
-	text::String sysName("System");
-	text::StringHash sysNameHash = sysName.intern();
+	_startupCond.waitUntil( [this]() -> bool {return this->_started;} );
+}
 
-	Runner runner(_runnerData);
+template<typename Runner>
+void System<Runner>::threadMain()
+{
+	static text::string_hash updateName = text::intern("Main loop"); // TODO Get real name for system.
+
+	Runner runner = _factory();
+
+	{
+		concurrency::MutexLockGuard lock(_startupCond.mutex());
+		_started = true;
+	}
+	_startupCond.notifyAll();
 
 	// Main thread loop.
 	for (;;)
@@ -93,7 +127,7 @@ void System<Runner, Data>::threadMain()
 		TimeStamp t0 = TimeStamp::now();
 
 		{
-			profiler::ThreadProfiler::Block frame(sysNameHash);
+			auto profileBlock = profiler::ThreadProfiler::profileBlock(updateName);
 
 			while (!_actions.isEmpty())
 				_actions.doAction(runner);
@@ -102,10 +136,8 @@ void System<Runner, Data>::threadMain()
 				return;
 		}
 
-		TimeDuration realDT = TimeDuration::between(t0,
-		                                            TimeStamp::now());
-		TimeDuration waitDuration = _sync
-		                            - realDT;
+		TimeDuration realDT = TimeDuration::between(t0, TimeStamp::now());
+		TimeDuration waitDuration = _sync - realDT;
 
 		if (waitDuration.isPositive())
 		{

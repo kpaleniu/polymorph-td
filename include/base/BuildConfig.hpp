@@ -8,7 +8,6 @@
 
 // Window constants:
 #define WIN_TITLE "PolyMorph TD"
-#define WIN32_WIN_CLASS_NAME "WinClassName"
 
 
 

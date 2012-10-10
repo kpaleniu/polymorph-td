@@ -2,8 +2,10 @@
 obj
 lib
 gmake
-gmake
+vs2010
 .settings
 bin
 /.cproject
 /.project
+/apidoc/html
+/apidoc/latex

@@ -6,41 +6,32 @@
 #ifndef WORLDSYSTEM_HPP_
 #define WORLDSYSTEM_HPP_
 
-#include "sys/System.hpp"
-#include "sys/Window.hpp"
-
-#include "gr/Renderer.hpp"
+#include "NonCopyable.hpp"
 #include "action/Action.hpp"
+#include "gr/Renderer.hpp"
 #include "stream/ArrayInputStream.hpp"
+#include "sys/System.hpp"
 
 namespace sys {
 
-class WorldSystemRunner
+class WorldSystemRunner : NonCopyable
 {
 public:
-	WorldSystemRunner(sys::Window::ConstructionData &winData);
+	WorldSystemRunner(gr::Renderer &renderer);
+	WorldSystemRunner(WorldSystemRunner&& system);
 
 	bool update();
 
 private:
-	sys::Window _window;
-	gr::Renderer _renderer;
+	gr::Renderer &_renderer;
 };
 
-}
-
-namespace sys {
-
-class WorldSystem : public System<
-        WorldSystemRunner,
-        sys::Window::ConstructionData &>
+class WorldSystem : public System<WorldSystemRunner>
 {
 public:
-	WorldSystem(const TimeDuration &sync,
-	            sys::Window::ConstructionData &runnerData);
+	WorldSystem(gr::Renderer &renderer, const TimeDuration &sync);
 
-	// JUST FOR TESTING
-#warning "TESTING REMOVE LATER"
+	// TODO: JUST FOR TESTING
 	SystemActionQueue<
 	        action::Action<WorldSystemRunner> > &actionQueue()
 	{

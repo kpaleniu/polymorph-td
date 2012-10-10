@@ -11,14 +11,14 @@
 
 #include <boost/thread.hpp>
 
-namespace sys {
+namespace concurrency {
 
 class Thread
 {
 public:
 	typedef boost::thread::id ID;
 
-	enum ThreadState
+	enum class ThreadState
 	{
 		NOT_STARTED = 0, RUNNING, EXITED,
 	};
@@ -53,10 +53,11 @@ public:
 	 * Suspends thread the specified amount of time.
 	 * @param timeDuration time to suspend thread execution.
 	 */
-	static void sleep(TimeDuration timeDuration);
+	static void sleep(sys::TimeDuration timeDuration);
+
+	static void interruptionPoint();
 
 	static const ID getCurrentID();
-
 protected:
 	/**
 	 * Method to run by this thread.
