@@ -54,6 +54,11 @@ void Thread::sleep(sys::TimeDuration timeDuration)
 	boost::this_thread::sleep(timeDuration.timeDuration);
 }
 
+void Thread::interruptionPoint()
+{
+	boost::this_thread::interruption_point();
+}
+
 const Thread::ID Thread::getCurrentID()
 {
 	return boost::this_thread::get_id();

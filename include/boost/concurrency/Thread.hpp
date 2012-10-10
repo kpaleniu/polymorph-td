@@ -55,6 +55,8 @@ public:
 	 */
 	static void sleep(sys::TimeDuration timeDuration);
 
+	static void interruptionPoint();
+
 	static const ID getCurrentID();
 protected:
 	/**
