@@ -24,7 +24,7 @@ public:
 	bool update();
 
 private:
-	gr::Surface _surface;
+	gr::Surface& _surface;
 	gr::Renderer _renderer;
 };
 

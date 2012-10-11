@@ -4,6 +4,7 @@
  */
 
 #include "sys/GraphicsSystem.hpp"
+#include "sys/Window.hpp"
 
 #include "gr/Surface.hpp"
 
@@ -12,13 +13,13 @@
 namespace sys {
 
 GraphiscSystemRunner::GraphiscSystemRunner(Window& win)
-	: _surface(win), _renderer(_surface)
+	: _surface(win.surface()), _renderer(_surface)
 {
-
+	_surface.activate(true);
 }
 
 GraphiscSystemRunner::GraphiscSystemRunner(GraphiscSystemRunner&& system)
-	: _surface(std::move(system._surface)), _renderer(std::move(system._renderer))
+	: _surface(system._surface), _renderer(std::move(system._renderer))
 {
 }
 

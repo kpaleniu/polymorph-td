@@ -50,6 +50,8 @@ public:
 	 *
 	 */
 	Window(const ConstructionData& desc);
+
+	Window(Window&& window);
 	/**
 	 * Shows or hides the window.
 	 * @return true if the window was visible previously
@@ -62,6 +64,8 @@ public:
 	 */
 	input::WindowInputSource& inputSource();
 
+	gr::Surface& surface();
+
 	/**
 	 * @return A handle to the underlying native window
 	 */
@@ -70,6 +74,7 @@ public:
 private:	// NOTE: surface has to be destroyed before the window
 
 	std::unique_ptr<HWND__, detail::window_deleter> _windowHandle;
+	gr::Surface _surface;
 	input::WindowInputSource _inputSource;
 };
 
