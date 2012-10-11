@@ -4,6 +4,9 @@
  * Template for systems.
  */
 
+#ifndef SYSTEM_HPP
+#define SYSTEM_HPP
+
 #include "sys/Time.hpp"
 #include "sys/SystemActionQueue.hpp"
 
@@ -13,10 +16,11 @@
 
 #include "profiler/ThreadProfiler.hpp"
 
+#include "Scoped.hpp"
 #include "Debug.hpp"
 
 #include <functional>
-
+#include <atomic>
 
 namespace sys {
 
@@ -62,6 +66,9 @@ protected:
 
 	SystemActionQueue<action::Action<Runner> > _actions;
 
+	// Note, access to runner is not synchronized!
+	std::atomic<Runner*> _runnerAccess;
+
 private:
 	bool _started;
 	concurrency::Condition _startupCond;
@@ -83,6 +90,7 @@ System<Runner>::System(const TimeDuration &sync,
 		  _sync(sync),
 		  _factory(),
 		  _actions(bufferSize),
+		  _runnerAccess(nullptr),
 		  _started(false),
 		  _startupCond()
 {
@@ -114,6 +122,10 @@ void System<Runner>::threadMain()
 	static text::string_hash updateName = text::intern("Main loop"); // TODO Get real name for system.
 
 	Runner runner = _factory();
+
+	Scoped accessScope([&]{ _runnerAccess = &runner; },
+	                   [&]{ _runnerAccess = nullptr; });
+
 
 	{
 		concurrency::MutexLockGuard lock(_startupCond.mutex());
@@ -151,3 +163,5 @@ void System<Runner>::threadMain()
 }
 
 }
+
+#endif

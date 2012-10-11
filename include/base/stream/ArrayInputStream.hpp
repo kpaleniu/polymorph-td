@@ -3,6 +3,9 @@
  *
  */
 
+#ifndef ARRAYINPUTSTREAM_HPP
+#define ARRAYINPUTSTREAM_HPP
+
 #include "stream/StreamException.hpp"
 
 namespace stream {
@@ -72,3 +75,5 @@ size_t ArrayInputStream<T>::dataLeft() const
 }
 
 }
+
+#endif
