@@ -11,3 +11,4 @@ bin
 /apidoc/latex
 /build/gmake
 /build/codeblocks
+/doc\architecture/*.png
