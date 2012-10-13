@@ -32,6 +32,7 @@ solution "polymorph-td"
 	-- C++0x/11 mode has to be explicitly enabled on some platforms
 	configuration "not vs*"
 		buildoptions { "-std=c++0x" }
+		defines { "__GXX_EXPERIMENTAL_CXX0X__" }
 	
 	-- From 'configurations'.
 	configuration "Debug"
