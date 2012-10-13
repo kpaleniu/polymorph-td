@@ -9,3 +9,5 @@ bin
 /.project
 /apidoc/html
 /apidoc/latex
+/build/gmake
+/build/codeblocks
