@@ -9,31 +9,33 @@
 #include "NonCopyable.hpp"
 #include "action/Action.hpp"
 #include "gr/Renderer.hpp"
+#include "gr/Surface.hpp"
 #include "stream/ArrayInputStream.hpp"
 #include "sys/System.hpp"
 
 namespace sys {
 
-class WorldSystemRunner : NonCopyable
+class GraphiscSystemRunner : NonCopyable
 {
 public:
-	WorldSystemRunner(gr::Renderer &renderer);
-	WorldSystemRunner(WorldSystemRunner&& system);
+	GraphiscSystemRunner(Window& win);
+	GraphiscSystemRunner(GraphiscSystemRunner&& system);
 
 	bool update();
 
 private:
-	gr::Renderer &_renderer;
+	gr::Surface& _surface;
+	gr::Renderer _renderer;
 };
 
-class WorldSystem : public System<WorldSystemRunner>
+class GraphicsSystem : public System<GraphiscSystemRunner>
 {
 public:
-	WorldSystem(gr::Renderer &renderer, const TimeDuration &sync);
+	GraphicsSystem(Window& window, const TimeDuration &sync);
 
 	// TODO: JUST FOR TESTING
 	SystemActionQueue<
-	        action::Action<WorldSystemRunner> > &actionQueue()
+	        action::Action<GraphiscSystemRunner> > &actionQueue()
 	{
 		return _actions;
 	}

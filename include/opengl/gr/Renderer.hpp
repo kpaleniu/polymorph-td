@@ -11,7 +11,8 @@ namespace gr
 	class Renderer : NonCopyable
 	{
 	public:
-		Renderer(Surface &surface);
+		Renderer(Surface& surface);
+		Renderer(Renderer&& renderer);
 		~Renderer();
 
 		void setClearColor(float r, float g, float b, float a=1.0f);
@@ -27,7 +28,7 @@ namespace gr
 	private:
 		//TextureHandler _texHandler;
 
-		Surface &_surface;
+		Surface& _surface;
 	};
 }
 

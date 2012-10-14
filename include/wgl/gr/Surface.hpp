@@ -22,17 +22,21 @@ namespace detail {
 /**
  * Custom deleter type to for HDC__ pointers.
  */
-class dc_deleter {
-	HWND _window;
+class dc_deleter
+{
 public:
 	explicit dc_deleter(HWND window);
 	void operator()(HDC dc);
+
+private:
+	HWND _window;
 };
 
 /**
  * Custom deleter type to allow HGLRC__ pointers.
  */
-struct rc_deleter {
+struct rc_deleter
+{
     void operator()(HGLRC rc);
 };
 
@@ -46,7 +50,9 @@ struct rc_deleter {
 class Surface : NonCopyable
 {
 public:
-	Surface(sys::Window &win);
+	Surface(sys::Window& win);
+	Surface(Surface&& surface);
+
 	~Surface();
 
 	/**
@@ -62,7 +68,7 @@ public:
 	void flipBuffers();
 
 private:
-	sys::Window &_win;
+	sys::Window& _win;
 	std::unique_ptr<HDC__,   detail::dc_deleter> _deviceHandle;
 	std::unique_ptr<HGLRC__, detail::rc_deleter> _glHandle;
 };

@@ -38,7 +38,7 @@ string_hash intern(std::string str)
 #ifdef _DEBUG
 	if (interned.count(rHash) != 0)
 	{
-		ASSERT(interned[rHash] != str, "Hash collision");
+		ASSERT(interned[rHash] == str, "Hash collision");
 		DEBUG_OUT("WARNING, re-hashing string.");
 	}
 #endif

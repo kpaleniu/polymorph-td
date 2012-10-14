@@ -51,11 +51,7 @@ public:
 	 */
 	Window(const ConstructionData& desc);
 
-	/**
-	 * TODO: detach from sys::Window ?
-	 */
-	gr::Surface& surface();
-
+	Window(Window&& window);
 	/**
 	 * Shows or hides the window.
 	 * @return true if the window was visible previously
@@ -67,6 +63,8 @@ public:
 	 * @return	Reference to the input source active on this window.
 	 */
 	input::WindowInputSource& inputSource();
+
+	gr::Surface& surface();
 
 	/**
 	 * @return A handle to the underlying native window

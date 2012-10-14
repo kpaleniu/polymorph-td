@@ -107,9 +107,11 @@ Window::Window(const ConstructionData &ctorData) :
 	VERIFY(RegisterRawInputDevices(&rid, 1, sizeof(rid)));
 }
 
-gr::Surface& Window::surface()
+Window::Window(Window&& window) :
+		_windowHandle(std::move(window._windowHandle)),
+		_surface(std::move(window._surface)),
+		_inputSource(window._inputSource)
 {
-	return _surface;
 }
 
 bool Window::show(bool show)
@@ -123,6 +125,11 @@ bool Window::show(bool show)
 input::WindowInputSource& Window::inputSource()
 {
 	return _inputSource;
+}
+
+gr::Surface& Window::surface()
+{
+	return _surface;
 }
 
 HWND Window::nativeHandle()

@@ -13,7 +13,11 @@ namespace gr {
 Renderer::Renderer(Surface &surface)
 : _surface(surface)
 {
+}
 
+Renderer::Renderer(Renderer&& renderer)
+: _surface(renderer._surface)
+{
 }
 
 Renderer::~Renderer()
