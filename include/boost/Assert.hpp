@@ -3,7 +3,7 @@
 #define BOOST_ASSERT_HPP_
 
 // NOTE: override the default boost assert stream on MSVC
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(BOOST_ASSERT_MSG_OSTREAM)
 #define BOOST_ASSERT_MSG_OSTREAM std::cout
 #endif
 
