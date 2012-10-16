@@ -59,20 +59,15 @@ void SystemActionQueue<ActionBase>::writeAction(const ActionBase &action,
 	    - _runnerInput.bytesUnread()
 	    < sizeof(action) + sizeof(data))
 	{
-		DEBUG_OUT_UNIT(SYSTEM_ACTION_QUEUE_UNIT,
-		               "Not enough space to write action");
-		DEBUG_OUT_UNIT(SYSTEM_ACTION_QUEUE_UNIT,
-		               "Space left: " << (_runnerInput.getSize() - _runnerInput.bytesUnread()));
-		DEBUG_OUT_UNIT(SYSTEM_ACTION_QUEUE_UNIT,
-		               "Action size: " << (sizeof(action) + sizeof(data)));
+		ERROR_OUT("SystemActionQueue", "Not enough space to write action\nSpace left: %1%\nAction size: %2%",
+			(_runnerInput.getSize() - _runnerInput.bytesUnread()),
+			(sizeof(action) + sizeof(data)));
 
 		// Maybe the runner thread has died?
 		throw stream::StreamException("Insufficient room to write action to stream");
 	}
 
-	DEBUG_OUT_UNIT(SYSTEM_ACTION_QUEUE_UNIT,
-	               "Writing action: " << &action);
-
+	VERBOSE_OUT("SystemActionQueue", "Writing action: %1%", &action);
 	_runnerInput << &action << data;
 }
 

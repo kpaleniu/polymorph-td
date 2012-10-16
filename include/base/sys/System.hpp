@@ -136,7 +136,7 @@ void System<Runner>::threadMain()
 	}
 	_startupCond.notifyAll();
 
-	// Main thread loop.
+	DEBUG_OUT("System", "Started thread main loop");
 	for (;;)
 	{
 		TimeStamp t0 = TimeStamp::now();

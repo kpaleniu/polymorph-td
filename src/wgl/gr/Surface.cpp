@@ -18,6 +18,7 @@
 #include "concurrency/Thread.hpp"
 
 namespace gr {
+namespace { const char* TAG = "Surface"; }
 namespace detail {
 
 dc_deleter::dc_deleter(HWND window)
@@ -32,8 +33,7 @@ void dc_deleter::operator()(HDC dc)
 
 void rc_deleter::operator()(HGLRC rc)
 {
-	DEBUG_OUT("Destroying context");
-	DEBUG_OUT("In thread " << concurrency::Thread::getCurrentID());
+	DEBUG_OUT(TAG, "Destroying rendering context");
 
 	// NOTE: if the rendering context is active in some other thread,
 	// wglDeleteContext() will produce an error
@@ -87,7 +87,7 @@ Surface::Surface(sys::Window &win)
 {
 	if (!_deviceHandle)
 	{
-		DEBUG_OUT( "Device handle cannot be created. HWND=" << long(win.nativeHandle()) );
+		ERROR_OUT(TAG, "Device handle cannot be created. HWND=%1%", long(win.nativeHandle()));
 		throw SurfaceException("Unable to get device context");
 	}
 
@@ -147,8 +147,7 @@ void Surface::activate(bool activate)
 		auto err = GetLastError();
 		std::string msg = "Unable to activate OpenGL rendering context.\n";
 
-		DEBUG_OUT("Surface::activate error " << err);
-		DEBUG_OUT("In thread " << concurrency::Thread::getCurrentID());
+		ERROR_OUT(TAG, "Surface::activate error %1%", err);
 
 		msg += detail::getWin32Message(err);
 		throw SurfaceException(msg);

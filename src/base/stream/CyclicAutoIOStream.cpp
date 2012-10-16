@@ -8,6 +8,7 @@
 #include "Debug.hpp"
 
 namespace stream {
+namespace { const char* TAG = "CyclicAutoIOStream"; }
 
 CyclicAutoIOStream::CyclicAutoIOStream(size_t size)
 		: CyclicAutoOutputStream(size),
@@ -28,15 +29,8 @@ void CyclicAutoIOStream::write(const void *data,
 	if (_count + size
 	    > CyclicAutoOutputStream::_source.getSize())
 	{
-		DEBUG_OUT_UNIT(CYCLIC_AUTO_IO_STREAM_UNIT,
-		               "Thrown StreamException while writing");
-		DEBUG_OUT_UNIT(CYCLIC_AUTO_IO_STREAM_UNIT,
-		               "count: " << _count);
-		DEBUG_OUT_UNIT(CYCLIC_AUTO_IO_STREAM_UNIT,
-		               "data size: " << size);
-		DEBUG_OUT_UNIT(CYCLIC_AUTO_IO_STREAM_UNIT,
-		               "buffer size: " << CyclicAutoOutputStream::_source.getSize());
-
+		ERROR_OUT(TAG, "Cyclic buffer overflow while writing!\ncount: %1%\ndata size: %2%\nbuffer size: %3%",
+			_count, size, CyclicAutoOutputStream::_source.getSize());
 		throw StreamException("Circular buffer overflow");
 	}
 
@@ -49,16 +43,9 @@ void CyclicAutoIOStream::read(void *data,
 {
 	if (_count < size)
 	{
-		DEBUG_OUT_UNIT(CYCLIC_AUTO_IO_STREAM_UNIT,
-		               "Thrown StreamException while reading");
-		DEBUG_OUT_UNIT(CYCLIC_AUTO_IO_STREAM_UNIT,
-		               "count: " << _count);
-		DEBUG_OUT_UNIT(CYCLIC_AUTO_IO_STREAM_UNIT,
-		               "data size: " << size);
-		DEBUG_OUT_UNIT(CYCLIC_AUTO_IO_STREAM_UNIT,
-		               "buffer size: " << CyclicAutoOutputStream::_source.getSize());
-
-		throw StreamException("Circular buffer overflow");
+		ERROR_OUT(TAG, "Cyclic buffer underflow while reading!\ncount: %1%\ndata size: %2%\nbuffer size: %3%",
+			_count, size, CyclicAutoOutputStream::_source.getSize());
+		throw StreamException("Circular buffer underflow");
 	}
 
 	_count -= size;
