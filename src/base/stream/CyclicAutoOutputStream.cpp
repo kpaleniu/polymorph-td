@@ -33,8 +33,7 @@ void CyclicAutoOutputStream::write(const void *data, size_t size)
 
 	_writeOff = _source.write(data, size, _writeOff);
 
-	DEBUG_OUT_UNIT(CYCLIC_AUTO_OUTPUT_STREAM_UNIT,
-	               "Write offset = " << _writeOff);
+	VERBOSE_OUT("CyclicAutoOutputStream", "Write offset = %1%", _writeOff);
 }
 
 

@@ -13,6 +13,9 @@
 
 #include <input/InputSource.hpp>
 
+// print tag
+namespace { const char* TAG = "Main"; }
+
 class TestSurfaceListener : public input::SurfaceListener
 {
 public:
@@ -49,7 +52,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
                      LPSTR /*lpCmdLine*/,
                      int /*nShowCmd*/)
 {
-	DEBUG_OUT("Hello World!");
+	DEBUG_OUT(TAG, "Hello World!");
 
 	sys::Window::ConstructionData winData = { hInstance,
 	                                          { 64,
@@ -60,24 +63,16 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	sys::UISystem uiSystem(winData, sys::TimeDuration::millis(60));
 	uiSystem.start();
 
-	std::cout << "UI system start " << uiSystem.getID() << std::endl;
-
 	sys::Window& uiWindow(uiSystem.waitForWindow());
 
 	sys::GraphicsSystem graphicsSystem(uiWindow, sys::TimeDuration::millis(33));
 	graphicsSystem.start();
 
-	std::cout << "Graphics system start " << graphicsSystem.getID() << std::endl;
-
 	graphicsSystem.join();
-	std::cout << "Graphics system is shut down" << std::endl;
-
-	std::cout.flush();
+	DEBUG_OUT(TAG, "Graphics system is shut down");
 
 	uiSystem.join();
-	std::cout << "UI system is shut down" << std::endl;
-
-	std::cout.flush();
+	DEBUG_OUT(TAG, "UI system is shut down");
 
 	/*
 

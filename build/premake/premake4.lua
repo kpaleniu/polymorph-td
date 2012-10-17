@@ -73,7 +73,8 @@ solution "polymorph-td"
 			includedirs { projPath .. "/include/win32" }
 			defines { "WIN32_LEAN_AND_MEAN",
 					  "WINVER=0x0501",
-					  "_WIN32_WINNT=0x0501" }
+					  "_WIN32_WINNT=0x0501",
+					  "_CRT_SECURE_NO_WARNINGS" }
 			files { projPath .. "/src/win32/**.cpp" }
 			flags { "WinMain" }
 		

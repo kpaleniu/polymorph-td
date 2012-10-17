@@ -10,6 +10,7 @@
 #include "Debug.hpp"
 
 namespace concurrency {
+namespace { const char* TAG = "Thread"; }
 
 Thread::Thread()
 		: _threadState(ThreadState::NOT_STARTED),
@@ -76,16 +77,11 @@ void Thread::threadRunner(Thread *thiz)
 	}
 	catch (Exception &e)
 	{
-		DEBUG_OUT_UNIT(THREAD_UNIT,
-		               "Exception caught in thread " << boost::this_thread::get_id());
-		DEBUG_OUT_UNIT(THREAD_UNIT,
-		               "Message: " << e.what());
-
+		ERROR_OUT(TAG, "Exception caught while running thread\nMessage: %1%", e.what());
 	}
 	catch (...)
 	{
-		DEBUG_OUT_UNIT(THREAD_UNIT,
-		               "Unknown exception caught in thread " << boost::this_thread::get_id());
+		ERROR_OUT(TAG, "Unknown exception caught while running thread");
 	}
 }
 

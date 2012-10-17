@@ -11,6 +11,7 @@
 #include "Debug.hpp"
 
 namespace stream {
+namespace { const char* TAG = "Buffer"; }
 
 Buffer::Buffer(size_t size)
 		: _begin(malloc(size)),
@@ -36,8 +37,7 @@ size_t Buffer::write(const void *src,
 	       src,
 	       size);
 
-	DEBUG_OUT_UNIT(BUFFER_UNIT,
-	               "Wrote " << size << " bytes to " << offset);
+	VERBOSE_OUT(TAG, "Wrote %1% bytes to %2%", size, offset);
 
 	return offset + size;
 }
@@ -54,8 +54,7 @@ size_t Buffer::read(void *target,
 	       (void *) (size_t(_begin) + offset),
 	       size);
 
-	DEBUG_OUT_UNIT(BUFFER_UNIT,
-	               "Read " << size << " bytes from " << offset);
+	VERBOSE_OUT(TAG, "Read %1% bytes from %2%", size, offset);
 
 	return offset + size;
 }

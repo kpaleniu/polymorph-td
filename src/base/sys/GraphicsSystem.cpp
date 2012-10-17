@@ -25,7 +25,7 @@ GraphiscSystemRunner::GraphiscSystemRunner(GraphiscSystemRunner&& system)
 
 bool GraphiscSystemRunner::update()
 {
-	DEBUG_OUT("WorldSystem updateSystem");
+	VERBOSE_OUT("GraphicsSystemRunner", "update()");
 
 	_renderer.clearBuffers();
 	_renderer.flipBuffers();
