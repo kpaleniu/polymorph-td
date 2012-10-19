@@ -43,7 +43,7 @@ Window& UISystem::waitForWindow()
 {
 	waitForStartup();
 
-	UISystemRunner* runner = _runnerAccess;
+	UISystemRunner* runner = _runnerAccess.load();
 	ASSERT(runner != nullptr, "Runner has started but cannot be accessed, is the system dying?");
 
 	return runner->window();

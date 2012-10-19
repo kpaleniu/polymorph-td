@@ -67,10 +67,7 @@ protected:
 	SystemActionQueue<action::Action<Runner> > _actions;
 
 
-	// std::atomic<Runner*> _runnerAccess; // WHY WON'T YOU WORK DAMMIT!
-
-	// Note, access to runner is not synchronized!
-	Runner* _runnerAccess;
+	std::atomic<Runner*> _runnerAccess; // WHY WON'T YOU WORK DAMMIT!
 
 private:
 	bool _started;
