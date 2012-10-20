@@ -16,7 +16,7 @@ namespace sys {
 namespace { const char* TAG_RUNNER = "GraphicsSystemRunner";
 			const char* TAG_SYSTEM = "GraphicsSystem"; }
 
-GraphiscSystemRunner::GraphiscSystemRunner(Window& win)
+GraphicsSystemRunner::GraphicsSystemRunner(Window& win)
 : _surface(win.surface()), _renderer(_surface)
 {
 	_surface.activate(true);
@@ -24,13 +24,18 @@ GraphiscSystemRunner::GraphiscSystemRunner(Window& win)
 	DEBUG_OUT(TAG_RUNNER, "Constructed");
 }
 
-GraphiscSystemRunner::GraphiscSystemRunner(GraphiscSystemRunner&& system)
+GraphicsSystemRunner::GraphicsSystemRunner(GraphicsSystemRunner&& system)
 : _surface(system._surface), _renderer(std::move(system._renderer))
 {
 	VERBOSE_OUT(TAG_RUNNER, "Moved");
 }
 
-bool GraphiscSystemRunner::update()
+GraphicsSystemRunner::~GraphicsSystemRunner()
+{
+	DEBUG_OUT(TAG_RUNNER, "Destroyed");
+}
+
+bool GraphicsSystemRunner::update()
 {
 	VERBOSE_OUT(TAG_RUNNER, "update()");
 

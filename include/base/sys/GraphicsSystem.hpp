@@ -15,11 +15,12 @@
 
 namespace sys {
 
-class GraphiscSystemRunner : NonCopyable
+class GraphicsSystemRunner : NonCopyable
 {
 public:
-	GraphiscSystemRunner(Window& win);
-	GraphiscSystemRunner(GraphiscSystemRunner&& system);
+	GraphicsSystemRunner(Window& win);
+	GraphicsSystemRunner(GraphicsSystemRunner&& system);
+	~GraphicsSystemRunner();
 
 	bool update();
 
@@ -28,14 +29,14 @@ private:
 	gr::Renderer _renderer;
 };
 
-class GraphicsSystem : public System<GraphiscSystemRunner>
+class GraphicsSystem : public System<GraphicsSystemRunner>
 {
 public:
 	GraphicsSystem(Window& window, const TimeDuration &sync);
 	GraphicsSystem(GraphicsSystem&& grSys);
 
 	// TODO: JUST FOR TESTING
-	SystemActionQueue<GraphiscSystemRunner>& actionQueue()
+	SystemActionQueue<GraphicsSystemRunner>& actionQueue()
 	{
 		return _actions;
 	}
