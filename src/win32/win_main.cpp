@@ -4,8 +4,6 @@
  * Holds the definition of the main function for Windows OS.
  */
 
-#include <action/GraphicsAction.hpp>
-
 #include <sys/GraphicsSystem.hpp>
 #include <sys/UISystem.hpp>
 
@@ -63,7 +61,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	sys::UISystem uiSystem(winData, sys::TimeDuration::millis(60));
 	uiSystem.start();
 
-	sys::Window& uiWindow(uiSystem.waitForWindow());
+	uiSystem.actionQueue().pushAction([](sys::UISystemRunner& uiRunner){ DEBUG_OUT("ACTION", "TEST"); });
 
 	/*
 	sys::GraphicsSystem graphicsSystem(uiWindow, sys::TimeDuration::millis(33));
@@ -121,10 +119,13 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		DEBUG_OUT("Exceptions: " << errs);
 	}
 
+	*/
+
+
 	profiler::ThreadProfiler::dumpAll(std::cout);
 	profiler::ThreadProfiler::shutdown();
 	text::clearInterned();
-	*/
+
 
 	return 0;
 }

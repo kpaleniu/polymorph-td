@@ -7,7 +7,6 @@
 #define UISYSTEM_HPP_
 
 #include "NonCopyable.hpp"
-#include "action/Action.hpp"
 #include "stream/ArrayInputStream.hpp"
 
 #include "sys/System.hpp"
@@ -44,6 +43,11 @@ public:
 	 */
 	Window& waitForWindow();
 
+	// TODO: JUST FOR TESTING
+	SystemActionQueue<UISystemRunner>& actionQueue()
+	{
+		return _actions;
+	}
 };
 
 }

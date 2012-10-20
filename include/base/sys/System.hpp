@@ -66,10 +66,10 @@ protected:
 	TimeDuration _sync;
 	std::function<Runner ()> _factory;
 
-	SystemActionQueue<action::Action<Runner> > _actions;
+	SystemActionQueue<Runner> _actions;
 
 
-	std::atomic<Runner*> _runnerAccess; // WHY WON'T YOU WORK DAMMIT!
+	std::atomic<Runner*> _runnerAccess;
 
 private:
 	bool _started;

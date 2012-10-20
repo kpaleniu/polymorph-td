@@ -6,12 +6,12 @@
 #ifndef WORLDSYSTEM_HPP_
 #define WORLDSYSTEM_HPP_
 
-#include "NonCopyable.hpp"
-#include "action/Action.hpp"
 #include "gr/Renderer.hpp"
 #include "gr/Surface.hpp"
 #include "stream/ArrayInputStream.hpp"
 #include "sys/System.hpp"
+
+#include "NonCopyable.hpp"
 
 namespace sys {
 
@@ -35,8 +35,7 @@ public:
 	GraphicsSystem(GraphicsSystem&& grSys);
 
 	// TODO: JUST FOR TESTING
-	SystemActionQueue<
-	        action::Action<GraphiscSystemRunner> > &actionQueue()
+	SystemActionQueue<GraphiscSystemRunner>& actionQueue()
 	{
 		return _actions;
 	}
