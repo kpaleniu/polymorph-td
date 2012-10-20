@@ -13,6 +13,8 @@
 #include "sys/Window.hpp"
 #include "sys/GraphicsSystem.hpp"
 
+#include "Assert.hpp"
+
 namespace sys {
 
 class UISystemRunner : NonCopyable
@@ -25,6 +27,7 @@ public:
 	bool update();
 
 	Window& window();
+	GraphicsSystem& graphics();
 
 private:
 	Window _window;
@@ -47,6 +50,15 @@ public:
 	SystemActionQueue<UISystemRunner>& actionQueue()
 	{
 		return _actions;
+	}
+
+	// TODO: JUST FOR TESTING ATM
+	GraphicsSystem& graphicsAccess()
+	{
+		UISystemRunner* runner = _runnerAccess.load();
+
+		ASSERT(runner != nullptr, "Runner isn't alive");
+		return runner->graphics();
 	}
 };
 

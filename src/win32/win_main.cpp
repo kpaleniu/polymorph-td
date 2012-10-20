@@ -59,6 +59,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	sys::UISystem uiSystem(winData);
 	uiSystem.start();
 
+	uiSystem.waitForStartup();
+
 	uiSystem.actionQueue().pushAction(
 	[](sys::UISystemRunner& uiRunner)
 	{
@@ -71,6 +73,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	[&](sys::UISystemRunner& uiRunner)
 	{
 		uiRunner.window().inputSource().setSurfaceListener(&testListener);
+	});
+
+	uiSystem.graphicsAccess().actionQueue().pushAction(
+	[](sys::GraphicsSystemRunner& grSys)
+	{
+		grSys.renderer().debugDraw().drawLine2D(0.0f, 0.0f, 1.0f, 1.0f);
 	});
 
 	uiSystem.join();

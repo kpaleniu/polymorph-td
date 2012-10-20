@@ -16,7 +16,8 @@ Renderer::Renderer(Surface &surface)
 }
 
 Renderer::Renderer(Renderer&& renderer)
-: _surface(renderer._surface)
+:	_surface(renderer._surface),
+ 	_debugDraw()
 {
 }
 
@@ -38,6 +39,11 @@ void Renderer::clearBuffers()
 void Renderer::flipBuffers()
 {
 	_surface.flipBuffers();
+}
+
+DebugDraw& Renderer::debugDraw()
+{
+	return _debugDraw;
 }
 
 }

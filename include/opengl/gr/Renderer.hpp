@@ -2,7 +2,8 @@
 #define RENDERER_HPP_
 
 #include "NonCopyable.hpp"
-//#include "gr/TextureHandler.hpp"
+
+#include "gr/DebugDraw.hpp"
 
 namespace gr
 {
@@ -21,14 +22,15 @@ namespace gr
 
 		void flipBuffers();
 
-		// TextureHandler &textures();
+		DebugDraw& debugDraw();
 
 	protected:
 
 	private:
-		//TextureHandler _texHandler;
-
 		Surface& _surface;
+
+		DebugDraw _debugDraw;
+
 	};
 }
 

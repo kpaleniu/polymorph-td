@@ -57,6 +57,12 @@ Window& UISystemRunner::window()
 	return _window;
 }
 
+GraphicsSystem& UISystemRunner::graphics()
+{
+	return _grSys;
+}
+
+
 UISystem::UISystem(Window::ConstructionData& winCtorData)
 : System(settings::uiSystemSync, 256, winCtorData)
 {
@@ -72,6 +78,7 @@ Window& UISystem::waitForWindow()
 
 	return runner->window();
 }
+
 
 }
 

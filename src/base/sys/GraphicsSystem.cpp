@@ -22,6 +22,7 @@ GraphicsSystemRunner::GraphicsSystemRunner(Window& win)
 : _surface(win.surface()), _renderer(_surface)
 {
 	_surface.activate(true);
+	_renderer.clearBuffers();
 
 	DEBUG_OUT(TAG_RUNNER, "Constructed");
 }
@@ -39,12 +40,15 @@ GraphicsSystemRunner::~GraphicsSystemRunner()
 
 bool GraphicsSystemRunner::update()
 {
-	VERBOSE_OUT(TAG_RUNNER, "update()");
-
-	_renderer.clearBuffers();
+	//_renderer.clearBuffers(); // Turned off just to see the line.
 	_renderer.flipBuffers();
 
 	return true;
+}
+
+gr::Renderer& GraphicsSystemRunner::renderer()
+{
+	return _renderer;
 }
 
 //
