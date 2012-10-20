@@ -30,17 +30,9 @@ public:
 	virtual bool handleInput() = 0;
 	virtual ~InputSource();
 
-	void registerSurfaceListener(SurfaceListener& listener);
-	void unregisterSurfaceListener(SurfaceListener& listener);
-	SurfaceEventSubscription surfaceSubscription(SurfaceListener& listener);
-
-	void registerKeyListener(KeyListener& listener);
-	void unregisterKeyListener(KeyListener& listener);
-	KeyEventSubscription keySubscription(KeyListener& listener);
-
-	void registerPointerListener(PointerListener& listener);
-	void unregisterPointerListener(PointerListener& listener);
-	PointerEventSubscription pointerSubscription(PointerListener& listener);
+	SurfaceEventSubscription 	surfaceSubscription(SurfaceListener& listener);
+	KeyEventSubscription 		keySubscription(KeyListener& listener);
+	PointerEventSubscription 	pointerSubscription(PointerListener& listener);
 
 protected:
 	void notifyResize(int w, int h);
@@ -58,9 +50,9 @@ protected:
 	void notifyPointerZoom(int dz);
 
 protected:
-	std::set<SurfaceListener*> _surfaceListeners;
-	std::set<KeyListener*> _keyListeners;
-	std::set<PointerListener*> _pointerListeners;
+	SurfaceListener* 	_surfaceListener;
+	KeyListener* 		_keyListener;
+	PointerListener* 	_pointerListener;
 
 };
 
