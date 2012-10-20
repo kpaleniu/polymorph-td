@@ -22,6 +22,8 @@ UISystemRunner::UISystemRunner(Window::ConstructionData& winCtorData)
 
 	_window.show(true);
 	_grSys.start();
+
+	_grSys.waitForStartup();
 }
 
 UISystemRunner::UISystemRunner(UISystemRunner&& runner)
@@ -33,6 +35,9 @@ UISystemRunner::UISystemRunner(UISystemRunner&& runner)
 
 UISystemRunner::~UISystemRunner()
 {
+	_grSys.interrupt();
+	_grSys.join();
+
 	DEBUG_OUT(TAG_RUNNER, "Destroyed");
 }
 

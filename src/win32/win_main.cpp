@@ -63,64 +63,13 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	uiSystem.actionQueue().pushAction([](sys::UISystemRunner& uiRunner){ DEBUG_OUT("ACTION", "TEST"); });
 
-	/*
-	sys::GraphicsSystem graphicsSystem(uiWindow, sys::TimeDuration::millis(33));
-	graphicsSystem.start();
 
-	graphicsSystem.join();
-	DEBUG_OUT(TAG, "Graphics system is shut down");
-	*/
+	concurrency::Thread::sleep(sys::TimeDuration::millis(500));
+
+	uiSystem.interrupt();
 
 	uiSystem.join();
 	DEBUG_OUT(TAG, "UI system is shut down");
-
-	/*
-
-	sys::Window window(winData);
-	window.show();
-
-	sys::GraphicsSystem graphicsSystem(window,
-	                                   sys::TimeDuration::millis(33));
-
-	graphicsSystem.start();
-	graphicsSystem.waitForStartup();
-
-	{
-		TestSurfaceListener surfaceListener;
-		input::SurfaceEventSubscription surfaceSub = window.inputSource().surfaceSubscription(surfaceListener);
-
-		DEBUG_OUT("Writing actions");
-
-		int index = 0, errs = 0;
-
-		while (!surfaceListener.quitRequested)
-		{
-			while (window.inputSource().handleInput())
-			{
-			}
-
-			try
-			{
-				action::graphics_action::TestAction::Data data = { index,
-				                                                index
-				                                                + 1 };
-				graphicsSystem.actionQueue().writeAction(action::graphics_action::TestAction,
-				                                      data);
-				++index;
-			}
-			catch (stream::StreamException& e)
-			{
-				DEBUG_OUT(e.what());
-				concurrency::Thread::sleep(sys::TimeDuration::millis(10));
-				++errs;
-			}
-		}
-
-		DEBUG_OUT("Exceptions: " << errs);
-	}
-
-	*/
-
 
 	profiler::ThreadProfiler::dumpAll(std::cout);
 	profiler::ThreadProfiler::shutdown();
