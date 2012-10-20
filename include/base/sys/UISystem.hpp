@@ -34,7 +34,7 @@ private:
 class UISystem : public System<UISystemRunner>
 {
 public:
-	UISystem(Window::ConstructionData& winCtorData, const TimeDuration& sync);
+	UISystem(Window::ConstructionData& winCtorData);
 
 	/**
 	 * Waits for system start up and returns the window.

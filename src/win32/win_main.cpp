@@ -58,13 +58,13 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	                                            800,
 	                                            600 } };
 
-	sys::UISystem uiSystem(winData, sys::TimeDuration::millis(60));
+	sys::UISystem uiSystem(winData);
 	uiSystem.start();
 
 	uiSystem.actionQueue().pushAction([](sys::UISystemRunner& uiRunner){ DEBUG_OUT("ACTION", "TEST"); });
 
 
-	concurrency::Thread::sleep(sys::TimeDuration::millis(500));
+	concurrency::Thread::sleep(sys::TimeDuration::millis(50000));
 
 	uiSystem.interrupt();
 

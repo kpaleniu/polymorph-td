@@ -8,6 +8,9 @@
 #include "Assert.hpp"
 #include "Debug.hpp"
 
+#include "BuildConfig.hpp"
+
+
 namespace sys {
 
 // print tag
@@ -16,7 +19,7 @@ namespace { const char* TAG_RUNNER = "UISystemRunner";
 
 UISystemRunner::UISystemRunner(Window::ConstructionData& winCtorData)
 : _window(winCtorData),
-  _grSys(_window, TimeDuration::millis(33))
+  _grSys(_window)
 {
 	DEBUG_OUT(TAG_RUNNER, "Constructed");
 
@@ -54,8 +57,8 @@ Window& UISystemRunner::window()
 	return _window;
 }
 
-UISystem::UISystem(Window::ConstructionData& winCtorData, const TimeDuration& sync)
-: System(sync, 256, winCtorData)
+UISystem::UISystem(Window::ConstructionData& winCtorData)
+: System(settings::uiSystemSync, 256, winCtorData)
 {
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }

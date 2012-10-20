@@ -10,6 +10,8 @@
 
 #include "Debug.hpp"
 
+#include "BuildConfig.hpp"
+
 namespace sys {
 
 // print tag
@@ -47,8 +49,8 @@ bool GraphicsSystemRunner::update()
 
 //
 
-GraphicsSystem::GraphicsSystem(Window& window, const TimeDuration &sync)
-: System(sync, 256, window)
+GraphicsSystem::GraphicsSystem(Window& window)
+: System(settings::grSystemSync, 256, window)
 {
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }

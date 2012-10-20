@@ -32,7 +32,7 @@ private:
 class GraphicsSystem : public System<GraphicsSystemRunner>
 {
 public:
-	GraphicsSystem(Window& window, const TimeDuration &sync);
+	GraphicsSystem(Window& window);
 	GraphicsSystem(GraphicsSystem&& grSys);
 
 	// TODO: JUST FOR TESTING
