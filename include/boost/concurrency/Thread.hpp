@@ -8,12 +8,13 @@
 #define THREAD_HPP_
 
 #include "sys/time.hpp"
+#include "NonCopyable.hpp"
 
 #include <boost/thread.hpp>
 
 namespace concurrency {
 
-class Thread
+class Thread : NonCopyable
 {
 public:
 	typedef boost::thread::id ID;
@@ -25,6 +26,8 @@ public:
 
 public:
 	Thread();
+	Thread(Thread&& thread);
+
 	virtual ~Thread();
 
 	/**

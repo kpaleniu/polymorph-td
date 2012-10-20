@@ -13,10 +13,15 @@ namespace concurrency {
 namespace { const char* TAG = "Thread"; }
 
 Thread::Thread()
-		: _threadState(ThreadState::NOT_STARTED),
-		  _boostThread()
+:	_threadState(ThreadState::NOT_STARTED),
+	_boostThread()
 {
+}
 
+Thread::Thread(Thread&& thread)
+:	_threadState(thread._threadState),
+	_boostThread(std::move(thread._boostThread))
+{
 }
 
 Thread::~Thread()

@@ -23,6 +23,8 @@ class SystemActionQueue
 public:
 	SystemActionQueue(size_t bufferSize);
 
+	SystemActionQueue(SystemActionQueue&& actionQueue);
+
 	/*
 	 *
 	 */
@@ -69,6 +71,13 @@ void SystemActionQueue<ActionBase>::writeAction(const ActionBase &action,
 
 	VERBOSE_OUT("SystemActionQueue", "Writing action: %1%", &action);
 	_runnerInput << &action << data;
+}
+
+template<typename ActionBase>
+SystemActionQueue<ActionBase>::SystemActionQueue(SystemActionQueue&& actionQueue)
+:	_runnerInput(std::move(actionQueue._runnerInput)),
+ 	_rwMutex() // Can't move mutex.
+{
 }
 
 template<typename ActionBase>

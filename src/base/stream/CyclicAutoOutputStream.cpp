@@ -10,14 +10,19 @@
 namespace stream {
 
 CyclicAutoOutputStream::CyclicAutoOutputStream(size_t size)
-		: _source(size), _writeOff(0)
+:	_source(size),
+ 	_writeOff(0)
 {
-	//
+}
+
+CyclicAutoOutputStream::CyclicAutoOutputStream(CyclicAutoOutputStream&& caos)
+:	_source(std::move(caos._source)),
+ 	_writeOff(caos._writeOff)
+{
 }
 
 CyclicAutoOutputStream::~CyclicAutoOutputStream()
 {
-	//
 }
 
 size_t CyclicAutoOutputStream::getWritePos() const

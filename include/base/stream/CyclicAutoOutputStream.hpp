@@ -24,6 +24,9 @@ public:
 	 * @param size	Size in bytes of buffer.
 	 */
 	CyclicAutoOutputStream(size_t size);
+
+	CyclicAutoOutputStream(CyclicAutoOutputStream&& caos);
+
 	/**
 	 * Destructor.
 	 */

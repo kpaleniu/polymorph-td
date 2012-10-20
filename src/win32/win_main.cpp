@@ -65,11 +65,13 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	sys::Window& uiWindow(uiSystem.waitForWindow());
 
+	/*
 	sys::GraphicsSystem graphicsSystem(uiWindow, sys::TimeDuration::millis(33));
 	graphicsSystem.start();
 
 	graphicsSystem.join();
 	DEBUG_OUT(TAG, "Graphics system is shut down");
+	*/
 
 	uiSystem.join();
 	DEBUG_OUT(TAG, "UI system is shut down");

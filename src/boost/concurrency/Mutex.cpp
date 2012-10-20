@@ -7,6 +7,11 @@
 
 namespace concurrency {
 
+Mutex::Mutex()
+:	_mutex()
+{
+}
+
 void Mutex::lock()
 {
 	_mutex.lock();

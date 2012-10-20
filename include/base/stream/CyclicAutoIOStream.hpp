@@ -19,6 +19,7 @@ class CyclicAutoIOStream : public CyclicAutoOutputStream,
 {
 public:
 	CyclicAutoIOStream(size_t size);
+	CyclicAutoIOStream(CyclicAutoIOStream&& caios);
 	virtual ~CyclicAutoIOStream();
 
 	size_t bytesUnread() const;

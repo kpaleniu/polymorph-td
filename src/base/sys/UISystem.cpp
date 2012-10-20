@@ -6,19 +6,34 @@
 #include "sys/UISystem.hpp"
 
 #include "Assert.hpp"
+#include "Debug.hpp"
 
 namespace sys {
 
+// print tag
+namespace { const char* TAG_RUNNER = "UISystemRunner";
+			const char* TAG_SYSTEM = "UISystem"; }
 
 UISystemRunner::UISystemRunner(Window::ConstructionData& winCtorData)
-: _window(winCtorData)
+: _window(winCtorData),
+  _grSys(_window, TimeDuration::millis(33))
 {
+	DEBUG_OUT(TAG_RUNNER, "Constructed");
+
 	_window.show(true);
+	_grSys.start();
 }
 
 UISystemRunner::UISystemRunner(UISystemRunner&& runner)
-: _window(std::move(runner._window))
+: _window(std::move(runner._window)),
+  _grSys(std::move(runner._grSys))
 {
+	VERBOSE_OUT(TAG_RUNNER, "Moved");
+}
+
+UISystemRunner::~UISystemRunner()
+{
+	DEBUG_OUT(TAG_RUNNER, "Destroyed");
 }
 
 bool UISystemRunner::update()
@@ -37,6 +52,7 @@ Window& UISystemRunner::window()
 UISystem::UISystem(Window::ConstructionData& winCtorData, const TimeDuration& sync)
 : System(sync, 256, winCtorData)
 {
+	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }
 
 Window& UISystem::waitForWindow()

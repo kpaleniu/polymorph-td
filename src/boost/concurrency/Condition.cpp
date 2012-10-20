@@ -9,9 +9,9 @@
 namespace concurrency {
 
 Condition::Condition()
-: _mutex(), _cond()
+:	_mutex(),
+ 	_cond()
 {
-	//
 }
 
 void Condition::notifyAll()

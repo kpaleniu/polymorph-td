@@ -9,8 +9,10 @@
 #include "NonCopyable.hpp"
 #include "action/Action.hpp"
 #include "stream/ArrayInputStream.hpp"
+
 #include "sys/System.hpp"
 #include "sys/Window.hpp"
+#include "sys/GraphicsSystem.hpp"
 
 namespace sys {
 
@@ -19,6 +21,7 @@ class UISystemRunner : NonCopyable
 public:
 	UISystemRunner(Window::ConstructionData& winCtorData);
 	UISystemRunner(UISystemRunner&& runner);
+	~UISystemRunner();
 
 	bool update();
 
@@ -26,6 +29,7 @@ public:
 
 private:
 	Window _window;
+	GraphicsSystem _grSys;
 };
 
 class UISystem : public System<UISystemRunner>

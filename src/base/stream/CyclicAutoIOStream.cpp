@@ -11,16 +11,21 @@ namespace stream {
 namespace { const char* TAG = "CyclicAutoIOStream"; }
 
 CyclicAutoIOStream::CyclicAutoIOStream(size_t size)
-		: CyclicAutoOutputStream(size),
-		  CyclicAutoInputStream(CyclicAutoOutputStream::_source),
-		  _count(0)
+:	CyclicAutoOutputStream(size),
+	CyclicAutoInputStream(CyclicAutoOutputStream::_source),
+	_count(0)
 {
-	//
+}
+
+CyclicAutoIOStream::CyclicAutoIOStream(CyclicAutoIOStream&& caios)
+:	CyclicAutoOutputStream(std::move(caios)),
+ 	CyclicAutoInputStream(std::move(caios)),
+ 	_count(caios._count)
+{
 }
 
 CyclicAutoIOStream::~CyclicAutoIOStream()
 {
-	//
 }
 
 void CyclicAutoIOStream::write(const void *data,

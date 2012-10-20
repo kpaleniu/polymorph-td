@@ -20,6 +20,7 @@ public:
 	 * @param source	Input to use.
 	 */
 	CyclicAutoInputStream(Buffer &source);
+	CyclicAutoInputStream(CyclicAutoInputStream&& cais);
 	/**
 	 * Destructor.
 	 */
@@ -42,7 +43,7 @@ private:
 	/**
 	 * Buffer with data to read from.
 	 */
-	Buffer &_source;
+	Buffer& _source;
 
 	size_t _readOff;
 };

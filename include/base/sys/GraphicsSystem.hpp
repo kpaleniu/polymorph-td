@@ -32,6 +32,7 @@ class GraphicsSystem : public System<GraphiscSystemRunner>
 {
 public:
 	GraphicsSystem(Window& window, const TimeDuration &sync);
+	GraphicsSystem(GraphicsSystem&& grSys);
 
 	// TODO: JUST FOR TESTING
 	SystemActionQueue<
