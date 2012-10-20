@@ -11,54 +11,30 @@
 
 namespace input {
 
+InputSource::InputSource()
+:	_surfaceListener(nullptr),
+ 	_keyListener(nullptr),
+ 	_pointerListener(nullptr)
+{
+}
+
 InputSource::~InputSource()
 {
 }
 
-SurfaceEventSubscription InputSource::surfaceSubscription(SurfaceListener& listener)
+void InputSource::setSurfaceListener(SurfaceListener* listener)
 {
-	return SurfaceEventSubscription(
-	[&]
-	{
-		ASSERT(_surfaceListener == nullptr, "Overwriting previous subscription");
-		_surfaceListener = &listener;
-	},
-	[&]
-	{
-		ASSERT(_surfaceListener != nullptr, "Removing non-existing subscription");
-		_surfaceListener = nullptr;
-	});
+	_surfaceListener = listener;
 }
 
-
-KeyEventSubscription InputSource::keySubscription(KeyListener& listener)
+void InputSource::setKeyListener(KeyListener* listener)
 {
-	return KeyEventSubscription(
-	[&]
-	{
-		ASSERT(_keyListener == nullptr, "Overwriting previous subscription");
-		_keyListener = &listener;
-	},
-	[&]
-	{
-		ASSERT(_keyListener != nullptr, "Removing non-existing subscription");
-		_keyListener = nullptr;
-	});
+	_keyListener = listener;
 }
 
-PointerEventSubscription InputSource::pointerSubscription(PointerListener& listener)
+void InputSource::setPointerListener(PointerListener* listener)
 {
-	return PointerEventSubscription(
-	[&]
-	{
-		ASSERT(_pointerListener == nullptr, "Overwriting previous subscription");
-		_pointerListener = &listener;
-	},
-	[&]
-	{
-		ASSERT(_pointerListener != nullptr, "Removing non-existing subscription");
-		_pointerListener = nullptr;
-	});
+	_pointerListener = listener;
 }
 
 void InputSource::notifyResize(int w, int h)

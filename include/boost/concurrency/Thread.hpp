@@ -60,6 +60,8 @@ public:
 
 	static void interruptionPoint();
 
+	static void interruptCurrent();
+
 	static const ID getCurrentID();
 protected:
 	/**

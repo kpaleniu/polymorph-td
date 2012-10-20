@@ -18,7 +18,6 @@ class TestSurfaceListener : public input::SurfaceListener
 {
 public:
 	TestSurfaceListener()
-			: quitRequested(false)
 	{
 	}
 
@@ -36,11 +35,10 @@ public:
 	}
 	virtual void onQuit()
 	{
-		quitRequested = true;
+		concurrency::Thread::interruptCurrent();
 	}
-
-	bool quitRequested;
 };
+
 
 /**
  * Windows main.
@@ -61,12 +59,19 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	sys::UISystem uiSystem(winData);
 	uiSystem.start();
 
-	uiSystem.actionQueue().pushAction([](sys::UISystemRunner& uiRunner){ DEBUG_OUT("ACTION", "TEST"); });
+	uiSystem.actionQueue().pushAction(
+	[](sys::UISystemRunner& uiRunner)
+	{
+		DEBUG_OUT("ACTION", "TEST");
+	});
 
+	TestSurfaceListener testListener;
 
-	concurrency::Thread::sleep(sys::TimeDuration::millis(50000));
-
-	uiSystem.interrupt();
+	uiSystem.actionQueue().pushAction(
+	[&](sys::UISystemRunner& uiRunner)
+	{
+		uiRunner.window().inputSource().setSurfaceListener(&testListener);
+	});
 
 	uiSystem.join();
 	DEBUG_OUT(TAG, "UI system is shut down");

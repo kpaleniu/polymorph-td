@@ -167,7 +167,7 @@ void System<Runner>::threadMain()
 		}
 		else
 		{
-			// Should warn and add interruption point.
+			Thread::interruptionPoint();
 		}
 	}
 }

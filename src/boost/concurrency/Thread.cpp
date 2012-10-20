@@ -65,6 +65,11 @@ void Thread::interruptionPoint()
 	boost::this_thread::interruption_point();
 }
 
+void Thread::interruptCurrent()
+{
+	throw boost::thread_interrupted();
+}
+
 const Thread::ID Thread::getCurrentID()
 {
 	return boost::this_thread::get_id();
@@ -72,6 +77,8 @@ const Thread::ID Thread::getCurrentID()
 
 void Thread::threadRunner(Thread *thiz)
 {
+	VERBOSE_OUT(TAG, "Thread starting");
+
 	try
 	{
 		thiz->threadMain();
@@ -88,6 +95,8 @@ void Thread::threadRunner(Thread *thiz)
 	{
 		ERROR_OUT(TAG, "Unknown exception caught while running thread");
 	}
+
+	VERBOSE_OUT(TAG, "Thread exited");
 }
 
 }

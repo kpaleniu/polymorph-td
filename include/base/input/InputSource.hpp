@@ -27,12 +27,14 @@ typedef Scoped PointerEventSubscription;
 class InputSource
 {
 public:
-	virtual bool handleInput() = 0;
+	InputSource();
 	virtual ~InputSource();
 
-	SurfaceEventSubscription 	surfaceSubscription(SurfaceListener& listener);
-	KeyEventSubscription 		keySubscription(KeyListener& listener);
-	PointerEventSubscription 	pointerSubscription(PointerListener& listener);
+	virtual bool handleInput() = 0;
+
+	void setSurfaceListener(SurfaceListener* listener);
+	void setKeyListener(KeyListener* listener);
+	void setPointerListener(PointerListener* listener);
 
 protected:
 	void notifyResize(int w, int h);
