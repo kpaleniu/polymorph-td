@@ -5,9 +5,10 @@
 
 #include "sys/UISystem.hpp"
 
+#include "sys/Time.hpp"
+
 #include "Assert.hpp"
 #include "Debug.hpp"
-
 #include "BuildConfig.hpp"
 
 
@@ -46,8 +47,13 @@ UISystemRunner::~UISystemRunner()
 
 bool UISystemRunner::update()
 {
+	TimeStamp start = TimeStamp::now();
+
 	while (_window.inputSource().handleInput())
-		;
+	{
+		if (TimeDuration::between(start, TimeStamp::now()) > settings::uiSystemSync)
+			break;
+	}
 
 	return true;
 }
