@@ -5,14 +5,32 @@
 
 #include "gr/Renderer.hpp"
 #include "gr/Surface.hpp"
+#include "gr/SurfaceException.hpp"
 
-#include <gl/gl.h>
+#include "gr/opengl.hpp"
+
+#include "Assert.hpp"
 
 namespace gr {
+
+namespace {
+
+void initGlew()
+{
+	GLenum err = glewInit();
+
+	if (err != GLEW_OK)
+		throw SurfaceException((const char*) glewGetErrorString(err));
+}
+
+}
 
 Renderer::Renderer(Surface &surface)
 : _surface(surface)
 {
+	_surface.activate(true);
+
+	initGlew(); // Must be called after Surface::activate(true).
 }
 
 Renderer::Renderer(Renderer&& renderer)
