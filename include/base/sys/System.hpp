@@ -63,7 +63,6 @@ public:
 	void waitForStartup();
 
 protected:
-	TimeDuration _sync;
 	std::function<Runner ()> _factory;
 
 	SystemActionQueue<Runner> _actions;
@@ -74,6 +73,8 @@ protected:
 private:
 	bool _started;
 	concurrency::Condition _startupCond;
+
+	const TimeDuration _sync;
 
 	/**
 	 * Calls runner's update method.
@@ -88,13 +89,13 @@ template<typename T1>
 System<Runner>::System(const TimeDuration &sync,
                              size_t bufferSize,
 							 T1&& arg1)
-		: Thread(),
-		  _sync(sync),
-		  _factory(),
-		  _actions(bufferSize),
-		  _runnerAccess(nullptr),
-		  _started(false),
-		  _startupCond()
+:	Thread(),
+	 _factory(),
+	 _actions(bufferSize),
+	 _runnerAccess(nullptr),
+	 _started(false),
+	 _startupCond(),
+	 _sync(sync)
 {
 	// NOTE: due to a limitation in the VC++11's implementation of
 	// lambdas the template parameter is not visible inside the lambda
@@ -105,12 +106,12 @@ System<Runner>::System(const TimeDuration &sync,
 template<typename Runner>
 System<Runner>::System(System&& system)
 :	Thread(std::move(system)),
-	_sync(system._sync),
 	_factory(system._factory),
 	_actions(std::move(system._actions)),
 	_runnerAccess(system._runnerAccess.load()),
 	_started(system._started),
-	_startupCond() // Conditions can't be moved.
+	_startupCond(), // Conditions can't be moved.
+	_sync(system._sync)
 {
 	system._runnerAccess = nullptr;
 }
@@ -130,6 +131,7 @@ template<typename Runner>
 void System<Runner>::threadMain()
 {
 	static text::string_hash updateName = text::intern("Main loop"); // TODO Get real name for system.
+	static const char* TAG = "System";
 
 	Runner runner(_factory());
 
@@ -167,6 +169,7 @@ void System<Runner>::threadMain()
 		}
 		else
 		{
+			VERBOSE_OUT(TAG, "Time budget miss by %ld", realDT - _sync);
 			Thread::interruptionPoint();
 		}
 	}
