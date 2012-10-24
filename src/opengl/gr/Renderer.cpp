@@ -26,7 +26,9 @@ void initGlew()
 }
 
 Renderer::Renderer(Surface &surface)
-: _surface(surface)
+:	_surface(surface),
+	_debugDraw(),
+	_bufferManager()
 {
 	_surface.activate(true);
 
@@ -34,8 +36,7 @@ Renderer::Renderer(Surface &surface)
 }
 
 Renderer::Renderer(Renderer&& renderer)
-:	_surface(renderer._surface),
- 	_debugDraw()
+:	_surface(renderer._surface) // TODO Move the rest
 {
 }
 
@@ -63,5 +64,11 @@ DebugDraw& Renderer::debugDraw()
 {
 	return _debugDraw;
 }
+
+BufferManager& Renderer::bufferManager()
+{
+	return _bufferManager;
+}
+
 
 }

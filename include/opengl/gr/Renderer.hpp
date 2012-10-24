@@ -4,6 +4,7 @@
 #include "NonCopyable.hpp"
 
 #include "gr/DebugDraw.hpp"
+#include "gr/BufferManager.hpp"
 
 namespace gr
 {
@@ -23,6 +24,7 @@ namespace gr
 		void flipBuffers();
 
 		DebugDraw& debugDraw();
+		BufferManager& bufferManager();
 
 	protected:
 
@@ -30,6 +32,7 @@ namespace gr
 		Surface& _surface;
 
 		DebugDraw _debugDraw;
+		BufferManager _bufferManager;
 
 	};
 }
