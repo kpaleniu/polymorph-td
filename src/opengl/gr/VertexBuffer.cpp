@@ -5,20 +5,39 @@
 
 #include "gr/VertexBuffer.hpp"
 #include "gr/BufferManager.hpp"
+#include "gr/GraphicsException.hpp"
 
 #include "Assert.hpp"
+#include "Debug.hpp"
 
 namespace gr {
 
+namespace {
+const char* TAG = "VertexBuffer";
+}
+
 VertexBuffer::VertexBuffer(BufferManager& manager,
-          	             VertexFormat format,
-          	             BufferUsage usage,
-          	             size_t vertexCount)
+                           VertexFormat format,
+                           BufferUsage usage,
+                           size_t vertexCount,
+                           const real* data)
 :	_bufferID(0),
  	_vertexCount(vertexCount),
  	_vertexFormat(format),
  	_manager(manager)
 {
+#ifdef _DEBUG
+	VERBOSE_OUT(TAG, "Size %i", (int) getVertexFormatData(_vertexFormat).size);
+	VERBOSE_OUT(TAG, "vert dim %i", (int) getVertexFormatData(_vertexFormat).vertDim);
+	VERBOSE_OUT(TAG, "Count %i", vertexCount);
+	for (unsigned int i = 0;
+		 i < _vertexCount * getVertexFormatData(_vertexFormat).size;
+		 ++i)
+	{
+		VERBOSE_OUT(TAG, "%f ", data[i]);
+	}
+#endif
+
 	glGenBuffers(1, &_bufferID);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
@@ -31,17 +50,41 @@ VertexBuffer::VertexBuffer(BufferManager& manager,
 
 	glBufferData(GL_ARRAY_BUFFER,
 	             _vertexCount * getVertexFormatData(_vertexFormat).size,
-	             0,
+	             data,
 	             GLenum(usage));
+
+	GLint bufferSize = 0;
+	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
+
+	if ( bufferSize != GLint(_vertexCount * getVertexFormatData(_vertexFormat).size) )
+	{
+		glDeleteBuffers(1, &_bufferID);
+		_bufferID = 0;
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		throw GraphicsException("Error while creating buffer");
+	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+VertexBuffer::VertexBuffer(VertexBuffer&& vertexBuffer)
+:	_bufferID(vertexBuffer._bufferID),
+ 	_vertexCount(vertexBuffer._vertexCount),
+ 	_vertexFormat(vertexBuffer._vertexFormat),
+ 	_manager(vertexBuffer._manager)
+{
+	vertexBuffer._bufferID = 0;
+}
+
 VertexBuffer::~VertexBuffer()
 {
-	glDeleteBuffers(1, &_bufferID);
-
-	_bufferID = 0;
+	if (_bufferID != 0)
+	{
+		glDeleteBuffers(1, &_bufferID);
+		_bufferID = 0;
+	}
 }
 
 void VertexBuffer::writeVertices(size_t offset,

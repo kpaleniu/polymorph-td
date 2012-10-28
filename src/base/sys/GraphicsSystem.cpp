@@ -40,6 +40,9 @@ GraphicsSystemRunner::~GraphicsSystemRunner()
 bool GraphicsSystemRunner::update()
 {
 	//_renderer.clearBuffers(); // Turned off just to see the line.
+
+	_renderer.render();
+
 	_renderer.flipBuffers();
 
 	return true;

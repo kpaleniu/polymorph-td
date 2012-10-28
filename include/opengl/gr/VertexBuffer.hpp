@@ -24,7 +24,11 @@ public:
 	VertexBuffer(BufferManager& manager,
 	             VertexFormat format,
 	             BufferUsage usage,
-	             size_t vertexCount);
+	             size_t vertexCount,
+	             const real* data=nullptr);
+
+	VertexBuffer(VertexBuffer&& vertexBuffer);
+
 	~VertexBuffer();
 
 	void writeVertices(size_t offset,

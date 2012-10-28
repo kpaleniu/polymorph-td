@@ -11,6 +11,8 @@
 
 #include <input/InputSource.hpp>
 
+#include <vector>
+
 // print tag
 namespace { const char* TAG = "Main"; }
 
@@ -75,13 +77,33 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		uiRunner.window().inputSource().setSurfaceListener(&testListener);
 	});
 
+
+	std::vector<gr::VertexBuffer> buffers;
+
 	uiSystem.graphicsAccess().actionQueue().pushAction(
-	[](sys::GraphicsSystemRunner& grSys)
+	[&buffers](sys::GraphicsSystemRunner& grSys)
 	{
-		grSys.renderer().debugDraw().drawLine2D(0.0f, 0.0f, 1.0f, 1.0f);
+		gr::real vecs[] = {-.5f, -.5f,
+						    .5f, -.5f,
+						    .5f,  .5f,
+						   -.5f,  .5f};
+
+		//grSys.renderer().debugDraw().drawLine2D(0.0f, 0.0f, 1.0f, 1.0f);
+		buffers.push_back(
+			grSys.renderer().
+				bufferManager().
+					createVertexBuffer(gr::VertexFormat::V2,
+					                   gr::BufferUsage::STATIC,
+					                   4, vecs));
+
+		//buffers.back().writeVertices(0, 4, vecs);
+
+		buffers.back().draw(gr::Primitive::QUADS);
+		buffers.clear();
 	});
 
 	uiSystem.join();
+
 	DEBUG_OUT(TAG, "UI system is shut down");
 
 	profiler::ThreadProfiler::dumpAll(std::cout);

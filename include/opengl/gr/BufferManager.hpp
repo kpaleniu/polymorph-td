@@ -19,6 +19,11 @@ public:
 	BufferManager();
 	~BufferManager();
 
+	VertexBuffer createVertexBuffer(VertexFormat format,
+	                                BufferUsage usage,
+	                                size_t vertexCount,
+	                                const real* data=nullptr);
+
 	void setFormat(format_flags fmt);
 
 	bool isEnabled() const;

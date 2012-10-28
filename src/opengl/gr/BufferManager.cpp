@@ -17,6 +17,14 @@ BufferManager::~BufferManager()
 	disable();
 }
 
+VertexBuffer BufferManager::createVertexBuffer(VertexFormat format,
+                                               BufferUsage usage,
+                                               size_t vertexCount,
+                                               const real* data)
+{
+	return VertexBuffer(*this, format, usage, vertexCount, data);
+}
+
 void BufferManager::setFormat(format_flags fmt)
 {
 	if (fmt == _lastFmt)

@@ -23,10 +23,10 @@ namespace gr
 
 		void flipBuffers();
 
+		void render();
+
 		DebugDraw& debugDraw();
 		BufferManager& bufferManager();
-
-	protected:
 
 	private:
 		Surface& _surface;

@@ -6,10 +6,12 @@
 #include "gr/Renderer.hpp"
 #include "gr/Surface.hpp"
 #include "gr/SurfaceException.hpp"
+#include "gr/GraphicsException.hpp"
 
 #include "gr/opengl.hpp"
 
 #include "Assert.hpp"
+#include "Debug.hpp"
 
 namespace gr {
 
@@ -23,6 +25,8 @@ void initGlew()
 		throw SurfaceException((const char*) glewGetErrorString(err));
 }
 
+const char* TAG = "Renderer";
+
 }
 
 Renderer::Renderer(Surface &surface)
@@ -33,6 +37,12 @@ Renderer::Renderer(Surface &surface)
 	_surface.activate(true);
 
 	initGlew(); // Must be called after Surface::activate(true).
+
+
+	int openGLVersion[2];
+	glGetIntegerv(GL_MAJOR_VERSION, &openGLVersion[0]);
+	glGetIntegerv(GL_MINOR_VERSION, &openGLVersion[1]);
+	VERBOSE_OUT(TAG, "GL Version %i.%i", openGLVersion[0], openGLVersion[1]);
 }
 
 Renderer::Renderer(Renderer&& renderer)
@@ -58,6 +68,17 @@ void Renderer::clearBuffers()
 void Renderer::flipBuffers()
 {
 	_surface.flipBuffers();
+}
+
+void Renderer::render()
+{
+	// TODO Implement
+
+#ifdef _DEBUG
+	GLenum errCode = glGetError();
+	if (errCode != GL_NO_ERROR)
+		throw GraphicsException(std::string((char*) gluErrorString(errCode)));
+#endif
 }
 
 DebugDraw& Renderer::debugDraw()
