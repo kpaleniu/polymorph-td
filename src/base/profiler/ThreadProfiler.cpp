@@ -90,6 +90,7 @@ void ThreadProfiler::shutdown()
 	for_each(_threadProfilers.begin(),
 	         _threadProfilers.end(),
 	         [=](pair<Thread::ID, ThreadProfiler*> profiler) { delete profiler.second; });
+	_threadProfilers.clear();
 }
 
 ProfileBlock ThreadProfiler::profileBlock(text::string_hash blockID)
