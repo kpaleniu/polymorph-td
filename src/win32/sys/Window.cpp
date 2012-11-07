@@ -68,7 +68,7 @@ HWND createWindow(const Window::ConstructionData& desc, Window* window)
 	HWND hwnd = CreateWindowEx(
 		dwExStyle,
 		MAKEINTATOM(name),
-		TEXT(WIN_TITLE),
+		TEXT(settings::windowTitle),
 		dwStyle,
 		rect.left, rect.top,
 		rect.w, rect.h,

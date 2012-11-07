@@ -66,7 +66,8 @@ solution "polymorph-td"
 		
 		configuration "with-opengl"
 			includedirs { projPath .. "/include/opengl" }
-			links { "opengl32" }
+			links { "glew32", "glu32", "opengl32" }
+			defines { "GLEW_STATIC" }
 			files { projPath .. "/src/opengl/**.cpp" }
 		
 		configuration "windows"

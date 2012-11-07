@@ -7,6 +7,8 @@
 #define CONDITION_HPP_
 
 #include "concurrency/Mutex.hpp"
+#include "NonCopyable.hpp"
+
 #include <boost/thread.hpp>
 
 namespace concurrency {
@@ -15,7 +17,7 @@ namespace concurrency {
  * Condition class.
  * This class allows blocking until a condition is true.
  */
-class Condition
+class Condition : NonCopyable
 {
 public:
 	/**

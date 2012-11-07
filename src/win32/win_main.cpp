@@ -4,8 +4,6 @@
  * Holds the definition of the main function for Windows OS.
  */
 
-#include <action/GraphicsAction.hpp>
-
 #include <sys/GraphicsSystem.hpp>
 #include <sys/UISystem.hpp>
 
@@ -20,7 +18,6 @@ class TestSurfaceListener : public input::SurfaceListener
 {
 public:
 	TestSurfaceListener()
-			: quitRequested(false)
 	{
 	}
 
@@ -38,11 +35,10 @@ public:
 	}
 	virtual void onQuit()
 	{
-		quitRequested = true;
+		concurrency::Thread::interruptCurrent();
 	}
-
-	bool quitRequested;
 };
+
 
 /**
  * Windows main.
@@ -60,69 +56,38 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	                                            800,
 	                                            600 } };
 
-	sys::UISystem uiSystem(winData, sys::TimeDuration::millis(60));
+	sys::UISystem uiSystem(winData);
 	uiSystem.start();
 
-	sys::Window& uiWindow(uiSystem.waitForWindow());
+	uiSystem.waitForStartup();
 
-	sys::GraphicsSystem graphicsSystem(uiWindow, sys::TimeDuration::millis(33));
-	graphicsSystem.start();
+	uiSystem.actionQueue().pushAction(
+	[](sys::UISystemRunner& uiRunner)
+	{
+		DEBUG_OUT("ACTION", "TEST");
+	});
 
-	graphicsSystem.join();
-	DEBUG_OUT(TAG, "Graphics system is shut down");
+	TestSurfaceListener testListener;
+
+	uiSystem.actionQueue().pushAction(
+	[&](sys::UISystemRunner& uiRunner)
+	{
+		uiRunner.window().inputSource().setSurfaceListener(&testListener);
+	});
+
+	uiSystem.graphicsAccess().actionQueue().pushAction(
+	[](sys::GraphicsSystemRunner& grSys)
+	{
+		grSys.renderer().debugDraw().drawLine2D(0.0f, 0.0f, 1.0f, 1.0f);
+	});
 
 	uiSystem.join();
 	DEBUG_OUT(TAG, "UI system is shut down");
 
-	/*
-
-	sys::Window window(winData);
-	window.show();
-
-	sys::GraphicsSystem graphicsSystem(window,
-	                                   sys::TimeDuration::millis(33));
-
-	graphicsSystem.start();
-	graphicsSystem.waitForStartup();
-
-	{
-		TestSurfaceListener surfaceListener;
-		input::SurfaceEventSubscription surfaceSub = window.inputSource().surfaceSubscription(surfaceListener);
-
-		DEBUG_OUT("Writing actions");
-
-		int index = 0, errs = 0;
-
-		while (!surfaceListener.quitRequested)
-		{
-			while (window.inputSource().handleInput())
-			{
-			}
-
-			try
-			{
-				action::graphics_action::TestAction::Data data = { index,
-				                                                index
-				                                                + 1 };
-				graphicsSystem.actionQueue().writeAction(action::graphics_action::TestAction,
-				                                      data);
-				++index;
-			}
-			catch (stream::StreamException& e)
-			{
-				DEBUG_OUT(e.what());
-				concurrency::Thread::sleep(sys::TimeDuration::millis(10));
-				++errs;
-			}
-		}
-
-		DEBUG_OUT("Exceptions: " << errs);
-	}
-
 	profiler::ThreadProfiler::dumpAll(std::cout);
 	profiler::ThreadProfiler::shutdown();
 	text::clearInterned();
-	*/
+
 
 	return 0;
 }

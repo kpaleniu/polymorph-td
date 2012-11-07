@@ -44,6 +44,8 @@ public:
 	template <typename T1>
 	System(const TimeDuration &sync, size_t bufferSize, T1&& arg1);
 
+	System(System&& system);
+
 	/** 
 	 * NOTE: due to a defect in the C++ standard(!!) implementing this function is not
 	 * possible by simply using lambda '[&] { return Runner(std::forward<Args>(args)...); }'
@@ -61,20 +63,18 @@ public:
 	void waitForStartup();
 
 protected:
-	TimeDuration _sync;
 	std::function<Runner ()> _factory;
 
-	SystemActionQueue<action::Action<Runner> > _actions;
+	SystemActionQueue<Runner> _actions;
 
 
-	// std::atomic<Runner*> _runnerAccess; // WHY WON'T YOU WORK DAMMIT!
-
-	// Note, access to runner is not synchronized!
-	Runner* _runnerAccess;
+	std::atomic<Runner*> _runnerAccess;
 
 private:
 	bool _started;
 	concurrency::Condition _startupCond;
+
+	const TimeDuration _sync;
 
 	/**
 	 * Calls runner's update method.
@@ -89,13 +89,13 @@ template<typename T1>
 System<Runner>::System(const TimeDuration &sync,
                              size_t bufferSize,
 							 T1&& arg1)
-		: Thread(),
-		  _sync(sync),
-		  _factory(),
-		  _actions(bufferSize),
-		  _runnerAccess(nullptr),
-		  _started(false),
-		  _startupCond()
+:	Thread(),
+	 _factory(),
+	 _actions(bufferSize),
+	 _runnerAccess(nullptr),
+	 _started(false),
+	 _startupCond(),
+	 _sync(sync)
 {
 	// NOTE: due to a limitation in the VC++11's implementation of
 	// lambdas the template parameter is not visible inside the lambda
@@ -104,13 +104,21 @@ System<Runner>::System(const TimeDuration &sync,
 }
 
 template<typename Runner>
+System<Runner>::System(System&& system)
+:	Thread(std::move(system)),
+	_factory(system._factory),
+	_actions(std::move(system._actions)),
+	_runnerAccess(system._runnerAccess.load()),
+	_started(system._started),
+	_startupCond(), // Conditions can't be moved.
+	_sync(system._sync)
+{
+	system._runnerAccess = nullptr;
+}
+
+template<typename Runner>
 System<Runner>::~System()
 {
-	if (getThreadState() != ThreadState::EXITED)
-	{
-		interrupt();
-		join();
-	}
 }
 
 template<typename Runner>
@@ -123,8 +131,9 @@ template<typename Runner>
 void System<Runner>::threadMain()
 {
 	static text::string_hash updateName = text::intern("Main loop"); // TODO Get real name for system.
+	static const char* TAG = "System";
 
-	Runner runner = _factory();
+	Runner runner(_factory());
 
 	Scoped accessScope([&]{ _runnerAccess = &runner; },
 	                   [&]{ _runnerAccess = nullptr; });
@@ -160,7 +169,8 @@ void System<Runner>::threadMain()
 		}
 		else
 		{
-			// Should warn and add interruption point.
+			VERBOSE_OUT(TAG, "Time budget miss by %ld", realDT - _sync);
+			Thread::interruptionPoint();
 		}
 	}
 }

@@ -8,14 +8,19 @@
 namespace stream {
 
 CyclicAutoInputStream::CyclicAutoInputStream(Buffer &source)
-		: _source(source), _readOff(0)
+:	_source(source),
+ 	_readOff(0)
 {
-	//
+}
+
+CyclicAutoInputStream::CyclicAutoInputStream(CyclicAutoInputStream&& cais)
+:	_source(cais._source),
+ 	_readOff(cais._readOff)
+{
 }
 
 CyclicAutoInputStream::~CyclicAutoInputStream()
 {
-	//
 }
 
 size_t CyclicAutoInputStream::getReadPos() const

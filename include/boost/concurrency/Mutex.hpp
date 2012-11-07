@@ -14,15 +14,17 @@
 
 namespace concurrency {
 
-class Mutex
+class Mutex : NonCopyable
 {
 public:
+	Mutex();
+
 	void lock();
 	bool tryLock();
 	void unlock();
 
 public:
-	boost::mutex &boostMutex();
+	boost::mutex& boostMutex();
 
 private:
 	boost::mutex _mutex;
@@ -43,7 +45,7 @@ public:
 	}
 
 private:
-	Mutex &_mutex;
+	Mutex& _mutex;
 };
 
 }

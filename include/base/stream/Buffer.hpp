@@ -24,6 +24,11 @@ public:
 	 * @param size	Size in bytes of the buffer.
 	 */
 	Buffer(size_t size);
+
+	Buffer(const Buffer& buffer);
+
+	Buffer(Buffer&& buffer);
+
 	/**
 	 * Destructor.
 	 */
@@ -39,7 +44,7 @@ public:
 	 *
 	 * @throws StreamException	If there's not enough room to write.
 	 */
-	size_t write(const void *src, size_t size, size_t offset);
+	size_t write(const void* src, size_t size, size_t offset);
 
 	/**
 	 * Reads data from buffer at the specified offset.
@@ -51,16 +56,16 @@ public:
 	 *
 	 * @throws StreamException	If offset is too high.
 	 */
-	size_t read(void *target, size_t size, size_t offset) const;
+	size_t read(void* target, size_t size, size_t offset) const;
 
 	/**
 	 * @returns	The beginning of the array storing the data.
 	 */
-	const void *begin() const;
+	const void* begin() const;
 	/**
 	 * @returns The end of the array storing the data.
 	 */
-	const void *end() const;
+	const void* end() const;
 
 	/**
 	 * @returns	The size of the buffer.
@@ -68,8 +73,8 @@ public:
 	size_t getSize() const;
 
 private:
-	void *_begin;
-	void *_end;
+	void* _begin;
+	void* _end;
 };
 
 }

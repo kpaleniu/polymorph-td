@@ -27,20 +27,14 @@ typedef Scoped PointerEventSubscription;
 class InputSource
 {
 public:
-	virtual bool handleInput() = 0;
+	InputSource();
 	virtual ~InputSource();
 
-	void registerSurfaceListener(SurfaceListener& listener);
-	void unregisterSurfaceListener(SurfaceListener& listener);
-	SurfaceEventSubscription surfaceSubscription(SurfaceListener& listener);
+	virtual bool handleInput() = 0;
 
-	void registerKeyListener(KeyListener& listener);
-	void unregisterKeyListener(KeyListener& listener);
-	KeyEventSubscription keySubscription(KeyListener& listener);
-
-	void registerPointerListener(PointerListener& listener);
-	void unregisterPointerListener(PointerListener& listener);
-	PointerEventSubscription pointerSubscription(PointerListener& listener);
+	void setSurfaceListener(SurfaceListener* listener);
+	void setKeyListener(KeyListener* listener);
+	void setPointerListener(PointerListener* listener);
 
 protected:
 	void notifyResize(int w, int h);
@@ -58,9 +52,9 @@ protected:
 	void notifyPointerZoom(int dz);
 
 protected:
-	std::set<SurfaceListener*> _surfaceListeners;
-	std::set<KeyListener*> _keyListeners;
-	std::set<PointerListener*> _pointerListeners;
+	SurfaceListener* 	_surfaceListener;
+	KeyListener* 		_keyListener;
+	PointerListener* 	_pointerListener;
 
 };
 

@@ -6,36 +6,39 @@
 #ifndef WORLDSYSTEM_HPP_
 #define WORLDSYSTEM_HPP_
 
-#include "NonCopyable.hpp"
-#include "action/Action.hpp"
 #include "gr/Renderer.hpp"
 #include "gr/Surface.hpp"
 #include "stream/ArrayInputStream.hpp"
 #include "sys/System.hpp"
 
+#include "NonCopyable.hpp"
+
 namespace sys {
 
-class GraphiscSystemRunner : NonCopyable
+class GraphicsSystemRunner : NonCopyable
 {
 public:
-	GraphiscSystemRunner(Window& win);
-	GraphiscSystemRunner(GraphiscSystemRunner&& system);
+	GraphicsSystemRunner(Window& win);
+	GraphicsSystemRunner(GraphicsSystemRunner&& system);
+	~GraphicsSystemRunner();
 
 	bool update();
+
+	gr::Renderer& renderer();
 
 private:
 	gr::Surface& _surface;
 	gr::Renderer _renderer;
 };
 
-class GraphicsSystem : public System<GraphiscSystemRunner>
+class GraphicsSystem : public System<GraphicsSystemRunner>
 {
 public:
-	GraphicsSystem(Window& window, const TimeDuration &sync);
+	GraphicsSystem(Window& window);
+	GraphicsSystem(GraphicsSystem&& grSys);
 
 	// TODO: JUST FOR TESTING
-	SystemActionQueue<
-	        action::Action<GraphiscSystemRunner> > &actionQueue()
+	SystemActionQueue<GraphicsSystemRunner>& actionQueue()
 	{
 		return _actions;
 	}

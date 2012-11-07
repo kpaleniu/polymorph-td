@@ -11,146 +11,66 @@
 
 namespace input {
 
+InputSource::InputSource()
+:	_surfaceListener(nullptr),
+ 	_keyListener(nullptr),
+ 	_pointerListener(nullptr)
+{
+}
+
 InputSource::~InputSource()
 {
 }
 
-void InputSource::registerSurfaceListener(SurfaceListener& listener)
+void InputSource::setSurfaceListener(SurfaceListener* listener)
 {
-#ifdef _DEBUG
-	ASSERT(_surfaceListeners.find(&listener) == _surfaceListeners.end(),
-	       "Listener already registered");
-#endif
-
-	_surfaceListeners.insert(&listener);
+	_surfaceListener = listener;
 }
 
-void InputSource::unregisterSurfaceListener(SurfaceListener& listener)
+void InputSource::setKeyListener(KeyListener* listener)
 {
-#ifdef _DEBUG
-	ASSERT(_surfaceListeners.erase(&listener) == 1,
-	       "Listener not registered");
-#else
-	_surfaceListeners.erase(&listener);
-#endif
+	_keyListener = listener;
 }
 
-SurfaceEventSubscription InputSource::surfaceSubscription(SurfaceListener& listener)
+void InputSource::setPointerListener(PointerListener* listener)
 {
-	return SurfaceEventSubscription([&] { registerSurfaceListener(listener); },
-	                                [&] { unregisterSurfaceListener(listener); });
-}
-
-void InputSource::registerKeyListener(KeyListener& listener)
-{
-#ifdef _DEBUG
-	ASSERT(_keyListeners.find(&listener) == _keyListeners.end(),
-	       "Listener already registered");
-#endif
-
-	_keyListeners.insert(&listener);
-}
-
-void InputSource::unregisterKeyListener(KeyListener& listener)
-{
-#ifdef _DEBUG
-	ASSERT(_keyListeners.erase(&listener) == 1,
-	       "Listener not registered");
-#else
-	_keyListeners.erase(&listener);
-#endif
-}
-
-KeyEventSubscription InputSource::keySubscription(KeyListener& listener)
-{
-	return KeyEventSubscription([&]	{ registerKeyListener(listener); },
-	                            [&] { unregisterKeyListener(listener); });
-}
-
-void InputSource::registerPointerListener(PointerListener& listener)
-{
-#ifdef _DEBUG
-	ASSERT(_pointerListeners.find(&listener) == _pointerListeners.end(),
-	       "Listener already registered");
-#endif
-
-	_pointerListeners.insert(&listener);
-}
-
-void InputSource::unregisterPointerListener(PointerListener& listener)
-{
-#ifdef _DEBUG
-	ASSERT(_pointerListeners.erase(&listener) == 1,
-	       "Listener not registered");
-#else
-	_pointerListeners.erase(&listener);
-#endif
-}
-
-PointerEventSubscription InputSource::pointerSubscription(PointerListener& listener)
-{
-	return PointerEventSubscription([&]	{ registerPointerListener(listener); },
-	                                [&] { unregisterPointerListener(listener); });
+	_pointerListener = listener;
 }
 
 void InputSource::notifyResize(int w, int h)
 {
-	std::for_each(_surfaceListeners.begin(),
-	              _surfaceListeners.end(),
-	              [&](SurfaceListener* listener)
-	              {
-		              listener->onResize(w, h);
-	              });
+	if (_surfaceListener != nullptr)
+		_surfaceListener->onResize(w, h);
 }
 
 void InputSource::notifyShow()
 {
-	std::for_each(_surfaceListeners.begin(),
-	              _surfaceListeners.end(),
-	              [](SurfaceListener* listener)
-	              {
-		              listener->onShow();
-	              });
+	if (_surfaceListener != nullptr)
+		_surfaceListener->onShow();
 }
 
 void InputSource::notifyHide()
 {
-	std::for_each(_surfaceListeners.begin(),
-	              _surfaceListeners.end(),
-	              [](SurfaceListener* listener)
-	              {
-		              listener->onHide();
-	              });
+	if (_surfaceListener != nullptr)
+		_surfaceListener->onHide();
 }
 
 void InputSource::notifyQuit()
 {
-	std::for_each(_surfaceListeners.begin(),
-	              _surfaceListeners.end(),
-	              [](SurfaceListener* listener)
-	              {
-		              listener->onQuit();
-	              });
+	if (_surfaceListener != nullptr)
+		_surfaceListener->onQuit();
 }
 
 void InputSource::notifyKeyDown(key_type key)
 {
-	std::for_each(_keyListeners.begin(),
-	              _keyListeners.end(),
-	              [&](KeyListener* listener)
-	              {
-		              listener->onKeyDown(key);
-	              });
+	if (_keyListener != nullptr)
+		_keyListener->onKeyDown(key);
 }
 
 void InputSource::notifyKeyUp(key_type key)
 {
-	std::for_each(_keyListeners.begin(),
-	              _keyListeners.end(),
-	              [&](KeyListener* listener)
-	              {
-		              listener->onKeyUp(key);
-	              });
+	if (_keyListener != nullptr)
+		_keyListener->onKeyUp(key);
 }
 
 void InputSource::notifyPointerDown(pointer_id id,
@@ -158,58 +78,38 @@ void InputSource::notifyPointerDown(pointer_id id,
                                     int x,
                                     int y)
 {
-	std::for_each(_pointerListeners.begin(),
-	              _pointerListeners.end(),
-	              [&](PointerListener* listener)
-	              {
-		              listener->onPointerDown(id, button, x, y);
-	              });
+	if (_pointerListener != nullptr)
+		_pointerListener->onPointerDown(id, button, x, y);
 }
 
 void InputSource::notifyPointerMove(pointer_id id,
                                     int dx,
                                     int dy)
 {
-	std::for_each(_pointerListeners.begin(),
-	              _pointerListeners.end(),
-	              [&](PointerListener* listener)
-	              {
-		              listener->onPointerMove(id, dx, dy);
-	              });
+	if (_pointerListener != nullptr)
+		_pointerListener->onPointerMove(id, dx, dy);
 }
 
 void InputSource::notifyPointerDrag(pointer_id id,
                                     int dx,
                                     int dy)
 {
-	std::for_each(_pointerListeners.begin(),
-	              _pointerListeners.end(),
-	              [&](PointerListener* listener)
-	              {
-		              listener->onPointerDrag(id, dx, dy);
-	              });
+	if (_pointerListener != nullptr)
+		_pointerListener->onPointerDrag(id, dx, dy);
 }
 
 void InputSource::notifyPointerUp(pointer_id id,
                                   int x,
                                   int y)
 {
-	std::for_each(_pointerListeners.begin(),
-	              _pointerListeners.end(),
-	              [&](PointerListener* listener)
-	              {
-		              listener->onPointerUp(id, x, y);
-	              });
+	if (_pointerListener != nullptr)
+		_pointerListener->onPointerUp(id, x, y);
 }
 
 void InputSource::notifyPointerZoom(int dz)
 {
-	std::for_each(_pointerListeners.begin(),
-	              _pointerListeners.end(),
-	              [&](PointerListener* listener)
-	              {
-		              listener->onPointerZoom(dz);
-	              });
+	if (_pointerListener != nullptr)
+		_pointerListener->onPointerZoom(dz);
 }
 
 }

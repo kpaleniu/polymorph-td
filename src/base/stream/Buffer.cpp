@@ -14,15 +14,32 @@ namespace stream {
 namespace { const char* TAG = "Buffer"; }
 
 Buffer::Buffer(size_t size)
-		: _begin(malloc(size)),
-		  _end((char *) (_begin) + size)
+:	_begin(malloc(size)),
+	_end((char *) (_begin) + size)
 {
-	//
+}
+
+Buffer::Buffer(const Buffer& buffer)
+:	_begin(malloc(buffer.getSize())),
+ 	_end((char*) (_begin) + buffer.getSize())
+{
+	memcpy(_begin, buffer._begin, buffer.getSize());
+
+	DEBUG_OUT(TAG, "Warning, copying buffer");
+}
+
+Buffer::Buffer(Buffer&& buffer)
+:	_begin(buffer._begin),
+ 	_end(buffer._end)
+{
+	buffer._begin = nullptr;
+	buffer._end = nullptr;
 }
 
 Buffer::~Buffer()
 {
-	free(_begin);
+	if (_begin != nullptr)
+		free(_begin);
 }
 
 size_t Buffer::write(const void *src,

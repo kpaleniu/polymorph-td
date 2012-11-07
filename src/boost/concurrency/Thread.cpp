@@ -13,10 +13,15 @@ namespace concurrency {
 namespace { const char* TAG = "Thread"; }
 
 Thread::Thread()
-		: _threadState(ThreadState::NOT_STARTED),
-		  _boostThread()
+:	_threadState(ThreadState::NOT_STARTED),
+	_boostThread()
 {
+}
 
+Thread::Thread(Thread&& thread)
+:	_threadState(thread._threadState),
+	_boostThread(std::move(thread._boostThread))
+{
 }
 
 Thread::~Thread()
@@ -60,6 +65,11 @@ void Thread::interruptionPoint()
 	boost::this_thread::interruption_point();
 }
 
+void Thread::interruptCurrent()
+{
+	throw boost::thread_interrupted();
+}
+
 const Thread::ID Thread::getCurrentID()
 {
 	return boost::this_thread::get_id();
@@ -67,6 +77,8 @@ const Thread::ID Thread::getCurrentID()
 
 void Thread::threadRunner(Thread *thiz)
 {
+	VERBOSE_OUT(TAG, "Thread starting");
+
 	try
 	{
 		thiz->threadMain();
@@ -83,6 +95,8 @@ void Thread::threadRunner(Thread *thiz)
 	{
 		ERROR_OUT(TAG, "Unknown exception caught while running thread");
 	}
+
+	VERBOSE_OUT(TAG, "Thread exited");
 }
 
 }

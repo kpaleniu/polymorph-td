@@ -6,9 +6,15 @@
 #ifndef BUILDCONFIG_HPP_
 #define BUILDCONFIG_HPP_
 
-// Window constants:
-#define WIN_TITLE "PolyMorph TD"
+#include "sys/Time.hpp"
 
+namespace settings {
 
+extern const char* windowTitle;
+
+extern const sys::TimeDuration uiSystemSync;
+extern const sys::TimeDuration grSystemSync;
+
+}
 
 #endif /* BUILDCONFIG_HPP_ */
