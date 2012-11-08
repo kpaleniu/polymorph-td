@@ -19,7 +19,7 @@ Thread::Thread()
 }
 
 Thread::Thread(Thread&& thread)
-:	_threadState(thread._threadState),
+:	_threadState(thread._threadState.load()),
 	_boostThread(std::move(thread._boostThread))
 {
 }
@@ -81,6 +81,7 @@ void Thread::threadRunner(Thread *thiz)
 
 	try
 	{
+		thiz->_threadState = ThreadState::RUNNING;
 		thiz->threadMain();
 	}
 	catch (boost::thread_interrupted &/*e*/)
@@ -96,6 +97,7 @@ void Thread::threadRunner(Thread *thiz)
 		ERROR_OUT(TAG, "Unknown exception caught while running thread");
 	}
 
+	thiz->_threadState = ThreadState::EXITED;
 	VERBOSE_OUT(TAG, "Thread exited");
 }
 

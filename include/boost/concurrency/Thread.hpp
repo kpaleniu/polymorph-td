@@ -12,6 +12,8 @@
 
 #include <boost/thread.hpp>
 
+#include <atomic>
+
 namespace concurrency {
 
 class Thread : NonCopyable
@@ -70,7 +72,7 @@ protected:
 	virtual void threadMain() = 0;
 
 private:
-	ThreadState _threadState;
+	std::atomic<ThreadState> _threadState;
 
 	boost::thread _boostThread;
 
