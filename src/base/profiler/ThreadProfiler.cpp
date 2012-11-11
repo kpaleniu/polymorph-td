@@ -40,7 +40,7 @@ void ThreadProfiler::exitBlock(text::string_hash blockName)
 		block.longest = blockDuration;
 	}
 
-	if (blockDuration > TimeDuration::millis(0) &&
+	if (blockDuration >= TimeDuration::millis(0) &&
 				(blockDuration < block.shortest ||
 				 block.shortest.isNegative()) )
 	{

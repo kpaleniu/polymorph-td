@@ -54,6 +54,16 @@ bool sys::TimeDuration::operator>(const TimeDuration& other) const
 	return timeDuration > other.timeDuration;
 }
 
+bool sys::TimeDuration::operator<=(const TimeDuration& other) const
+{
+	return timeDuration <= other.timeDuration;
+}
+
+bool sys::TimeDuration::operator>=(const TimeDuration& other) const
+{
+	return timeDuration >= other.timeDuration;
+}
+
 bool TimeDuration::isPositive() const
 {
 	return !timeDuration.is_negative();

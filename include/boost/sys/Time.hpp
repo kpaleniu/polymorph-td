@@ -52,6 +52,8 @@ public:
 	bool operator!=(const TimeDuration& other) const;
 	bool operator<(const TimeDuration& other) const;
 	bool operator>(const TimeDuration& other) const;
+	bool operator<=(const TimeDuration& other) const;
+	bool operator>=(const TimeDuration& other) const;
 
 	/**
 	 * Checks if time duration is positive.

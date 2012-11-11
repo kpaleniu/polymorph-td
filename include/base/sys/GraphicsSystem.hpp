@@ -27,6 +27,9 @@ public:
 
 	gr::Renderer& renderer();
 
+	static const char* getSystemName()
+	{ return "GraphicsSystem"; }
+
 private:
 	gr::Surface& _surface;
 

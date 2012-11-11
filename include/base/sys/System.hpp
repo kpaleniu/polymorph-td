@@ -130,7 +130,11 @@ void System<Runner>::waitForStartup()
 template<typename Runner>
 void System<Runner>::threadMain()
 {
-	static text::string_hash updateName = text::intern("Main loop"); // TODO Get real name for system.
+	// Strings for profiler.
+	static text::string_hash updateName = text::intern(std::string(Runner::getSystemName()) + ": update");
+	static text::string_hash actionName = text::intern(std::string(Runner::getSystemName()) + ": action");
+	//
+
 	static const char* TAG = "System";
 
 	Runner runner(_factory());
@@ -150,11 +154,14 @@ void System<Runner>::threadMain()
 	{
 		TimeStamp t0 = TimeStamp::now();
 
+		while (!_actions.isEmpty())
+		{
+			auto profileBlock = profiler::ThreadProfiler::profileBlock(actionName);
+			_actions.doAction(runner);
+		}
+
 		{
 			auto profileBlock = profiler::ThreadProfiler::profileBlock(updateName);
-
-			while (!_actions.isEmpty())
-				_actions.doAction(runner);
 
 			if (!runner.update())
 				return;

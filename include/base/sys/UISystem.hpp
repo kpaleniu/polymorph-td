@@ -29,6 +29,9 @@ public:
 	Window& window();
 	GraphicsSystem& graphics();
 
+	static const char* getSystemName()
+	{ return "UISystem"; }
+
 private:
 	Window _window;
 	GraphicsSystem _grSys;
