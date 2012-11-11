@@ -29,7 +29,7 @@ string_hash intern(std::string str)
 	const int prime = 31;
 	int f = 1; // = prime^i
 
-	for (int i = n - 1; i <= 0; --i)
+	for (int i = n - 1; i >= 0; --i)
 	{
 		rHash += str[i] * f;
 		f *= prime;
