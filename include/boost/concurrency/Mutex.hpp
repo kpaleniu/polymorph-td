@@ -33,19 +33,29 @@ private:
 class MutexLockGuard : NonCopyable
 {
 public:
-	MutexLockGuard(Mutex &mutex)
-	: _mutex(mutex)
+	MutexLockGuard(Mutex& mutex)
+	:	_mutex(mutex),
+	 	_active(true)
 	{
 		_mutex.lock();
 	}
 
+	MutexLockGuard(MutexLockGuard&& other)
+	:	_mutex(other._mutex),
+	 	_active(true)
+	{
+		other._active = false;
+	}
+
 	~MutexLockGuard()
 	{
-		_mutex.unlock();
+		if (_active)
+			_mutex.unlock();
 	}
 
 private:
 	Mutex& _mutex;
+	bool _active;
 };
 
 }
