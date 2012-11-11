@@ -66,23 +66,21 @@ ThreadProfiler& ThreadProfiler::profilerFor(Thread::ID tid)
 
 void ThreadProfiler::dumpAll(ostream& out)
 {
-	out << "---Thread profiler---" << endl;
-	for_each(_threadProfilers.begin(),
-	         _threadProfilers.end(),
-			[&](pair<Thread::ID, ThreadProfiler*> profiler)
-			{
-				out << "---Profiler " << profiler.first << endl;
-				for_each(profiler.second->_blocks.begin(),
-				         profiler.second->_blocks.end(),
-				        [&](pair<text::string_hash, BlockInfo> block)
-				        {
-							out << "\tBlock \"" << text::get(block.first) << "\"" << endl;
-							out << "\t\tCount    " << block.second.count << endl;
-							out << "\t\tShortest " << block.second.shortest << endl;
-							out << "\t\tLongest  " << block.second.longest << endl << endl;
-				        });
-				out << endl;
-			});
+	out << "<profiler>" << endl;
+	for (auto& profilers : _threadProfilers)
+	{
+		out << "\t<thread-profiler id=\"" << profilers.first << "\">" << endl;
+		for (auto& block : profilers.second->_blocks)
+		{
+			out << "\t\t<block name=\"" << text::get(block.first) << "\">" << endl;
+			out << "\t\t\t<count>" << block.second.count << "</count>" << endl;
+			out << "\t\t\t<shortest>" << block.second.shortest << "</shortest>" << endl;
+			out << "\t\t\t<longest>" << block.second.longest << "</longest>" << endl;
+			out << "\t\t</block>" << endl;
+		}
+		out << "\t</thread-profiler>" << endl;
+	}
+	out << "</profiler>" << endl;
 }
 
 void ThreadProfiler::shutdown()
