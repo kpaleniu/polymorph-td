@@ -52,7 +52,7 @@ Renderer::Renderer(Renderer&& renderer)
 
 Renderer::~Renderer()
 {
-
+	VERBOSE_OUT(TAG, "dtor");
 }
 
 void Renderer::setClearColor(float r, float g, float b, float a)
@@ -72,13 +72,25 @@ void Renderer::flipBuffers()
 
 void Renderer::render()
 {
-	// TODO Implement
+	clearBuffers();
+
+	_renderList.erase(
+			std::remove_if(_renderList.begin(),
+			               _renderList.end(),
+			               [this](const RenderAction& action) -> bool
+						   { return !action(*this); }),
+			_renderList.end());
 
 #ifdef _DEBUG
 	GLenum errCode = glGetError();
 	if (errCode != GL_NO_ERROR)
 		throw GraphicsException(std::string((char*) gluErrorString(errCode)));
 #endif
+}
+
+void Renderer::addRenderAction(RenderAction&& action)
+{
+	_renderList.push_back(action);
 }
 
 DebugDraw& Renderer::debugDraw()

@@ -8,6 +8,7 @@
 
 #include "gr/Renderer.hpp"
 #include "gr/Surface.hpp"
+
 #include "stream/ArrayInputStream.hpp"
 #include "sys/System.hpp"
 
@@ -28,6 +29,7 @@ public:
 
 private:
 	gr::Surface& _surface;
+
 	gr::Renderer _renderer;
 };
 
