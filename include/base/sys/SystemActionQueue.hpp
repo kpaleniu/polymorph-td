@@ -93,7 +93,7 @@ void SystemActionQueue<Runner>::pushAction(RunnerAction action)
 template<typename Runner>
 void SystemActionQueue<Runner>::doAction(Runner& runner)
 {
-	RunnerAction* actionPtr;
+	RunnerAction action;
 
 	{
 		concurrency::MutexLockGuard lock(_rwMutex);
@@ -103,13 +103,13 @@ void SystemActionQueue<Runner>::doAction(Runner& runner)
 			throw stream::StreamException("SystemActionQueue is empty");
 		}
 
-		actionPtr = &_runnerInput[_readIndex++];
+		action = _runnerInput[_readIndex++];
 
 		_readIndex %= _runnerInput.size();
 		--_unreadActions;
 	}
 
-	(*actionPtr)(runner);
+	action(runner);
 }
 
 template<typename Runner>
