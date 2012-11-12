@@ -12,3 +12,5 @@ bin
 /build/gmake
 /build/codeblocks
 /doc\architecture/*.png
+/doc\architecture/*.png
+/doc\architecture/*.png
