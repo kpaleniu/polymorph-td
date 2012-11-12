@@ -85,6 +85,15 @@ Window& UISystem::waitForWindow()
 	return runner->window();
 }
 
+GraphicsSystem& UISystem::waitForGraphicsSystem()
+{
+	waitForStartup();
+
+	UISystemRunner* runner = _runnerAccess.load();
+	ASSERT(runner != nullptr, "Runner isn't alive");
+
+	return runner->graphics();
+}
 
 }
 

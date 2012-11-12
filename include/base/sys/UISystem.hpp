@@ -55,14 +55,7 @@ public:
 		return _actions;
 	}
 
-	// TODO: JUST FOR TESTING ATM
-	GraphicsSystem& graphicsAccess()
-	{
-		UISystemRunner* runner = _runnerAccess.load();
-
-		ASSERT(runner != nullptr, "Runner isn't alive");
-		return runner->graphics();
-	}
+	GraphicsSystem& waitForGraphicsSystem();
 };
 
 }

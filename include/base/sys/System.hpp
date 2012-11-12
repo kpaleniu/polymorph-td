@@ -32,6 +32,9 @@ namespace sys {
  * 					method update(void) that returns true if system should
  * 					continue running.
  *
+ * 					FIX Current implementation crashes if runner is accessed
+ * 					after it's been destroyed.
+ *
  */
 template<typename Runner>
 class System : public concurrency::Thread
