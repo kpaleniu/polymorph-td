@@ -6,8 +6,8 @@
 #ifndef MUTEX_HPP_
 #define MUTEX_HPP_
 
-#include "NonCopyable.hpp"
-#include "sys/Time.hpp"
+#include <NonCopyable.hpp>
+#include <Time.hpp>
 
 #include <boost/thread.hpp>
 

@@ -7,10 +7,11 @@
 #ifndef THREAD_PROFILER_HPP_
 #define THREAD_PROFILER_HPP_
 
-#include "concurrency/Thread.hpp"
-#include "sys/Time.hpp"
-#include "text/util.hpp"
-#include "Scoped.hpp"
+#include <concurrency/Thread.hpp>
+#include <text/util.hpp>
+
+#include <Scoped.hpp>
+#include <Time.hpp>
 
 #include <map>
 #include <stack>
@@ -40,19 +41,19 @@ private:
 	struct BlockInfo
 	{
 		BlockInfo()
-		: longest( sys::TimeDuration::millis(0) ),
-		  shortest( sys::TimeDuration::millis(-1) ),
+		: longest( TimeDuration::millis(0) ),
+		  shortest( TimeDuration::millis(-1) ),
 		  count(0),
-		  atEnter( sys::TimeStamp::now() )
+		  atEnter( TimeStamp::now() )
 		{}
 
-		sys::TimeDuration longest;
-		sys::TimeDuration shortest;
+		TimeDuration longest;
+		TimeDuration shortest;
 
 		unsigned long count;
 
 		// Buffer
-		sys::TimeStamp atEnter;
+		TimeStamp atEnter;
 	};
 
 	std::map<text::string_hash, BlockInfo> _blocks;

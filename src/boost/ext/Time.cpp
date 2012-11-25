@@ -3,9 +3,7 @@
  *
  */
 
-#include "sys/Time.hpp"
-
-namespace sys {
+#include "Time.hpp"
 
 // TimeStamp implementation
 
@@ -34,32 +32,32 @@ TimeDuration TimeDuration::operator-(const TimeDuration &other) const
 	                    - other.timeDuration);
 }
 
-bool sys::TimeDuration::operator==(const TimeDuration& other) const
+bool TimeDuration::operator==(const TimeDuration& other) const
 {
 	return timeDuration == other.timeDuration;
 }
 
-bool sys::TimeDuration::operator!=(const TimeDuration& other) const
+bool TimeDuration::operator!=(const TimeDuration& other) const
 {
 	return timeDuration != other.timeDuration;
 }
 
-bool sys::TimeDuration::operator<(const TimeDuration& other) const
+bool TimeDuration::operator<(const TimeDuration& other) const
 {
 	return timeDuration < other.timeDuration;
 }
 
-bool sys::TimeDuration::operator>(const TimeDuration& other) const
+bool TimeDuration::operator>(const TimeDuration& other) const
 {
 	return timeDuration > other.timeDuration;
 }
 
-bool sys::TimeDuration::operator<=(const TimeDuration& other) const
+bool TimeDuration::operator<=(const TimeDuration& other) const
 {
 	return timeDuration <= other.timeDuration;
 }
 
-bool sys::TimeDuration::operator>=(const TimeDuration& other) const
+bool TimeDuration::operator>=(const TimeDuration& other) const
 {
 	return timeDuration >= other.timeDuration;
 }
@@ -89,8 +87,6 @@ TimeDuration TimeDuration::between(const TimeStamp &t1,
 TimeDuration TimeDuration::millis(tick_type ms)
 {
 	return TimeDuration(boost::posix_time::millisec(ms));
-}
-
 }
 
 

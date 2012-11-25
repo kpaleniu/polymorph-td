@@ -5,7 +5,7 @@
 
 #include "profiler/ThreadProfiler.hpp"
 
-#include "Assert.hpp"
+#include <Assert.hpp>
 
 #include <algorithm>
 
@@ -23,13 +23,11 @@ ThreadProfiler::ThreadProfiler()
 
 void ThreadProfiler::enterBlock(text::string_hash blockName)
 {
-	_blocks[blockName].atEnter = sys::TimeStamp::now();
+	_blocks[blockName].atEnter = TimeStamp::now();
 }
 
 void ThreadProfiler::exitBlock(text::string_hash blockName)
 {
-	using namespace sys;
-
 	BlockInfo& block = _blocks[blockName];
 	TimeDuration blockDuration = TimeDuration::between(block.atEnter, TimeStamp::now());
 

@@ -55,7 +55,7 @@ const Thread::ID Thread::getID() const
 	return _boostThread.get_id();
 }
 
-void Thread::sleep(sys::TimeDuration timeDuration)
+void Thread::sleep(TimeDuration timeDuration)
 {
 	boost::this_thread::sleep(timeDuration.timeDuration);
 }

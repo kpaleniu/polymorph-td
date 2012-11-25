@@ -9,8 +9,6 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-namespace sys {
-
 /**
  * Class representing a point in time.
  */
@@ -98,6 +96,5 @@ inline std::ostream& operator<<(std::ostream& out, const TimeDuration& duration)
 	return out;
 }
 
-}
 
 #endif /* TIME_HPP_ */

@@ -7,8 +7,8 @@
 #ifndef THREAD_HPP_
 #define THREAD_HPP_
 
-#include "sys/time.hpp"
-#include "NonCopyable.hpp"
+#include <Time.hpp>
+#include <NonCopyable.hpp>
 
 #include <boost/thread.hpp>
 
@@ -58,7 +58,7 @@ public:
 	 * Suspends thread the specified amount of time.
 	 * @param timeDuration time to suspend thread execution.
 	 */
-	static void sleep(sys::TimeDuration timeDuration);
+	static void sleep(TimeDuration timeDuration);
 
 	static void interruptionPoint();
 

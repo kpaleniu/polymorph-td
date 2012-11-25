@@ -7,17 +7,17 @@
 #ifndef SYSTEM_HPP
 #define SYSTEM_HPP
 
-#include "sys/Time.hpp"
 #include "sys/SystemActionQueue.hpp"
 
-#include "concurrency/Thread.hpp"
-#include "concurrency/Mutex.hpp"
-#include "concurrency/Condition.hpp"
+#include <concurrency/Thread.hpp>
+#include <concurrency/Mutex.hpp>
+#include <concurrency/Condition.hpp>
 
-#include "profiler/ThreadProfiler.hpp"
+#include <profiler/ThreadProfiler.hpp>
 
-#include "Scoped.hpp"
-#include "Debug.hpp"
+#include <Time.hpp>
+#include <Scoped.hpp>
+#include <Debug.hpp>
 
 #include <functional>
 #include <atomic>
