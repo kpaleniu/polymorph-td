@@ -6,13 +6,12 @@
 #ifndef WORLDSYSTEM_HPP_
 #define WORLDSYSTEM_HPP_
 
-#include "gr/Renderer.hpp"
-#include "gr/Surface.hpp"
-
-#include "stream/ArrayInputStream.hpp"
 #include "sys/System.hpp"
 
-#include "NonCopyable.hpp"
+#include <gr/Renderer.hpp>
+#include <gr/Surface.hpp>
+
+#include <NonCopyable.hpp>
 
 namespace sys {
 

@@ -6,14 +6,13 @@
 #ifndef UISYSTEM_HPP_
 #define UISYSTEM_HPP_
 
-#include "NonCopyable.hpp"
-#include "stream/ArrayInputStream.hpp"
 
 #include "sys/System.hpp"
 #include "sys/Window.hpp"
 #include "sys/GraphicsSystem.hpp"
 
-#include "Assert.hpp"
+#include <NonCopyable.hpp>
+#include <Assert.hpp>
 
 namespace sys {
 

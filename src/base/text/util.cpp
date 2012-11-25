@@ -5,8 +5,8 @@
 
 #include "text/util.hpp"
 
-#include "Debug.hpp"
-#include "Assert.hpp"
+#include <Debug.hpp>
+#include <Assert.hpp>
 
 #include <map>
 

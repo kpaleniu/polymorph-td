@@ -10,16 +10,11 @@
 #include "input/KeyListener.hpp"
 #include "input/PointerListener.hpp"
 
-#include "Scoped.hpp"
+#include <Scoped.hpp>
 
 #include <set>
 
 namespace input {
-
-typedef Scoped SurfaceEventSubscription;
-typedef Scoped KeyEventSubscription;
-typedef Scoped PointerEventSubscription;
-
 
 /**
  *

@@ -6,7 +6,7 @@
 #ifndef GRAPHICSEXCEPTION_HPP_
 #define GRAPHICSEXCEPTION_HPP_
 
-#include "Exception.hpp"
+#include <Exception.hpp>
 
 class GraphicsException : public Exception
 {
