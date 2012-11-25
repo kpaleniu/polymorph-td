@@ -75,7 +75,7 @@ HWND createWindow(const Window::ConstructionData& desc, Window* window)
 		NULL,
 		NULL,
 		module,
-		window);	// this value is attached as user data by sys::handler
+		&window->inputSource());	// this value is attached as user data by sys::handler
 
 	if (!hwnd)
 		throw WindowException("Cannot create window.");
@@ -95,7 +95,7 @@ void window_deleter::operator()(HWND window)
 
 Window::Window(const ConstructionData &ctorData) :
 		_windowHandle(createWindow(ctorData, this)),
-		_surface(*this),
+		_surface(_windowHandle.get()),
 		_inputSource(_windowHandle.get())
 {
 	// get raw input data from the mouse/pointer device

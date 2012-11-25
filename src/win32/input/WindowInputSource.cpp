@@ -6,11 +6,6 @@
 #include "input/WindowInputSource.hpp"
 #include "sys/WindowException.hpp"
 
-#include "sys/Window.hpp"
-
-namespace sys {
-class Window;
-}
 
 namespace input {
 
@@ -150,8 +145,8 @@ LRESULT CALLBACK handler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_CHAR:
 	{
-		sys::Window* thiz = getUserData<sys::Window*>(hwnd);
-		thiz->inputSource().keyboardInput(msg, wParam, lParam);
+		WindowInputSource* thiz = getUserData<WindowInputSource*>(hwnd);
+		thiz->keyboardInput(msg, wParam, lParam);
 		return 0;
 	}
 	case WM_INPUT:

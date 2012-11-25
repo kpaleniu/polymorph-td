@@ -50,7 +50,7 @@ struct rc_deleter
 class Surface : NonCopyable
 {
 public:
-	Surface(sys::Window& win);
+	Surface(HWND win);
 	Surface(Surface&& surface);
 
 	~Surface();
@@ -68,7 +68,7 @@ public:
 	void flipBuffers();
 
 private:
-	sys::Window& _win;
+	HWND _win;
 	std::unique_ptr<HDC__,   detail::dc_deleter> _deviceHandle;
 	std::unique_ptr<HGLRC__, detail::rc_deleter> _glHandle;
 };

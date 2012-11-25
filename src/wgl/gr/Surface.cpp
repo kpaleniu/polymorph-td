@@ -6,16 +6,12 @@
 
 #include "gr/Surface.hpp"
 #include "gr/SurfaceException.hpp"
-#include "sys/Window.hpp"
-#include "Assert.hpp"
 
-#include "Debug.hpp"
+#include <Assert.hpp>
+#include <Debug.hpp>
 
 #include <windows.h>
 #include <gl/gl.h>
-
-// ---------
-#include "concurrency/Thread.hpp"
 
 namespace gr {
 namespace { const char* TAG = "Surface"; }
@@ -80,14 +76,14 @@ std::string getWin32Message(DWORD error)
 }	// namespace detail
 
 
-Surface::Surface(sys::Window &win)
+Surface::Surface(HWND win)
 	: _win(win),
-	  _deviceHandle(GetDC(win.nativeHandle()), detail::dc_deleter(win.nativeHandle())),
+	  _deviceHandle(GetDC(win), detail::dc_deleter(win)),
 	  _glHandle()
 {
 	if (!_deviceHandle)
 	{
-		ERROR_OUT(TAG, "Device handle cannot be created. HWND=%1%", long(win.nativeHandle()));
+		ERROR_OUT(TAG, "Device handle cannot be created. HWND=%1%", long(win));
 		throw SurfaceException("Unable to get device context");
 	}
 
