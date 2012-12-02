@@ -11,6 +11,15 @@ newoption
 	description = "Uses Boost libraries."
 }
 
+newoption
+{
+	trigger		= "test-build",
+	description	= "Adds tests projects."
+	execute = function()
+		buildTests = true
+	end
+}
+
 projPath = "../.."
 boostDir = os.getenv("BOOST_HOME") or ""
 
@@ -46,6 +55,8 @@ solution "polymorph-td"
 		includedirs { boostDir .. "/include" } 
 		libdirs { boostDir .. "/lib" }
 	
+	configuration "test-build"
+		defines { "TEST_BUILD" }
 	
 	configuration "windows"
 		defines { "WIN32_LEAN_AND_MEAN",
@@ -70,6 +81,10 @@ solution "polymorph-td"
 	for _, proj in ipairs(projects) do
 		print("Making project " .. proj)
 		_G[proj].doProject()
+		
+		if buildTests and _G[proj].doTestProject then
+			_G[proj].doTestProject()
+		end
 	end
 	
 	-- Project for the actual game
