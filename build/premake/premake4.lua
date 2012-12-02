@@ -14,10 +14,7 @@ newoption
 newoption
 {
 	trigger		= "test-build",
-	description	= "Adds tests projects."
-	execute = function()
-		buildTests = true
-	end
+	description	= "Adds tests projects.",
 }
 
 projPath = "../.."
@@ -82,8 +79,12 @@ solution "polymorph-td"
 		print("Making project " .. proj)
 		_G[proj].doProject()
 		
-		if buildTests and _G[proj].doTestProject then
-			_G[proj].doTestProject()
+		if _OPTIONS["test-build"] then
+			if _G[proj].doTestProjects then
+				_G[proj].doTestProjects()
+			else
+				print("No test project for " .. proj)
+			end
 		end
 	end
 	
