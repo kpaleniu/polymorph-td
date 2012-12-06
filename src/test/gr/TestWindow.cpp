@@ -1,6 +1,9 @@
 
 #include "gr/TestWindow.hpp"
 
+#include "gr/SurfaceException.hpp"
+#include "gr/opengl.hpp"
+
 namespace {
 
 HWND g_hwnd;
@@ -98,7 +101,14 @@ void createTestWindow(HINSTANCE hinstance)
 
 gr::Surface createSurface()
 {
-	return gr::Surface(g_hwnd);
+	auto surface = gr::Surface(g_hwnd);
+	surface.activate();
+
+	GLenum err = glewInit();
+	if (err != GLEW_OK)
+		throw SurfaceException((const char*) glewGetErrorString(err));
+
+	return surface;
 }
 
 void destroyTestWindow()
