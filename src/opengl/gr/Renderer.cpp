@@ -73,24 +73,34 @@ void Renderer::flipBuffers()
 void Renderer::render()
 {
 	clearBuffers();
-
-	_renderList.erase(
-			std::remove_if(_renderList.begin(),
-			               _renderList.end(),
+/*
+	_renderObjects.erase(
+			std::remove_if(_renderObjects.begin(),
+			               _renderObjects.end(),
 			               [this](const RenderAction& action) -> bool
 						   { return !action(*this); }),
-			_renderList.end());
-
+			_renderObjects.end());
+*/
 #ifdef _DEBUG
 	GLenum errCode = glGetError();
 	if (errCode != GL_NO_ERROR)
 		throw GraphicsException(std::string((char*) gluErrorString(errCode)));
 #endif
 }
-
-void Renderer::addRenderAction(RenderAction&& action)
+/*
+Renderer::RenderObjectHandle Renderer::addRenderObject(RenderObject&& object)
 {
-	_renderList.push_back(action);
+	render_variant_iterator it =
+		_renderObjects.insert(
+			std::make_pair(object.material(),
+			               RenderVariant(object)));
+
+	return RenderObjectHandle(it);
+}
+*/
+void Renderer::removeRenderObject(Renderer::RenderObjectHandle handle)
+{
+	_renderObjects.erase(handle);
 }
 
 DebugDraw& Renderer::debugDraw()
