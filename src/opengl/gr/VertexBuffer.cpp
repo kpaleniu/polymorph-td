@@ -7,8 +7,8 @@
 #include "gr/BufferManager.hpp"
 #include "gr/GraphicsException.hpp"
 
-#include "Assert.hpp"
-#include "Debug.hpp"
+#include <Assert.hpp>
+#include <Debug.hpp>
 
 namespace gr {
 
@@ -20,53 +20,70 @@ VertexBuffer::VertexBuffer(BufferManager& manager,
                            VertexFormat format,
                            BufferUsage usage,
                            size_t vertexCount,
-                           const real* data)
+                           const real_t* data)
 :	_bufferID(0),
- 	_vertexCount(vertexCount),
- 	_vertexFormat(format),
- 	_manager(manager)
+	_vertexCount(vertexCount),
+	_usage(usage),
+	_vertexFormat(format),
+	_manager(manager)
 {
 #ifdef _DEBUG
-	VERBOSE_OUT(TAG, "Size %i", (int) getVertexFormatData(_vertexFormat).size);
-	VERBOSE_OUT(TAG, "vert dim %i", (int) getVertexFormatData(_vertexFormat).vertDim);
+	VERBOSE_OUT(TAG,
+	            "Size %i", (int) getVertexFormatData(_vertexFormat).size);
+	VERBOSE_OUT(TAG,
+	            "vert dim %i", (int) getVertexFormatData(_vertexFormat).vertDim);
 	VERBOSE_OUT(TAG, "Count %i", vertexCount);
-	for (unsigned int i = 0;
-		 i < _vertexCount * getVertexFormatData(_vertexFormat).size;
-		 ++i)
+	if (data != nullptr)
 	{
-		VERBOSE_OUT(TAG, "%f ", data[i]);
+		for (unsigned int i = 0;
+			 i < _vertexCount * getVertexFormatData(_vertexFormat).size;
+			 ++i)
+		{
+			VERBOSE_OUT(TAG, "%f ", data[i]);
+		}
 	}
 #endif
-
-	glGenBuffers(1, &_bufferID);
-
-	glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
-
-	// Vertices are saved as [v1, ..., vN, c1, ..., cN, t1, ..., tN, n1, ..., nN]
-	//  v - vertex
-	//  c - color
-	//  t - texture coordinate
-	//  n - normal
-
-	glBufferData(GL_ARRAY_BUFFER,
-	             _vertexCount * getVertexFormatData(_vertexFormat).size,
-	             data,
-	             GLenum(usage));
-
-	GLint bufferSize = 0;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-
-	if ( bufferSize != GLint(_vertexCount * getVertexFormatData(_vertexFormat).size) )
+	if (vertexCount > 0)
 	{
-		glDeleteBuffers(1, &_bufferID);
-		_bufferID = 0;
+		gl::genBuffers(1, &_bufferID);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		gl::bindBuffer(GL_ARRAY_BUFFER, _bufferID);
 
-		throw GraphicsException("Error while creating buffer");
+		// Vertices are saved as [v1, ..., vN, c1, ..., cN, t1, ..., tN, n1, ..., nN]
+		//  v - vertex
+		//  c - color
+		//  t - texture coordinate
+		//  n - normal
+
+		gl::bufferData(GL_ARRAY_BUFFER,
+		             _vertexCount
+		             * getVertexFormatData(_vertexFormat).size
+		             * sizeof(real_t),
+		             data,
+		             usage);
+
+		GLint bufferSize = 0;
+		glGetBufferParameteriv(GL_ARRAY_BUFFER,
+		                       GL_BUFFER_SIZE,
+		                       &bufferSize);
+
+		DEBUG_OUT(TAG, "Allocated VertexBuffer %i: %i bytes.", _bufferID, bufferSize);
+
+		if (bufferSize
+		    != GLint(_vertexCount
+		             * getVertexFormatData(_vertexFormat).size
+		             * sizeof(real_t)))
+		{
+			gl::deleteBuffers(1, &_bufferID);
+			_bufferID = 0;
+
+			gl::bindBuffer(GL_ARRAY_BUFFER, 0);
+
+			throw GraphicsException("Error while creating buffer");
+		}
+
+		gl::bindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 VertexBuffer::VertexBuffer(VertexBuffer&& vertexBuffer)
@@ -76,116 +93,167 @@ VertexBuffer::VertexBuffer(VertexBuffer&& vertexBuffer)
  	_manager(vertexBuffer._manager)
 {
 	vertexBuffer._bufferID = 0;
+	vertexBuffer._vertexCount = 0;
 }
 
 VertexBuffer::~VertexBuffer()
 {
 	if (_bufferID != 0)
 	{
-		glDeleteBuffers(1, &_bufferID);
+		gl::deleteBuffers(1, &_bufferID);
+		DEBUG_OUT(TAG, "Deallocated VertexBuffer %i", _bufferID);
 		_bufferID = 0;
 	}
 }
 
 void VertexBuffer::writeVertices(size_t offset,
                                  size_t count,
-                                 const real* verts)
+                                 const real_t* verts)
 {
 	ASSERT(getVertexFormatData(_vertexFormat).vertDim != 0,
 	       "Vertices don't store vertices?");
 
-	write(size_t(startOf(VertexFormatFlag::VERT_FLAG)) + offset,
-	      count * getVertexFormatData(_vertexFormat).vertDim,
+	write(size_t(startOf(VertexFormatFlag::VERT_FLAG))
+	      + offset * getVertexFormatData(_vertexFormat).vertDim * sizeof(real_t),
+	      count * getVertexFormatData(_vertexFormat).vertDim * sizeof(real_t),
 	      verts);
 }
 
 void VertexBuffer::writeColors(size_t offset,
                                size_t count,
-                               const real* colors)
+                               const real_t* colors)
 {
 	ASSERT(getVertexFormatData(_vertexFormat).colorDim != 0,
 	       "Vertices don't store colors");
 
-	write(size_t(startOf(VertexFormatFlag::COLOR_FLAG)) + offset,
-	      count * getVertexFormatData(_vertexFormat).colorDim,
+	write(size_t(startOf(VertexFormatFlag::COLOR_FLAG))
+	      + offset * getVertexFormatData(_vertexFormat).colorDim * sizeof(real_t),
+	      count * getVertexFormatData(_vertexFormat).colorDim * sizeof(real_t),
 	      colors);
 }
 
 void VertexBuffer::writeTextureCoords(size_t offset,
                                       size_t count,
-                                      const real* texCoords)
+                                      const real_t* texCoords)
 {
 	ASSERT(getVertexFormatData(_vertexFormat).textDim != 0,
 	       "Vertices don't store texture coordinates");
 
-	write(size_t(startOf(VertexFormatFlag::TEXT_FLAG)) + offset,
-	      count * getVertexFormatData(_vertexFormat).textDim,
+	write(size_t(startOf(VertexFormatFlag::TEXT_FLAG))
+	      + offset * getVertexFormatData(_vertexFormat).textDim * sizeof(real_t),
+	      count * getVertexFormatData(_vertexFormat).textDim * sizeof(real_t),
 	      texCoords);
 }
 
 void VertexBuffer::writeNormals(size_t offset,
                                 size_t count,
-                                const real* normals)
+                                const real_t* normals)
 {
 	ASSERT(getVertexFormatData(_vertexFormat).normalDim != 0,
 	       "Vertices don't store normal coordinates");
 
-	write(size_t(startOf(VertexFormatFlag::NORMAL_FLAG)) + offset,
-	      count * getVertexFormatData(_vertexFormat).normalDim,
+	write(size_t(startOf(VertexFormatFlag::NORMAL_FLAG))
+	      + offset * getVertexFormatData(_vertexFormat).normalDim * sizeof(real_t),
+	      count * getVertexFormatData(_vertexFormat).normalDim * sizeof(real_t),
 	      normals);
+}
+
+void VertexBuffer::draw(Primitive primitive,
+                        size_t start,
+                        size_t end)
+{
+	gl::bindBuffer(GL_ARRAY_BUFFER, _bufferID);
+
+	const VertexFormatData& formatData = getVertexFormatData(_vertexFormat);
+	_manager.setFormat(formatData.fmtFlags);
+	setArrays(formatData);
+
+	glDrawArrays(GLenum(primitive), start, end);
+
+	gl::bindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void VertexBuffer::draw(Primitive primitive)
 {
+	draw(primitive, 0, _vertexCount);
+}
+
+void VertexBuffer::draw(Primitive primitive,
+                        IndexBuffer& indices)
+{
+	gl::bindBuffer(GL_ARRAY_BUFFER, _bufferID);
+	gl::bindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices._bufferID);
+
 	const VertexFormatData& formatData = getVertexFormatData(_vertexFormat);
 	_manager.setFormat(formatData.fmtFlags);
+	setArrays(formatData);
 
-	glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
+	glDrawElements(GLenum(primitive),
+	               indices._indexCount,
+	               INDEX_TYPE,
+	               0);
 
-	if ( (formatData.fmtFlags & (unsigned char) VertexFormatFlag::VERT_FLAG) != 0)
-	{
-		glVertexPointer(formatData.vertDim,
-		                REAL_TYPE, 0,
-		                startOf(VertexFormatFlag::VERT_FLAG));
-	}
-	if ( (formatData.fmtFlags & (unsigned char) VertexFormatFlag::COLOR_FLAG) != 0)
-	{
-		glColorPointer(formatData.colorDim,
-		               REAL_TYPE, 0,
-		               startOf(VertexFormatFlag::COLOR_FLAG));
-	}
-	if ( (formatData.fmtFlags & (unsigned char) VertexFormatFlag::TEXT_FLAG) != 0)
-	{
-		glTexCoordPointer(formatData.textDim,
-		                  REAL_TYPE, 0,
-		                  startOf(VertexFormatFlag::TEXT_FLAG));
-	}
-	if ( (formatData.fmtFlags & (unsigned char) VertexFormatFlag::NORMAL_FLAG) != 0)
-	{
-		ASSERT(formatData.normalDim == 3, "Bad normal dimension");
-		glNormalPointer(REAL_TYPE, 0,
-		                startOf(VertexFormatFlag::NORMAL_FLAG));
-	}
-
-	glDrawArrays(GLenum(primitive), 0, _vertexCount);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	gl::bindBuffer(GL_ARRAY_BUFFER, 0);
+	gl::bindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
-/*
-void VertexBuffer::draw(Primitive primitive,
-                        const IndexBuffer& indices)
-{
-	ASSERT(_manager.isEnabled(), "Vertex buffers must be enabled for this");
 
-}
-*/
+
 void VertexBuffer::write(size_t offset,
                          size_t size,
-                         const real* verts)
+                         const real_t* verts)
 {
-	glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
-	glBufferSubData(GL_ARRAY_BUFFER, offset, size, verts);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	ASSERT(_bufferID != 0,
+	       "Buffer is invalid.");
+	ASSERT(offset + size <= _vertexCount * getVertexFormatData(_vertexFormat).size * sizeof(real_t),
+	       "Buffer overflow.");
+
+	gl::bindBuffer(GL_ARRAY_BUFFER, _bufferID);
+	gl::bufferSubData(GL_ARRAY_BUFFER,
+	                  offset,
+	                  size,
+	                  verts);
+	gl::bindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void VertexBuffer::setArrays(const VertexFormatData& formatData)
+{
+	if ((formatData.fmtFlags
+	     & (unsigned char) VertexFormatFlag::VERT_FLAG)
+	    != 0)
+	{
+		gl::vertexPointer(formatData.vertDim,
+		                  REAL_TYPE,
+		                  0,
+		                  startOf(VertexFormatFlag::VERT_FLAG));
+	}
+	if ((formatData.fmtFlags
+	     & (unsigned char) VertexFormatFlag::COLOR_FLAG)
+	    != 0)
+	{
+		gl::colorPointer(formatData.colorDim,
+	  	                 REAL_TYPE,
+		                 0,
+		                 startOf(VertexFormatFlag::COLOR_FLAG));
+	}
+	if ((formatData.fmtFlags
+	     & (unsigned char) VertexFormatFlag::TEXT_FLAG)
+	    != 0)
+	{
+		gl::texCoordPointer(formatData.textDim,
+		                    REAL_TYPE,
+		                    0,
+		                    startOf(VertexFormatFlag::TEXT_FLAG));
+	}
+	if ((formatData.fmtFlags
+	     & (unsigned char) VertexFormatFlag::NORMAL_FLAG)
+	    != 0)
+	{
+		ASSERT(formatData.normalDim == 3,
+		       "Bad normal dimension");
+		gl::normalPointer(REAL_TYPE,
+		                  0,
+		                  startOf(VertexFormatFlag::NORMAL_FLAG));
+	}
 }
 
 const void* VertexBuffer::startOf(VertexFormatFlag type) const
@@ -198,21 +266,67 @@ const void* VertexBuffer::startOf(VertexFormatFlag type) const
 			return 0;
 
 		case VertexFormatFlag::COLOR_FLAG:
-			return (void*)(_vertexCount * formatData.vertDim);
+			return (void*) (_vertexCount
+			                * formatData.vertDim
+			                * sizeof(real_t));
 
 		case VertexFormatFlag::TEXT_FLAG:
-			return (void*)(_vertexCount * (	formatData.vertDim +
-											formatData.colorDim ));
+			return (void*) (_vertexCount
+			                * (formatData.vertDim
+			                   + formatData.colorDim)
+			                * sizeof(real_t));
 
 		case VertexFormatFlag::NORMAL_FLAG:
-			return (void*)(_vertexCount * (	formatData.vertDim +
-											formatData.colorDim +
-											formatData.textDim ));
+			return (void*) (_vertexCount
+			                * (formatData.vertDim
+			                   + formatData.colorDim
+			                   + formatData.textDim)
+			                * sizeof(real_t));
 	}
 
-	ASSERT(false, "Parameter isn't of type VertexFormatFlag");
+	ASSERT(false,
+	       "Parameter isn't of type VertexFormatFlag");
 
 	return (void*) 0;
+}
+
+size_t VertexBuffer::getVertexCount() const
+{
+	return _vertexCount;
+}
+
+VertexFormat VertexBuffer::getVertexFormat() const
+{
+	return _vertexFormat;
+}
+
+BufferUsage VertexBuffer::getBufferUsage() const
+{
+	return _usage;
+}
+
+BufferManager& VertexBuffer::bufferManager()
+{
+	return _manager;
+}
+
+VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other)
+{
+	ASSERT(&_manager == &other._manager,
+	       "Trying to copy from different managers (possibly from different contexts).");
+
+	if (_bufferID != 0)
+		gl::deleteBuffers(1, &_bufferID);
+
+	_bufferID = other._bufferID;
+	_vertexCount = other._vertexCount;
+	_vertexFormat = other._vertexFormat;
+	_usage = other._usage;
+
+	other._bufferID = 0;
+	other._vertexCount = 0;
+
+	return *this;
 }
 
 }

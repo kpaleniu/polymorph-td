@@ -20,7 +20,7 @@ BufferManager::~BufferManager()
 VertexBuffer BufferManager::createVertexBuffer(VertexFormat format,
                                                BufferUsage usage,
                                                size_t vertexCount,
-                                               const real* data)
+                                               const real_t* data)
 {
 	return VertexBuffer(*this, format, usage, vertexCount, data);
 }
@@ -39,45 +39,45 @@ void BufferManager::setFormat(format_flags fmt)
 	if ( (disableFmt &
 		  format_flags(VertexFormatFlag::VERT_FLAG)) != 0 )
 	{
-		glDisableClientState(GL_VERTEX_ARRAY);
+		gl::disableClientState(GL_VERTEX_ARRAY);
 	}
 	else if ( (enableFmt &
 			   format_flags(VertexFormatFlag::VERT_FLAG)) != 0 )
 	{
-		glEnableClientState(GL_VERTEX_ARRAY);
+		gl::enableClientState(GL_VERTEX_ARRAY);
 	}
 
 	if ( (disableFmt &
 		  format_flags(VertexFormatFlag::COLOR_FLAG)) != 0 )
 	{
-		glDisableClientState(GL_COLOR_ARRAY);
+		gl::disableClientState(GL_COLOR_ARRAY);
 	}
 	else if ( (enableFmt &
 			   format_flags(VertexFormatFlag::COLOR_FLAG)) != 0 )
 	{
-		glEnableClientState(GL_COLOR_ARRAY);
+		gl::enableClientState(GL_COLOR_ARRAY);
 	}
 
 	if ( (disableFmt &
 		  format_flags(VertexFormatFlag::TEXT_FLAG)) != 0 )
 	{
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		gl::disableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 	else if ( (enableFmt &
 			   format_flags(VertexFormatFlag::TEXT_FLAG)) != 0 )
 	{
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		gl::enableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 
 	if ( (disableFmt &
 		  format_flags(VertexFormatFlag::NORMAL_FLAG)) != 0 )
 	{
-		glDisableClientState(GL_NORMAL_ARRAY);
+		gl::disableClientState(GL_NORMAL_ARRAY);
 	}
 	else if ( (enableFmt &
 			   format_flags(VertexFormatFlag::NORMAL_FLAG)) != 0 )
 	{
-		glEnableClientState(GL_NORMAL_ARRAY);
+		gl::enableClientState(GL_NORMAL_ARRAY);
 	}
 
 	_lastFmt = fmt;

@@ -8,25 +8,46 @@
 
 #include "gr/opengl.hpp"
 
+#include <array>
+
 namespace gr {
 
-typedef GLfloat real;
+typedef GLfloat real_t;
+typedef GLuint  index_t;
+typedef GLenum 	enum_t;
 
-const GLenum REAL_TYPE = GL_FLOAT;
+typedef GLfloat* matrix4x4;
+typedef GLfloat matrix4x4_s[4*4];
 
-enum class BufferUsage : GLenum
+const matrix4x4_s identityMatrix{ 1.0f, 0.0f, 0.0f, 0.0f,
+                                  0.0f, 1.0f, 0.0f, 0.0f,
+					  		      0.0f, 0.0f, 1.0f, 0.0f,
+                                  0.0f, 0.0f, 0.0f, 1.0f };
+
+const enum_t REAL_TYPE 	= GL_FLOAT;
+const enum_t INDEX_TYPE = GL_UNSIGNED_INT;
+
+enum class BufferUsage : enum_t
 {
-	STATIC = GL_STATIC_DRAW,
+	STATIC 	= GL_STATIC_DRAW,
 	DYNAMIC = GL_DYNAMIC_DRAW,
-	STREAM = GL_STREAM_DRAW,
+	STREAM 	= GL_STREAM_DRAW,
 };
 
-enum class Primitive : GLenum
+enum class Primitive : enum_t
 {
-	LINES = GL_LINES,
-	TRIANGLES = GL_TRIANGLES,
-	TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
-	QUADS = GL_QUADS,
+	LINES 			= GL_LINES,
+	TRIANGLES 		= GL_TRIANGLES,
+	TRIANGLE_STRIP 	= GL_TRIANGLE_STRIP,
+	QUADS 			= GL_QUADS,
+};
+
+enum class BufferFlag : enum_t
+{
+	NONE 		= 0,
+	COLOR 		= GL_COLOR_BUFFER_BIT,
+	DEPTH		= GL_DEPTH_BUFFER_BIT,
+	ALL			= COLOR | DEPTH,
 };
 
 }

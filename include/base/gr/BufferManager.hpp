@@ -22,7 +22,7 @@ public:
 	VertexBuffer createVertexBuffer(VertexFormat format,
 	                                BufferUsage usage,
 	                                size_t vertexCount,
-	                                const real* data=nullptr);
+	                                const real_t* data=nullptr);
 
 	void setFormat(format_flags fmt);
 
