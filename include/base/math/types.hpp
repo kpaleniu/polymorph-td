@@ -8,7 +8,7 @@
 
 namespace math {
 
-typedef float real;
+typedef float real_t;
 
 }
 

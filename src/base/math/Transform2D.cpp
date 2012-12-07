@@ -8,7 +8,7 @@
 
 namespace math {
 
-TransUST2D::TransUST2D(real scaling_, real translation_)
+TransUST2D::TransUST2D(real_t scaling_, real_t translation_)
 :	scaling(scaling_),
  	translation(translation_)
 {

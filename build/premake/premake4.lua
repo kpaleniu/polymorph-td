@@ -13,12 +13,23 @@ newoption
 
 newoption
 {
+	trigger		= "with-eigen",
+	description	= "Uses Eigen math headers."
+}
+
+newoption
+{
 	trigger		= "test-build",
 	description	= "Adds tests projects.",
 }
 
 projPath = "../.."
 boostDir = os.getenv("BOOST_HOME") or ""
+eigenDir = os.getenv("EIGEN_HOME") or ""
+
+print("Dirs: ")
+print("Boost: " .. boostDir)
+print("Eigen: " .. eigenDir)
 
 solution "polymorph-td"
 	configurations { "Debug", "Release" }
