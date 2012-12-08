@@ -16,32 +16,77 @@ namespace math {
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
 class MatrixMap;
 
+/**
+ * Class for generic matrix.
+ */
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor=false>
 class Matrix : private Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
 {
 public:
+	/**
+	 * Type used for indexing.
+	 */
 	typedef unsigned int index_t;
 
+	/**
+	 * Empty constructor.
+	 *
+	 * Elements are un-initialized.
+	 */
 	Matrix();
+	/**
+	 * Diagonal constructor.
+	 *
+	 * All elements on the diagonal (ROW == COL) are the specified value,
+	 * the rest are zero.
+	 *
+	 * @param diagonal	Value to set on diagonal.
+	 */
 	Matrix(S diagonal);
+	/**
+	 * Copy constructor.
+	 *
+	 * Copies the data in the array to the matrix.
+	 * The parameter is assumed to be in Row-major order.
+	 *
+	 * @param data	Data buffer to copy.
+	 */
 	Matrix(const std::array<S, Rows * Cols>& data);
+	/**
+	 * Copy constructor.
+	 *
+	 * @param mat	Matrix to copy.
+	 */
 	Matrix(const Matrix<S, Rows, Cols, RowMajor>& mat);
 
+
+	/** @name Element access
+	 * Access to elements.
+	 */
+	///@{
 	S* data();
 	const S* data() const;
 
 	S& operator()(index_t row, index_t col);
 	const S& operator()(index_t row, index_t col) const;
+	///@}
 
+
+	/** @name Binary operators
+	 * Vector space operators.
+	 */
+	///@{
 	Matrix<S, Rows, Cols, RowMajor> operator*(S scalar) const;
 	Matrix<S, Rows, Cols, RowMajor> operator/(S scalar) const;
-	Matrix<S, Rows, Cols, RowMajor> operator*=(S scalar);
-	Matrix<S, Rows, Cols, RowMajor> operator/=(S scalar);
 
 	template<unsigned int N, bool RM>
 	Matrix<S, Rows, N, RM> operator*(const Matrix<S, Cols, N, RM>& other) const;
 	template<unsigned int N, bool RM>
 	Matrix<S, Rows, N, RM> operator*(const MatrixMap<S, Cols, N, RM>& other) const;
+
+	Matrix<S, Rows, Cols, RowMajor> operator*=(S scalar);
+	Matrix<S, Rows, Cols, RowMajor> operator/=(S scalar);
+	///@}
 
 private:
 	typedef Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor> EigenDerived;
@@ -59,16 +104,33 @@ template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor=false>
 class MatrixMap : private Eigen::Map<Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>>
 {
 public:
+	/**
+	 * Type used for indexing.
+	 */
 	typedef unsigned int index_t;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param data	Row-major ordered data to map.
+	 */
 	MatrixMap(S* data);
 
+	/** @name Element access
+	 * Access to elements.
+	 */
+	///@{
 	S* data();
 	const S* data() const;
 
 	S& operator()(index_t row, index_t col);
 	const S& operator()(index_t row, index_t col) const;
+	///@}
 
+	/** @name Binary operators
+	 * Vector space operators.
+	 */
+	///@{
 	Matrix<S, Rows, Cols, RowMajor> operator*(S scalar) const;
 	Matrix<S, Rows, Cols, RowMajor> operator/(S scalar) const;
 	MatrixMap<S, Rows, Cols, RowMajor> operator*=(S scalar);
@@ -78,6 +140,7 @@ public:
 	Matrix<S, Rows, N, RM> operator*(const Matrix<S, Cols, N, RM>& other) const;
 	template<unsigned int N, bool RM>
 	Matrix<S, Rows, N, RM> operator*(const MatrixMap<S, Cols, N, RM>& other) const;
+	///@}
 
 private:
 	typedef Eigen::Map<Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>> EigenDerived;
@@ -85,8 +148,16 @@ private:
 
 }
 
+/** @name Printing
+ * Printers for matrices.
+ */
+///@{
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
 std::ostream& operator<<(std::ostream& out, const math::Matrix<S, Rows, Cols, RowMajor>& mat);
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline std::ostream& operator<<(std::ostream& out, const math::MatrixMap<S, Rows, Cols, RowMajor>& mat);
+///@}
 
 namespace math {
 
