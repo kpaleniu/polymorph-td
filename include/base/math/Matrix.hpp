@@ -1,5 +1,3 @@
-
-
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
@@ -8,6 +6,7 @@
 #include <Eigen/Dense>
 
 #include <ostream>
+#include <iomanip>
 #include <array>
 #include <cstring>
 
@@ -48,6 +47,8 @@ public:
 	 *
 	 * Copies the data in the array to the matrix.
 	 * The parameter is assumed to be in Row-major order.
+	 *
+	 * TODO Add possibility to specify element order of parameter.
 	 *
 	 * @param data	Data buffer to copy.
 	 */
@@ -111,6 +112,8 @@ public:
 
 	/**
 	 * Constructor.
+	 *
+	 * TODO Add possibility to specify element order of parameter.
 	 *
 	 * @param data	Row-major ordered data to map.
 	 */
@@ -365,7 +368,12 @@ inline std::ostream& operator<<(std::ostream& out, const math::Matrix<S, Rows, C
 	{
 		out << "|" << " ";
 		for (typename math::Matrix<S, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
-			out << mat(row, col) << " ";
+			out << std::fixed
+				<< std::showpoint
+				<< std::setprecision(3)
+				<< std::setw(8)
+				<< mat(row, col)
+				<< " ";
 		out << "|" << std::endl;
 	}
 
@@ -381,7 +389,12 @@ inline std::ostream& operator<<(std::ostream& out, const math::MatrixMap<S, Rows
 	{
 		out << "|" << " ";
 		for (typename math::Matrix<S, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
-			out << mat(row, col) << " ";
+			out << std::fixed
+				<< std::showpoint
+				<< std::setprecision(3)
+				<< std::setw(8)
+				<< mat(row, col)
+				<< " ";
 		out << "|" << std::endl;
 	}
 
