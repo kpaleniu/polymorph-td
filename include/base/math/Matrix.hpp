@@ -13,7 +13,10 @@
 
 namespace math {
 
-template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor=true>
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+class MatrixMap;
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor=false>
 class Matrix : private Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
 {
 public:
@@ -37,13 +40,47 @@ public:
 
 	template<unsigned int N, bool RM>
 	Matrix<S, Rows, N, RM> operator*(const Matrix<S, Cols, N, RM>& other) const;
+	template<unsigned int N, bool RM>
+	Matrix<S, Rows, N, RM> operator*(const MatrixMap<S, Cols, N, RM>& other) const;
 
 private:
-	Matrix(const Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>& mat);
+	typedef Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor> EigenDerived;
 
-	// Yes this is legal C++11.
+	Matrix(const EigenDerived& mat);
+
 	template<typename _S, unsigned int _Rows, unsigned int _Cols, bool _RowMajor>
 	friend class Matrix;
+	template<typename _S, unsigned int _Rows, unsigned int _Cols, bool _RowMajor>
+	friend class MatrixMap;
+};
+
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor=false>
+class MatrixMap : private Eigen::Map<Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>>
+{
+public:
+	typedef unsigned int index_t;
+
+	MatrixMap(S* data);
+
+	S* data();
+	const S* data() const;
+
+	S& operator()(index_t row, index_t col);
+	const S& operator()(index_t row, index_t col) const;
+
+	Matrix<S, Rows, Cols, RowMajor> operator*(S scalar) const;
+	Matrix<S, Rows, Cols, RowMajor> operator/(S scalar) const;
+	MatrixMap<S, Rows, Cols, RowMajor> operator*=(S scalar);
+	MatrixMap<S, Rows, Cols, RowMajor> operator/=(S scalar);
+
+	template<unsigned int N, bool RM>
+	Matrix<S, Rows, N, RM> operator*(const Matrix<S, Cols, N, RM>& other) const;
+	template<unsigned int N, bool RM>
+	Matrix<S, Rows, N, RM> operator*(const MatrixMap<S, Cols, N, RM>& other) const;
+
+private:
+	typedef Eigen::Map<Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>> EigenDerived;
 };
 
 }
@@ -53,6 +90,8 @@ std::ostream& operator<<(std::ostream& out, const math::Matrix<S, Rows, Cols, Ro
 
 namespace math {
 
+// Common types:
+
 typedef Matrix<real_t, 3, 3> Matrix3x3_r;
 typedef Matrix<real_t, 4, 4> Matrix4x4_r;
 
@@ -60,17 +99,24 @@ typedef Matrix<real_t, 2, 1, false> Vector2_r;
 typedef Matrix<real_t, 3, 1, false> Vector3_r;
 typedef Matrix<real_t, 4, 1, false> Vector4_r;
 
+typedef MatrixMap<real_t, 3, 3> MapMatrix3x3_r;
+typedef MatrixMap<real_t, 4, 4> MapMatrix4x4_r;
+
+typedef MatrixMap<real_t, 2, 1, false> MapVector2_r;
+typedef MatrixMap<real_t, 3, 1, false> MapVector3_r;
+typedef MatrixMap<real_t, 4, 1, false> MapVector4_r;
+
 // Implementation:
 
 // Constructors	START
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Matrix<S, Rows, Cols, RowMajor>::Matrix()
-:	Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>()
+inline Matrix<S, Rows, Cols, RowMajor>::Matrix()
+:	EigenDerived()
 {}
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Matrix<S, Rows, Cols, RowMajor>::Matrix(S diagonal)
-:	Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>()
+inline Matrix<S, Rows, Cols, RowMajor>::Matrix(S diagonal)
+:	EigenDerived()
 {
 	for (index_t row = 0; row < Rows; ++row)
 		for (index_t col = 0; col < Cols; ++col)
@@ -79,96 +125,162 @@ Matrix<S, Rows, Cols, RowMajor>::Matrix(S diagonal)
 }
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Matrix<S, Rows, Cols, RowMajor>::Matrix(const std::array<S, Rows * Cols>& data)
-:	Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>()
+inline Matrix<S, Rows, Cols, RowMajor>::Matrix(const std::array<S, Rows * Cols>& data)
+:	EigenDerived()
 {
-	// Could be done with memcpy?
-	for (index_t row = 0; row < Rows; ++row)
-	{
-		for (index_t col = 0; col < Cols; ++col)
-		{
-			Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
-											::operator()(row, col) = data[(RowMajor ? row : col) * Cols
-											                              + (RowMajor ? col : row)];
-		}
-	}
+	Eigen::CommaInitializer<EigenDerived> init(*this, data[0]);
+	for (index_t i = 1; i < Rows * Cols; ++i)
+		init , data[i];
+	init.finished();
 }
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Matrix<S, Rows, Cols, RowMajor>::Matrix(const Matrix<S, Rows, Cols, RowMajor>& mat)
-:	Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>(mat)
+inline Matrix<S, Rows, Cols, RowMajor>::Matrix(const Matrix<S, Rows, Cols, RowMajor>& mat)
+:	EigenDerived(mat)
 {}
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Matrix<S, Rows, Cols, RowMajor>::Matrix(
-		const Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>& mat)
-:	Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>(mat)
+inline Matrix<S, Rows, Cols, RowMajor>::Matrix(
+		const EigenDerived& mat)
+:	EigenDerived(mat)
 {}
 // Constructors	END
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-S* Matrix<S, Rows, Cols, RowMajor>::data()
+inline S* Matrix<S, Rows, Cols, RowMajor>::data()
 {
-	return Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
-			::data();
+	return EigenDerived::data();
 }
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-const S* Matrix<S, Rows, Cols, RowMajor>::data() const
+inline const S* Matrix<S, Rows, Cols, RowMajor>::data() const
 {
-	return Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
-			::data();
+	return EigenDerived::data();
 }
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-S& Matrix<S, Rows, Cols, RowMajor>::operator()(index_t row, index_t col)
+inline S& Matrix<S, Rows, Cols, RowMajor>::operator()(index_t row, index_t col)
 {
-	return Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
-			::operator()(row, col);
+	return EigenDerived::operator()(row, col);
 }
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-const S& Matrix<S, Rows, Cols, RowMajor>::operator()(index_t row, index_t col) const
+inline const S& Matrix<S, Rows, Cols, RowMajor>::operator()(index_t row, index_t col) const
 {
-	return Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
-			::operator()(row, col);
+	return EigenDerived::operator()(row, col);
 }
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Matrix<S, Rows, Cols, RowMajor> Matrix<S, Rows, Cols, RowMajor>::operator*(S scalar) const
+inline Matrix<S, Rows, Cols, RowMajor> Matrix<S, Rows, Cols, RowMajor>::operator*(S scalar) const
 {
-	return Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
-			::operator*(scalar);
+	return EigenDerived::operator*(scalar);
 }
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Matrix<S, Rows, Cols, RowMajor> Matrix<S, Rows, Cols, RowMajor>::operator/(S scalar) const
+inline Matrix<S, Rows, Cols, RowMajor> Matrix<S, Rows, Cols, RowMajor>::operator/(S scalar) const
 {
-	return Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
-			::operator/(scalar);
+	return EigenDerived::operator/(scalar);
 }
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Matrix<S, Rows, Cols, RowMajor> Matrix<S, Rows, Cols, RowMajor>::operator*=(S scalar)
+inline Matrix<S, Rows, Cols, RowMajor> Matrix<S, Rows, Cols, RowMajor>::operator*=(S scalar)
 {
-	Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
-		::operator*=(scalar);
+	EigenDerived::operator*=(scalar);
 	return *this;
 }
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Matrix<S, Rows, Cols, RowMajor> Matrix<S, Rows, Cols, RowMajor>::operator/=(S scalar)
+inline Matrix<S, Rows, Cols, RowMajor> Matrix<S, Rows, Cols, RowMajor>::operator/=(S scalar)
 {
-	Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
-		::operator/=(scalar);
+	EigenDerived::operator/=(scalar);
 	return *this;
 }
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
 template<unsigned int N, bool RM>
-Matrix<S, Rows, N, RM> Matrix<S, Rows, Cols, RowMajor>
+inline Matrix<S, Rows, N, RM> Matrix<S, Rows, Cols, RowMajor>
 	::operator*(const Matrix<S, Cols, N, RM>& other) const
 {
-	return Matrix<S, Rows, N, RM>(Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
-											::operator*(other));
+	return Matrix<S, Rows, N, RM>(EigenDerived::operator*(other));
+}
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+template<unsigned int N, bool RM>
+inline Matrix<S, Rows, N, RM> Matrix<S, Rows, Cols, RowMajor>
+	::operator*(const MatrixMap<S, Cols, N, RM>& other) const
+{
+	return Matrix<S, Rows, N, RM>(EigenDerived::operator*(other));
+}
+
+// MatrixMap implementation
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline MatrixMap<S, Rows, Cols, RowMajor>::MatrixMap(S* data)
+:	EigenDerived(data)
+{}
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline S* MatrixMap<S, Rows, Cols, RowMajor>::data()
+{
+	return EigenDerived::data();
+}
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline const S* MatrixMap<S, Rows, Cols, RowMajor>::data() const
+{
+	return EigenDerived::data();
+}
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline S& MatrixMap<S, Rows, Cols, RowMajor>::operator()(index_t row, index_t col)
+{
+	return EigenDerived::operator()(row, col);
+}
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline const S& MatrixMap<S, Rows, Cols, RowMajor>::operator()(index_t row, index_t col) const
+{
+	return EigenDerived::operator()(row, col);
+}
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline Matrix<S, Rows, Cols, RowMajor> math::MatrixMap<S, Rows, Cols, RowMajor>::operator*(S scalar) const
+{
+	return EigenDerived::operator*(scalar);
+}
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline Matrix<S, Rows, Cols, RowMajor> math::MatrixMap<S, Rows, Cols, RowMajor>::operator/(S scalar) const
+{
+	return EigenDerived::operator*(scalar);
+}
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline MatrixMap<S, Rows, Cols, RowMajor> MatrixMap<S, Rows, Cols, RowMajor>
+	::operator*=(S scalar)
+{
+	EigenDerived::operator/=(scalar);
+	return *this;
+}
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline MatrixMap<S, Rows, Cols, RowMajor> MatrixMap<S, Rows, Cols, RowMajor>
+	::operator/=(S scalar)
+{
+	EigenDerived::operator/=(scalar);
+	return *this;
+}
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+template<unsigned int N, bool RM>
+inline Matrix<S, Rows, N, RM> MatrixMap<S, Rows, Cols, RowMajor>
+	::operator*(const Matrix<S, Cols, N, RM>& other) const
+{
+	return Matrix<S, Rows, N, RM>(EigenDerived::operator*(other));
+}
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+template<unsigned int N, bool RM>
+inline Matrix<S, Rows, N, RM> MatrixMap<S, Rows, Cols, RowMajor>
+	::operator*(const MatrixMap<S, Cols, N, RM>& other) const
+{
+	return Matrix<S, Rows, N, RM>(EigenDerived::operator*(other));
 }
 
 }
@@ -178,16 +290,31 @@ inline std::ostream& operator<<(std::ostream& out, const math::Matrix<S, Rows, C
 {
 	out << "Matrix" << Rows << "x" << Cols << " " << (RowMajor ? "Row major" : "Column major") << std::endl;
 
-	for (typename math::Matrix<S, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
+	for (typename math::Matrix<S, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
 	{
 		out << "|" << " ";
-		for (typename math::Matrix<S, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-				out << mat(row, col) << " ";
+		for (typename math::Matrix<S, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
+			out << mat(row, col) << " ";
 		out << "|" << std::endl;
 	}
 
 	return out;
 }
 
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline std::ostream& operator<<(std::ostream& out, const math::MatrixMap<S, Rows, Cols, RowMajor>& mat)
+{
+	out << "MatrixMap" << Rows << "x" << Cols << " " << (RowMajor ? "Row major" : "Column major") << std::endl;
+
+	for (typename math::Matrix<S, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
+	{
+		out << "|" << " ";
+		for (typename math::Matrix<S, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
+			out << mat(row, col) << " ";
+		out << "|" << std::endl;
+	}
+
+	return out;
+}
 
 #endif
