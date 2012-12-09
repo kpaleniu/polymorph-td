@@ -8,7 +8,6 @@
 #include <ostream>
 #include <iomanip>
 #include <array>
-#include <cstring>
 
 namespace math {
 
@@ -89,8 +88,16 @@ public:
 	Matrix<S, Rows, Cols, RowMajor> operator/=(S scalar);
 	///@}
 
-private:
+public:
+	// Eigen implementation specific:
+
 	typedef Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor> EigenDerived;
+	EigenDerived& asEigen()
+	{ return *this; }
+	const EigenDerived& asEigen() const
+	{ return *this; }
+
+private:
 
 	Matrix(const EigenDerived& mat);
 
@@ -145,8 +152,15 @@ public:
 	Matrix<S, Rows, N, RM> operator*(const MatrixMap<S, Cols, N, RM>& other) const;
 	///@}
 
-private:
+public:
+	// Eigen implementation specific:
+
 	typedef Eigen::Map<Eigen::Matrix<S, Rows, Cols, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>> EigenDerived;
+	EigenDerived& asEigen()
+	{ return *this; }
+	const EigenDerived& asEigen() const
+	{ return *this; }
+
 };
 
 }
@@ -166,19 +180,19 @@ namespace math {
 
 // Common types:
 
-typedef Matrix<real_t, 3, 3> Matrix3x3_r;
-typedef Matrix<real_t, 4, 4> Matrix4x4_r;
+typedef Matrix<real_t, 3u, 3u> Matrix3x3_r;
+typedef Matrix<real_t, 4u, 4u> Matrix4x4_r;
 
-typedef Matrix<real_t, 2, 1, false> Vector2_r;
-typedef Matrix<real_t, 3, 1, false> Vector3_r;
-typedef Matrix<real_t, 4, 1, false> Vector4_r;
+typedef Matrix<real_t, 2u, 1u, false> Vector2_r;
+typedef Matrix<real_t, 3u, 1u, false> Vector3_r;
+typedef Matrix<real_t, 4u, 1u, false> Vector4_r;
 
-typedef MatrixMap<real_t, 3, 3> MapMatrix3x3_r;
-typedef MatrixMap<real_t, 4, 4> MapMatrix4x4_r;
+typedef MatrixMap<real_t, 3u, 3u> MapMatrix3x3_r;
+typedef MatrixMap<real_t, 4u, 4u> MapMatrix4x4_r;
 
-typedef MatrixMap<real_t, 2, 1, false> MapVector2_r;
-typedef MatrixMap<real_t, 3, 1, false> MapVector3_r;
-typedef MatrixMap<real_t, 4, 1, false> MapVector4_r;
+typedef MatrixMap<real_t, 2u, 1u, false> MapVector2_r;
+typedef MatrixMap<real_t, 3u, 1u, false> MapVector3_r;
+typedef MatrixMap<real_t, 4u, 1u, false> MapVector4_r;
 
 // Implementation:
 
