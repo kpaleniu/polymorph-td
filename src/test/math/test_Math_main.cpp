@@ -1,5 +1,7 @@
 
 #include "math/Matrix.hpp"
+#include "math/Transform.hpp"
+
 #include <iostream>
 
 using namespace std;
@@ -55,11 +57,30 @@ void testMapMat()
 	}
 }
 
+void testTransform()
+{
+	cout << "============== 3 ==============" << endl;
+	{
+		//Vector3_r vec(array<float, 3>{0,2,0});
+		Matrix<real_t, 3u, 1u, false> vec(array<float, 3>{0,2,0});
+
+		auto trans1 = Transform<real_t>::identity();
+		auto trans2 = Transform<real_t>::translate(vec);
+
+		auto trans3 = trans2 * trans1;
+		auto trans4 = Transform<real_t>::translate(Vector3_r(array<float, 3>{1.0f,1.0f,1.0f}))
+					  * Transform<real_t>::rotateAxis(Vector3_r(array<float, 3>{0,0,1}), 1.0f)
+					  * Transform<real_t>::scale(2.0f);
+
+		cout << trans3 << trans4;
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	testMatrix();
 	testMapMat();
-
+	testTransform();
 
 	return 0;
 }
