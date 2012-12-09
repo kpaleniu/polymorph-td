@@ -329,4 +329,9 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other)
 	return *this;
 }
 
+bool VertexBuffer::isEmpty() const
+{
+	return _vertexCount == 0;
+}
+
 }

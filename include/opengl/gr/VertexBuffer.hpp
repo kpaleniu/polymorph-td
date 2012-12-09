@@ -65,6 +65,8 @@ public:
 
 	VertexBuffer& operator=(VertexBuffer&& other);
 
+	bool isEmpty() const;
+
 private:
 	void write(size_t offset, size_t size, const real_t* verts);
 
