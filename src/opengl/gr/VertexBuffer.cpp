@@ -89,6 +89,7 @@ VertexBuffer::VertexBuffer(BufferManager& manager,
 VertexBuffer::VertexBuffer(VertexBuffer&& vertexBuffer)
 :	_bufferID(vertexBuffer._bufferID),
  	_vertexCount(vertexBuffer._vertexCount),
+ 	_usage(vertexBuffer._usage),
  	_vertexFormat(vertexBuffer._vertexFormat),
  	_manager(vertexBuffer._manager)
 {
