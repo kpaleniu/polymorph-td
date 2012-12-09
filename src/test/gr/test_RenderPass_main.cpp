@@ -43,6 +43,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	{
 		auto surface = createSurface();
 		BufferManager bufferManager;
+
 		/*
 		RenderPass::BufferDesc bufferDesc;
 		bufferDesc.clearFlags = enum_t(BufferFlag::COLOR);
@@ -79,61 +80,16 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		TestVertexSupplier testVS;
 		pass1.addVertexSupplier(testVS);
 
-
-		/*
-		GLfloat verts[] = {0.0f, 0.0f,
-						   0.5f, 0.0f,
-						   0.5f, 0.5f};
-		GLint indices[] = {0, 1, 2};
-
-		GLuint vID;
-		gl::genBuffers(1, &vID);
-		gl::bindBuffer(GL_ARRAY_BUFFER, vID);
-		gl::bufferData(GL_ARRAY_BUFFER, 3 * 2 * sizeof(GLfloat), nullptr, BufferUsage::DYNAMIC);
-		gl::bufferSubData(GL_ARRAY_BUFFER, 0, 3 * 2 * sizeof(GLfloat), verts);
-		gl::bindBuffer(GL_ARRAY_BUFFER, 0);
-
-		GLuint iID;
-		gl::genBuffers(1, &iID);
-		gl::bindBuffer(GL_ELEMENT_ARRAY_BUFFER, iID);
-		gl::bufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(GLuint), nullptr, BufferUsage::DYNAMIC);
-		gl::bufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 3 * sizeof(GLuint), indices);
-		gl::bindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		*/
-
 		gl::enableClientState(GL_VERTEX_ARRAY);
 		while (updateTestWindow())
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			/*
-			gl::bindBuffer(GL_ARRAY_BUFFER, vID);
-			gl::bindBuffer(GL_ELEMENT_ARRAY_BUFFER, iID);
-
-			gl::vertexPointer(2, GL_FLOAT, 0, 0);
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-			//glDisableClientState(GL_VERTEX_ARRAY);
-			gl::bindBuffer(GL_ARRAY_BUFFER, 0);
-			gl::bindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-			*/
-
 			pass1.render();
-
-			/*
-			glBegin(GL_TRIANGLES);
-			glVertex2f(0.0f, 0.0f);
-			glVertex2f(0.5f, 0.0f);
-			glVertex2f(0.5f, 0.5f);
-			glEnd();
-			*/
 
 			surface.flipBuffers();
 		}
 
-		/*
-		glDeleteBuffers(1, &vID);
-		glDeleteBuffers(1, &iID);
-		*/
 	}
 	catch (...)
 	{

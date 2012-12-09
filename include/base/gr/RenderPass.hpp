@@ -41,9 +41,9 @@ public:
 
 	struct TransformDesc
 	{
-		matrix4x4 projTransform;
-		matrix4x4 modelTransform;
-		matrix4x4 viewTransform;
+		Projection projection;
+		Transform model;
+		Transform view;
 	};
 
 	struct MaterialDesc
@@ -52,14 +52,14 @@ public:
 		Shader*  shader;
 	};
 
-	RenderPass(BufferManager& bufferManager,
-	           VertexFormat format,
-	           Primitive shape = Primitive::TRIANGLES,
-			   const MaterialDesc& materialDesc = {nullptr, nullptr},
-	           const BufferDesc& bufferDesc = {enum_t(BufferFlag::ALL), enum_t(BufferFlag::ALL)}/*,
-	           const TransformDesc& transformDesc = {identityMatrix,
-	                                                 identityMatrix,
-	                                                 identityMatrix}*/);
+	RenderPass( BufferManager& bufferManager,
+	            VertexFormat format,
+	            Primitive shape = Primitive::TRIANGLES,
+			    const MaterialDesc& materialDesc = {nullptr, nullptr},
+	            const BufferDesc& bufferDesc = {enum_t(BufferFlag::ALL), enum_t(BufferFlag::ALL)},
+	            const TransformDesc& transformDesc = {Projection::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f),
+	                                                 Transform::identity(),
+	                                                 Transform::identity()} );
 
 	VertexSupplierHandle addVertexSupplier(VertexSupplier& vertexSupplier);
 	void removeVertexSupplier(VertexSupplierHandle handle);
@@ -80,7 +80,7 @@ private:
 
 	const MaterialDesc& 	_materialDesc;
 	const BufferDesc& 		_bufferDesc;
-	//const TransformDesc& 	_transformDesc;
+	const TransformDesc& 	_transformDesc;
 
 	std::list<VertexSupplier*> _vertexSuppliers;
 };

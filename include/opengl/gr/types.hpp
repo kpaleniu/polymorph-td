@@ -3,10 +3,13 @@
  *
  */
 
-#ifndef TYPES_HPP_
-#define TYPES_HPP_
+#ifndef GR_TYPES_HPP_
+#define GR_TYPES_HPP_
 
 #include "gr/opengl.hpp"
+
+#include <math/Projection.hpp>
+#include <math/Transform.hpp>
 
 #include <array>
 
@@ -16,13 +19,8 @@ typedef GLfloat real_t;
 typedef GLuint  index_t;
 typedef GLenum 	enum_t;
 
-typedef GLfloat* matrix4x4;
-typedef GLfloat matrix4x4_s[4*4];
-
-const matrix4x4_s identityMatrix{ 1.0f, 0.0f, 0.0f, 0.0f,
-                                  0.0f, 1.0f, 0.0f, 0.0f,
-					  		      0.0f, 0.0f, 1.0f, 0.0f,
-                                  0.0f, 0.0f, 0.0f, 1.0f };
+typedef math::Projection<real_t, true> Projection;
+typedef math::Transform<real_t, true> Transform;
 
 const enum_t REAL_TYPE 	= GL_FLOAT;
 const enum_t INDEX_TYPE = GL_UNSIGNED_INT;

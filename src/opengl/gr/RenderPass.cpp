@@ -12,8 +12,8 @@ RenderPass::RenderPass(BufferManager& bufferManager,
                        VertexFormat format,
                        Primitive shape,
                        const MaterialDesc& materialDesc,
-                       const BufferDesc& bufferDesc/*,
-                       const TransformDesc& transformDesc*/)
+                       const BufferDesc& bufferDesc,
+                       const TransformDesc& transformDesc)
 :	_bufferManager(bufferManager),
  	_shape(shape),
  	_vertices(bufferManager, format, BufferUsage::DYNAMIC),
@@ -21,7 +21,7 @@ RenderPass::RenderPass(BufferManager& bufferManager,
  	_vertexWriter(_vertices, _indices),
  	_materialDesc(materialDesc),
  	_bufferDesc(bufferDesc),
- 	//_transformDesc(transformDesc),
+ 	_transformDesc(transformDesc),
  	_vertexSuppliers()
 {
 }
@@ -45,11 +45,11 @@ void RenderPass::render()
 		glClear( GLenum(_bufferDesc.clearFlags) );
 
 	glMatrixMode(GL_PROJECTION);
-	//glLoadMatrixf(_transformDesc.projTransform);
+	glLoadMatrixf(_transformDesc.projection.data());
 
 	glMatrixMode(GL_MODELVIEW);
-	//glLoadMatrixf(_transformDesc.viewTransform);
-	//glMultMatrixf(_transformDesc.modelTransform);
+	glLoadMatrixf(_transformDesc.view.data());
+	glMultMatrixf(_transformDesc.model.data());
 
 	if (_materialDesc.texture != nullptr)
 	{

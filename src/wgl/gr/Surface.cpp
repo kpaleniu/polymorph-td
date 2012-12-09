@@ -152,6 +152,7 @@ void Surface::activate(bool activate)
 
 void Surface::flipBuffers()
 {
+	glFinish();
 	VERIFY(SwapBuffers(_deviceHandle.get()));
 }
 

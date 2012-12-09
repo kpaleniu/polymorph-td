@@ -43,6 +43,7 @@ gr =
 			concurrency.doDeclarations() -- Used in Debug
 			ext.doDeclarations()
 			gr.doDeclarations()
+			math_proj.doDeclarations()
 			
 			files { projPath .. "/src/base/gr/**.cpp", 
 					projPath .. "/src/test/gr/test_RenderPass_main.cpp",
