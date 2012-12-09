@@ -44,7 +44,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		auto surface = createSurface();
 		BufferManager bufferManager;
 
-		/*
+
 		RenderPass::BufferDesc bufferDesc;
 		bufferDesc.clearFlags = enum_t(BufferFlag::COLOR);
 		bufferDesc.useFlags = enum_t(BufferFlag::COLOR);
@@ -53,42 +53,37 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		materialDesc.shader = nullptr;
 		materialDesc.texture = nullptr;
 
-		RenderPass::TransformDesc transformDesc;
-		transformDesc.modelTransform = { 1.0f, 0.0f, 0.0f, 0.0f,
-		                                 0.0f, 1.0f, 0.0f, 0.0f,
-										 0.0f, 0.0f, 1.0f, 0.0f,
-		                                 0.0f, 0.0f, 0.0f, 1.0f };
-		transformDesc.projTransform = { 1.0f, 0.0f, 0.0f, 0.0f,
-		                                0.0f, 1.0f, 0.0f, 0.0f,
-										0.0f, 0.0f, 1.0f, 0.0f,
-		                                0.0f, 0.0f, 0.0f, 1.0f };
-		transformDesc.viewTransform = { 1.0f, 0.0f, 0.0f, 0.0f,
-									    0.0f, 1.0f, 0.0f, 0.0f,
-									    0.0f, 0.0f, 1.0f, 0.0f,
-									    0.0f, 0.0f, 0.0f, 1.0f };
-
+		RenderPass::TransformDesc transformDesc =
+		{
+			Projection::ortho(0, 1, 0, 1, 1, -1),
+			Transform::scale(0.5f) * Transform::rotateAxis(Vector3_r(std::array<real_t, 3>{{0, 0, 1}}),
+			                                               math::QUARTER_PI),
+			Transform::identity()
+		};
 
 		RenderPass pass1(bufferManager,
+		                 VertexFormat::V2,
 		                 Primitive::TRIANGLES,
 		                 materialDesc,
 		                 bufferDesc,
 		                 transformDesc);
-		 */
 
-
-		RenderPass pass1(bufferManager, VertexFormat::V2);
 		TestVertexSupplier testVS;
-		pass1.addVertexSupplier(testVS);
+		auto vsHandle = pass1.addVertexSupplier(testVS);
 
-		gl::enableClientState(GL_VERTEX_ARRAY);
+		int i = 0;
 		while (updateTestWindow())
 		{
-			glClear(GL_COLOR_BUFFER_BIT);
-
 			pass1.render();
 
 			surface.flipBuffers();
+
+			if (++i == 500)
+				pass1.removeVertexSupplier(vsHandle);
+			if (i == 2000)
+				vsHandle = pass1.addVertexSupplier(testVS);
 		}
+
 
 	}
 	catch (...)

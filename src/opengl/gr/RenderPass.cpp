@@ -59,7 +59,9 @@ void RenderPass::render()
 	{
 		// TODO Implement
 	}
-	_vertices.draw(_shape, _indices);
+
+	if ( !_vertices.isEmpty() )
+		_vertices.draw(_shape, _indices);
 }
 
 void RenderPass::updateVertices()
