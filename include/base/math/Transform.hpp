@@ -4,8 +4,8 @@
  * Contains some generic 2D transformations.
  */
 
-#ifndef TRANSFORM2D_HPP_
-#define TRANSFORM2D_HPP_
+#ifndef TRANSFORM_HPP_
+#define TRANSFORM_HPP_
 
 #include "math/types.hpp"
 #include "math/Matrix.hpp"
@@ -37,7 +37,7 @@ class Transform : private Eigen::Transform<S, 3, Eigen::Affine, RowMajor ? Eigen
 public:
 	friend std::ostream& operator<<<S, RowMajor>(std::ostream&, const Transform<S, RowMajor>&);
 
-	typedef real_t radian_t;
+	typedef S radian_t;
 
 	Transform(const Transform&) 			= default;
 	Transform& operator=(const Transform&) 	= default;

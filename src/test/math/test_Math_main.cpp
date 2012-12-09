@@ -1,6 +1,7 @@
 
 #include "math/Matrix.hpp"
 #include "math/Transform.hpp"
+#include "math/Projection.hpp"
 
 #include <iostream>
 
@@ -76,11 +77,20 @@ void testTransform()
 	}
 }
 
+void testProjection()
+{
+	cout << "============== 4 ==============" << endl;
+	{
+		auto proj1 = Projection<real_t>::ortho(-1, 1, -1, 1, 1, -1);
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	testMatrix();
 	testMapMat();
 	testTransform();
+	testProjection();
 
 	return 0;
 }
