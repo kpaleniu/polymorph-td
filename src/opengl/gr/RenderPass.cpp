@@ -22,7 +22,9 @@ RenderPass::RenderPass(BufferManager& bufferManager,
  	_materialDesc(materialDesc),
  	_bufferDesc(bufferDesc),
  	_transformDesc(transformDesc),
- 	_vertexSuppliers()
+ 	_vertexSuppliers(),
+ 	_preRenderHook(),
+ 	_postRenderHook()
 {
 }
 
@@ -36,10 +38,12 @@ void RenderPass::removeVertexSupplier(VertexSupplierHandle handle)
 	_vertexSuppliers.erase((vertex_supplier_iterator) handle);
 }
 
-
 void RenderPass::render()
 {
 	updateVertices();
+
+	if (_preRenderHook)
+		_preRenderHook();
 
 	if ( _bufferDesc.clearFlags != enum_t(BufferFlag::NONE) )
 		glClear( GLenum(_bufferDesc.clearFlags) );
@@ -62,7 +66,21 @@ void RenderPass::render()
 
 	if ( !_vertices.isEmpty() )
 		_vertices.draw(_shape, _indices);
+
+	if (_postRenderHook)
+		_postRenderHook();
 }
+
+void RenderPass::preRender(Hook hook)
+{
+	_preRenderHook = hook;
+}
+
+void RenderPass::postRender(Hook hook)
+{
+	_postRenderHook = hook;
+}
+
 
 void RenderPass::updateVertices()
 {

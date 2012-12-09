@@ -31,6 +31,7 @@ public:
 		friend class RenderPass;
 	};
 
+	typedef std::function<void ()> Hook;
 
 public:
 	struct BufferDesc
@@ -66,6 +67,9 @@ public:
 
 	void render();
 
+	void preRender(Hook hook);
+	void postRender(Hook hook);
+
 private:
 	void updateVertices();
 
@@ -83,6 +87,9 @@ private:
 	const TransformDesc& 	_transformDesc;
 
 	std::list<VertexSupplier*> _vertexSuppliers;
+
+	Hook _preRenderHook;
+	Hook _postRenderHook;
 };
 
 }
