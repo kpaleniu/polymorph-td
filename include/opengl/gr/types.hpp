@@ -19,8 +19,9 @@ typedef GLfloat real_t;
 typedef GLuint  index_t;
 typedef GLenum 	enum_t;
 
-typedef math::Projection<real_t, true> Projection;
-typedef math::Transform<real_t, true> Transform;
+typedef math::Projection<real_t, true> 	Projection;
+typedef math::Transform<real_t, true> 	Transform;
+typedef math::Matrix<real_t, 3, 1> 		Vector3_r;
 
 const enum_t REAL_TYPE 	= GL_FLOAT;
 const enum_t INDEX_TYPE = GL_UNSIGNED_INT;
