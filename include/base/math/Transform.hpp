@@ -45,6 +45,8 @@ public:
 	Transform<S, RowMajor> operator*(const Transform<S, RowMajor>& other) const;
 	Transform<S, RowMajor>& operator*=(const Transform<S, RowMajor>& other);
 
+	const S* data() const;
+
 	/** @name Factories
 	 * Public constructors.
 	 */
@@ -81,6 +83,12 @@ inline Transform<S, RowMajor>& Transform<S, RowMajor>::operator*=(const Transfor
 {
 	EigenDerived::operator*=(other);
 	return *this;
+}
+
+template<typename S, bool RowMajor>
+inline const S* Transform<S, RowMajor>::data() const
+{
+	return EigenDerived::data();
 }
 
 template<typename S, bool RowMajor>

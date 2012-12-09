@@ -3,8 +3,8 @@
  *
  */
 
-#ifndef TYPES_HPP_
-#define TYPES_HPP_
+#ifndef MATH_TYPES_HPP_
+#define MATH_TYPES_HPP_
 
 namespace math {
 

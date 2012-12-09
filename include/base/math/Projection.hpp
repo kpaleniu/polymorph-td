@@ -27,6 +27,8 @@ public:
 	Projection(const Projection&) 				= default;
 	Projection& operator=(const Projection&) 	= default;
 
+	const S* data() const;
+
 	/** @name Factories
 	 * Public constructors.
 	 */
@@ -49,21 +51,28 @@ inline Projection<S, RowMajor>::Projection(const EigenDerived& data)
 {}
 
 template<typename S, bool RowMajor>
-inline Projection<S, RowMajor> Projection<S, RowMajor>::ortho(S left, S right, S bottom, S top, S near, S far)
+inline const S* Projection<S, RowMajor>::data() const
 {
-	S rMl = right - left;
-	S rPl = right + left;
-	S tMb = top - bottom;
-	S tPb = top + bottom;
-	S fMn = far - near;
-	S fPn = far + near;
+	return EigenDerived::data();
+}
+
+template<typename S, bool RowMajor>
+inline Projection<S, RowMajor> Projection<S, RowMajor>::ortho(S left, S right, S bottom, S top, S near_, S far_)
+{
+	S rightMleft = right - left;
+	S rightPleft = right + left;
+	S topMbottom = top - bottom;
+	S topPbottom = top + bottom;
+	S farMnear = far_ - near_;		// For some reason far - near causes error.
+	S farPnear = far_ + near_;
+
 
 	Eigen::Matrix<S, 4, 4, RowMajor ? Eigen::RowMajor : Eigen::ColMajor> mat;
 
-	mat << 	S(2) / rMl, S(0), 			S(0), 			rPl / rMl,
-			S(0),		S(2) / tMb,		S(0), 			tPb / tMb,
-			S(0),		S(0),			S(-2) / fMn,	fPn / fMn,
-			S(0),		S(0),			S(0),			S(1);
+	mat << 	S(2) / rightMleft, S(0), 			S(0), 				rightPleft / rightMleft,
+			S(0),		S(2) / topMbottom,		S(0), 				topPbottom / topMbottom,
+			S(0),		S(0),					S(-2) / farMnear,	farPnear / farMnear,
+			S(0),		S(0),					S(0),				S(1);
 
 	return Projection<S, RowMajor>(EigenDerived(mat));
 }
