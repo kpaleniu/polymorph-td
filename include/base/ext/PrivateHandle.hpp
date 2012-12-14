@@ -9,11 +9,14 @@
 #ifndef PRIVATEHANDLE_HPP_
 #define PRIVATEHANDLE_HPP_
 
+#include "NonCopyable.hpp"
+
 /**
  * Base class for the wrapper.
+ * TODO Implement move constructor.
  */
 template <typename T>
-class PrivateHandle
+class PrivateHandle : NonCopyable
 {
 protected:
 	PrivateHandle()				: _val() 	{}
@@ -25,7 +28,6 @@ protected:
 	operator T()
 	{ return _val; }
 
-private:
 	T _val;
 };
 
