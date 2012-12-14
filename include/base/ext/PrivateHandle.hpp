@@ -13,10 +13,9 @@
 
 /**
  * Base class for the wrapper.
- * TODO Implement move constructor.
  */
 template <typename T>
-class PrivateHandle : NonCopyable
+class PrivateHandle
 {
 protected:
 	PrivateHandle()				: _val() 	{}
