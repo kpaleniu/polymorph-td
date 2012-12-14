@@ -5,7 +5,7 @@ sys =
 	doDeclarations = function()
 		includedirs { projPath .. "/include/base" }
 		
-		configuration "with-boost"
+		configuration "boost"
 			includedirs { projPath .. "/include/boost" }
 		
 		configuration "windows"
@@ -28,7 +28,7 @@ sys =
 			
 			files { projPath .. "/src/base/sys/**.cpp" }
 			
-			configuration "with-boost"
+			configuration "boost"
 				files { projPath .. "/src/boost/sys/**.cpp" }
 			
 			configuration "windows"

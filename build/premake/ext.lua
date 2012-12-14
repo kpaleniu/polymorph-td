@@ -10,7 +10,7 @@ ext =
 	doDeclarations = function()
 		includedirs { projPath .. "/include/base/ext" }
 	
-		configuration "with-boost"
+		configuration "boost"
 			includedirs { projPath .. "/include/boost/ext" }
 	end,
 	

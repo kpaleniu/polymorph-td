@@ -5,12 +5,12 @@ gr =
 	doDeclarations = function()
 		includedirs { projPath .. "/include/base" }
 		
-		configuration {"windows", "with-opengl"}
+		configuration {"windows", "opengl"}
 			includedirs { projPath .. "/include/wgl" }
-	
-		configuration "with-opengl"
-			includedirs { projPath .. "/include/opengl" }
 			defines { "GLEW_STATIC" }
+	
+		configuration "opengl"
+			includedirs { projPath .. "/include/opengl" }
 	end,
 	
 	doProject = function()
@@ -20,16 +20,22 @@ gr =
 			kind "StaticLib"
 			language "C++"
 			
+			assert(ext)
+			assert(concurrency)
+			assert(math_proj)
+			
+			concurrency.doDeclarations() -- Used in Debug
 			gr.doDeclarations()
 			ext.doDeclarations()
+			math_proj.doDeclarations()
 			
 			files { projPath .. "/src/base/gr/**.cpp" }
 			
-			configuration {"windows", "with-opengl"}
+			configuration {"windows", "opengl"}
 				files { projPath .. "/src/wgl/**.cpp" }
 				links { "glew32", "glu32", "opengl32" }
 			
-			configuration "with-opengl"
+			configuration "opengl"
 				files { projPath .. "/src/opengl/**.cpp" }
 	end,
 	
@@ -37,6 +43,10 @@ gr =
 		project "RenderPassTest"
 			kind "WindowedApp"
 			language "C++"
+			
+			assert(ext)
+			assert(concurrency)
+			assert(math_proj)
 			
 			links { "ext", "concurrency" }
 			
@@ -51,11 +61,11 @@ gr =
 			
 			includedirs { projPath .. "/include/test" }
 			
-			configuration {"windows", "with-opengl"}
+			configuration {"windows", "opengl"}
 				files { projPath .. "/src/wgl/**.cpp" }
 				links { "glew32", "glu32", "opengl32" }
 			
-			configuration "with-opengl"
+			configuration "opengl"
 				files { projPath .. "/src/opengl/**.cpp" }
 			
 			

@@ -8,6 +8,7 @@ profiler =
 
 	doProject = function()
 		assert(concurrency)
+		assert(ext)
 		
 		project "profiler"
 			kind "StaticLib"

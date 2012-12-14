@@ -1,6 +1,6 @@
 
 --
--- I/O Stream project.
+-- I/O Stream project. Not needed atm.
 --
 --[[
 project "stream"

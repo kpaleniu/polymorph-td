@@ -5,8 +5,8 @@ math_proj =
 	doDeclarations = function()
 		includedirs { projPath .. "/include/base" }
 		
-		configuration { "with-eigen" }
-			includedirs { eigenDir }
+		configuration { "eigen" }
+			includedirs { externalPath .. "/include/eigen" }
 		
 	end,
 	
@@ -17,7 +17,7 @@ math_proj =
 			
 			math_proj.doDeclarations()
 			
-			files { projPath .. "/src/base/math/**.cpp" }
+			files { projPath .. "/src/base/math/**.cpp" } -- Will most likelly only hold headers in future.
 	end,
 	
 	doTestProjects = function()

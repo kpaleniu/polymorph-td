@@ -1,35 +1,80 @@
 
+-- Graphics API.
 newoption 
 {
-	trigger 	= "with-opengl",
-	description = "Uses OpenGL for rendering."
+	trigger 	= "gfx-api",
+	value		= "API",
+	description = "Graphics API.",
+	allowed 	= { {"opengl",	"OpenGL"} }
 }
+_OPTIONS["gfx-api"] = _OPTIONS["gfx-api"] or "opengl"
 
+-- Extensions API.
 newoption
 {
-	trigger		= "with-boost",
-	description = "Uses Boost libraries."
+	trigger		= "ext-api",
+	value		= "API",
+	description = "Extensions API.",
+	allowed		= { {"boost", 	"Boost"} } -- Future C++11 implementations might depricate this.
 }
+_OPTIONS["ext-api"] = _OPTIONS["ext-api"] or "boost"
 
+-- Math API.
 newoption
 {
-	trigger		= "with-eigen",
-	description	= "Uses Eigen math headers."
+	trigger		= "math-api",
+	value		= "API",
+	description	= "Math API.",
+	allowed		= { {"eigen", 	"Eigen"} }
 }
+_OPTIONS["math-api"] = _OPTIONS["math-api"] or "eigen"
 
+-- Image loading API.
+newoption
+{
+	trigger		= "il-api",
+	value		= "API",
+	description	= "Image loading API.",
+	allowed		= { {"libpng",	"libPNG"} }
+}
+_OPTIONS["il-api"] = _OPTIONS["il-api"] or "libpng"
+
+-- Build tests option.
 newoption
 {
 	trigger		= "test-build",
 	description	= "Adds tests projects.",
 }
 
-projPath = "../.."
-boostDir = os.getenv("BOOST_HOME") or ""
-eigenDir = os.getenv("EIGEN_HOME") or ""
+projPath 		= "../.."
+externalPath	= projPath .. "/external"
 
-print("Dirs: ")
-print("Boost: " .. boostDir)
-print("Eigen: " .. eigenDir)
+print("Graphics API")
+print("  " .. _OPTIONS["gfx-api"] .. "\n")
+
+print("Extensions API")
+print("  " .. _OPTIONS["ext-api"] .. "\n")
+
+print("Math API")
+print("  " .. _OPTIONS["math-api"] .. "\n")
+
+print("Image loading API")
+print("  " .. _OPTIONS["il-api"] .. "\n")
+
+if _OPTIONS["test-build"] then
+	print("Building tests as well...\n")
+end
+
+-- Projects to build.
+projects = { "ext",
+			 "text",
+			 "concurrency",
+			 "gr",
+			 "input",
+			 "profiler",
+			 "sys",
+			 "math_proj",
+			 "resource" }
 
 solution "polymorph-td"
 	configurations { "Debug", "Release" }
@@ -53,15 +98,21 @@ solution "polymorph-td"
 		flags { "Symbols", "ExtraWarnings" }
 		defines { "_DEBUG" }
 		libdirs { projPath .. "/lib/Debug" }
-	
 	configuration "Release"
 		flags { "Optimize" }
 		defines { "NDEBUG" }
 		libdirs { projPath .. "/lib/Release" }
 	
-	configuration "with-boost"
-		includedirs { boostDir .. "/include" } 
-		libdirs { boostDir .. "/lib" }
+	configuration "boost"
+		includedirs { externalPath .. "/include/boost" } 
+		libdirs { externalPath .. "/lib/boost" }
+	
+	configuration "libpng"
+		includedirs { externalPath .. "/include/libpng" }
+		libdirs { externalPath .. "/lib/libpng" }
+	
+	configuration "eigen"
+		includedirs { externalPath .. "/include/eigen" }
 	
 	configuration "test-build"
 		defines { "TEST_BUILD" }
@@ -72,19 +123,12 @@ solution "polymorph-td"
 				  "_WIN32_WINNT=0x0501",
 				  "_CRT_SECURE_NO_WARNINGS" }
 	
-	projects = { "ext",
-				 "text",
-				 "concurrency",
-				 "gr",
-				 "input",
-				 "profiler",
-				 "sys",
-				 "math_proj" }
-	
 	for _, proj in ipairs(projects) do
 		print("Loading " .. proj)
 		dofile(proj .. ".lua")
 	end
+	
+	print()
 	
 	for _, proj in ipairs(projects) do
 		print("Making project " .. proj)
@@ -92,12 +136,13 @@ solution "polymorph-td"
 		
 		if _OPTIONS["test-build"] then
 			if _G[proj].doTestProjects then
+				print("Making test project for " .. proj)
 				_G[proj].doTestProjects()
-			else
-				print("No test project for " .. proj)
 			end
 		end
 	end
+	
+	print()
 	
 	-- Project for the actual game
 	project "PolyMorphTD"
