@@ -31,7 +31,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	try
 	{
-		// Yea, change this before running the test...
 		static text::string_hash urlHash = text::intern( R"(.\data\images\test.png)" );
 
 		auto surface = createSurface();

@@ -70,7 +70,7 @@ GraphicsSystem& UISystemRunner::graphics()
 
 
 UISystem::UISystem(Window::ConstructionData& winCtorData)
-: System(settings::uiSystemSync, 256, winCtorData)
+: System(TimeDuration::millis(settings::sys::uiSystemSyncMillis), 256, winCtorData)
 {
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }

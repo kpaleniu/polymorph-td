@@ -10,10 +10,21 @@
 
 namespace settings {
 
-extern const char* windowTitle;
+namespace window
+{
+	constexpr const char* windowTitle = "PolyMorph TD";
+}
 
-extern const TimeDuration uiSystemSync;
-extern const TimeDuration grSystemSync;
+namespace sys
+{
+	constexpr TimeDuration::tick_type uiSystemSyncMillis = 33;
+	constexpr TimeDuration::tick_type grSystemSyncMillis = 16;
+}
+
+namespace path
+{
+	constexpr const char* imagePath = R"(.\data\images\)";
+}
 
 }
 

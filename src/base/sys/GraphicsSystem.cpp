@@ -54,7 +54,7 @@ gr::Renderer& GraphicsSystemRunner::renderer()
 //
 
 GraphicsSystem::GraphicsSystem(Window& window)
-: System(settings::grSystemSync, 256, window)
+: System(TimeDuration::millis(settings::sys::grSystemSyncMillis), 256, window)
 {
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }
