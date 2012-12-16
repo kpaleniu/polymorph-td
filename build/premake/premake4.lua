@@ -109,7 +109,8 @@ solution "polymorph-td"
 	
 	configuration "libpng"
 		includedirs { externalPath .. "/include/libpng" }
-		libdirs { externalPath .. "/lib/libpng" }
+		libdirs { externalPath .. "/lib/libpng",
+				  externalPath .. "/lib/zlib" }
 	
 	configuration "eigen"
 		includedirs { externalPath .. "/include/eigen" }

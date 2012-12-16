@@ -7,6 +7,7 @@ gr =
 		
 		configuration {"windows", "opengl"}
 			includedirs { projPath .. "/include/wgl" }
+			links { "glew32", "glu32", "opengl32" }
 			defines { "GLEW_STATIC" }
 	
 		configuration "opengl"
@@ -33,7 +34,6 @@ gr =
 			
 			configuration {"windows", "opengl"}
 				files { projPath .. "/src/wgl/**.cpp" }
-				links { "glew32", "glu32", "opengl32" }
 			
 			configuration "opengl"
 				files { projPath .. "/src/opengl/**.cpp" }

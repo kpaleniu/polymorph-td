@@ -32,6 +32,5 @@ math_proj =
 			
 			includedirs { projPath .. "/include/test" }
 			
-			
 	end
 }

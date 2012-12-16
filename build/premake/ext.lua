@@ -24,6 +24,9 @@ ext =
 			ext.doDeclarations()
 			concurrency.doDeclarations()
 			
+			configuration "boost"
+				files { projPath .. "/src/boost/ext/**.cpp" }
+				
 			files { projPath .. "/src/base/ext/**.cpp" }
 	end
 }

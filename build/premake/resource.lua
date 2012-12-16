@@ -12,11 +12,12 @@ resource =
 		
 		configuration "libpng"
 			includedirs { projPath .. "/include/libpng" }
-			links { externalPath .. "/lib/libpng/libpng" }
+			links { "png", "z" }
 	end,
 
 	doProject = function()
 		assert(gr)
+		assert(text)
 		
 		project "resource"
 			kind "StaticLib"
@@ -31,16 +32,21 @@ resource =
 	end,
 	
 	doTestProjects = function()
-		project "LibPNGTest"
-			kind "ConsoleApp"
+		project "ImageReaderTest"
+			kind "WindowedApp"
 			language "C++"
 			
-			gr.doDeclarations()
+			links { "gr", "ext", "concurrency", "text" }
+			
 			resource.doDeclarations()
+			concurrency.doDeclarations()
+			gr.doDeclarations()
+			ext.doDeclarations()
 			
 			files { projPath .. "/src/libpng/resource/**.cpp",
 					projPath .. "/src/base/resource/**.cpp",
-					projPath .. "/src/test/resource/test_libpng_main.cpp" }
+					projPath .. "/src/test/resource/test_ImageReader_main.cpp",
+					projPath .. "/src/test/gr/TestWindow.cpp" }
 			
 			includedirs { projPath .. "/include/test" }
 			

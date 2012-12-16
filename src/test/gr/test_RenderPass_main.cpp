@@ -45,15 +45,26 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		BufferManager bufferManager;
 
 
-		RenderPass::BufferDesc bufferDesc;
-		bufferDesc.clearFlags = enum_t(BufferFlag::COLOR);
-		bufferDesc.useFlags = enum_t(BufferFlag::COLOR);
+		RenderPass::BufferDesc bufferDesc1;
+		bufferDesc1.clearFlags = enum_t(BufferFlag::COLOR);
+		bufferDesc1.useFlags = enum_t(BufferFlag::COLOR);
+
+		RenderPass::BufferDesc bufferDesc2;
+		bufferDesc2.clearFlags = enum_t(BufferFlag::NONE);
+		bufferDesc2.useFlags = enum_t(BufferFlag::COLOR);
 
 		RenderPass::MaterialDesc materialDesc;
 		materialDesc.shader = nullptr;
 		materialDesc.texture = nullptr;
 
-		RenderPass::TransformDesc transformDesc =
+		RenderPass::TransformDesc transformDesc1 =
+		{
+			Projection::ortho(-1, 1, -1, 1, 1, -1),
+			Transform::identity(),
+			Transform::identity()
+		};
+
+		RenderPass::TransformDesc transformDesc2 =
 		{
 			Projection::ortho(0, 1, 0, 1, 1, -1),
 			Transform::scale(0.5f) * Transform::rotateAxis(Vector3_r(std::array<real_t, 3>{{0, 0, 1}}),
@@ -65,23 +76,31 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		                 VertexFormat::V2,
 		                 Primitive::TRIANGLES,
 		                 materialDesc,
-		                 bufferDesc,
-		                 transformDesc);
+		                 bufferDesc1,
+		                 transformDesc1);
+		RenderPass pass2(bufferManager,
+		                 VertexFormat::V2,
+		                 Primitive::TRIANGLES,
+		                 materialDesc,
+		                 bufferDesc2,
+		                 transformDesc2);
 
 		TestVertexSupplier testVS;
-		auto vsHandle = pass1.addVertexSupplier(testVS);
+		auto vsHandle1 = pass1.addVertexSupplier(testVS);
+		/*auto vsHandle2 = */pass2.addVertexSupplier(testVS);
 
 		int i = 0;
 		while (updateTestWindow())
 		{
 			pass1.render();
+			pass2.render();
 
 			surface.flipBuffers();
 
 			if (++i == 500)
-				pass1.removeVertexSupplier(vsHandle);
+				pass1.removeVertexSupplier(vsHandle1);
 			if (i == 2000)
-				vsHandle = pass1.addVertexSupplier(testVS);
+				vsHandle1 = pass1.addVertexSupplier(testVS);
 		}
 
 

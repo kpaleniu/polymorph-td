@@ -3,7 +3,7 @@
 concurrency =
 {
 	doDeclarations = function()
-		configuration "with-boost"
+		configuration "boost"
 			includedirs { projPath .. "/include/boost" }
 		
 		-- boost libraries need to be explicitly linked on 
