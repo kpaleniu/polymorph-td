@@ -6,19 +6,43 @@
 #ifndef TEXTURE_HPP_
 #define TEXTURE_HPP_
 
+#include "gr/opengl.hpp"
+#include "gr/Image.hpp"
+
+#include <Scoped.hpp>
+#include <NonCopyable.hpp>
+
 namespace gr {
 
 class Texture
 {
 public:
-	friend class TextureManager;
+	typedef Scoped BindLock;
 
-private:
-	Texture();
+	struct TextureParams
+	{
+		enum Wrap : GLint
+		{
+			CLAMP = GL_CLAMP,
+			REPEAT = GL_REPEAT,
+		} sWrap, tWrap;
+
+		enum Zoom : GLint
+		{
+			NEAREST = GL_NEAREST,
+			LINEAR = GL_LINEAR,
+		} minZoom, magZoom;
+	};
+
+public:
+	Texture(const Image& source, const TextureParams& texParams);
+	Texture(Texture&& other);
 	~Texture();
 
-	Texture(const Texture &);
-	Texture &operator=(const Texture &);
+	BindLock bindLock();
+
+private:
+	GLuint _texID;
 };
 
 }

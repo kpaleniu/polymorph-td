@@ -3,6 +3,7 @@
 #include "gr/TestWindow.hpp"
 
 #include <gr/opengl.hpp>
+#include <gr/Texture.hpp>
 
 #include <text/util.hpp>
 
@@ -31,32 +32,26 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	try
 	{
 		// Yea, change this before running the test...
-		static text::string_hash urlHash = text::intern( R"(C:\Programmering\PolyMorphTD\data\images\test.png)" );
+		static text::string_hash urlHash = text::intern( R"(.\data\images\test.png)" );
 
 		auto surface = createSurface();
 
 		ImageReader imReader;
 		auto imageHandle = imReader.getImage(urlHash);
 
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-		glGenTextures(1, &texId);
-		glBindTexture(GL_TEXTURE_2D, texId);
-
 		glEnable(GL_TEXTURE_2D);
 
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageHandle->getWidth(),
-					imageHandle->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
-					imageHandle->data());
-
-		glBindTexture(GL_TEXTURE_2D, texId);
+		Texture tex(*imageHandle,
+		            Texture::TextureParams
+		            { Texture::TextureParams::CLAMP,
+					  Texture::TextureParams::CLAMP,
+					  Texture::TextureParams::LINEAR,
+					  Texture::TextureParams::LINEAR });
 
 		while (updateTestWindow())
 		{
+			auto bindLock = tex.bindLock();
+
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			glBegin(GL_QUADS);
