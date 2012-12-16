@@ -1,9 +1,6 @@
-/**
- * @file VertexList.hpp
- *
- */
 
-#ifndef VERTEXBUFFER_HPP_
+
+#ifndef IMAGE_HPP_
 #define IMAGE_HPP_
 
 #include "gr/PixelFormat.hpp"
@@ -20,11 +17,24 @@ public:
 	      unsigned int h,
 	      PixelFormat format,
 	      unsigned int rowAlignment,
-	      const void* pixels);
+	      unsigned char* pixels);
 
 	Image(Image&& image);
 
+	~Image();
 
+	unsigned int getWidth() const;
+	unsigned int getHeight() const;
+	PixelFormat getPixelFormat() const;
+	unsigned int getRowAlignment() const;
+	const unsigned char* data() const;
+
+private:
+	unsigned int _width;
+	unsigned int _height;
+	PixelFormat _format;
+	unsigned int _rowAlignment;
+	unsigned char* _pixels;
 };
 
 }
