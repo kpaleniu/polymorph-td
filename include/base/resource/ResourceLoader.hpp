@@ -34,6 +34,8 @@ public:
 	public:
 		ResourceHandle(const res_map_iterator& rmi) : PrivateHandle<res_map_iterator>(rmi)
 		{ ++PrivateHandle<res_map_iterator>::_val->second.refs; }
+		ResourceHandle(const ResourceHandle& other) : PrivateHandle<res_map_iterator>(other)
+		{ ++PrivateHandle<res_map_iterator>::_val->second.refs; }
 		~ResourceHandle()
 		{ --PrivateHandle<res_map_iterator>::_val->second.refs; }
 
@@ -43,14 +45,18 @@ public:
 		Product& operator*()
 		{ return PrivateHandle<res_map_iterator>::_val->second.data; }
 
+		Product* operator->()
+		{ return &PrivateHandle<res_map_iterator>::_val->second.data; }
+
 		friend class ResourceLoader<Product>;
 	};
 
 public:
-	void clearGarbage();
+	void collectGarbage();
 
 protected:
 	ResourceHandle addProduct(text::string_hash id, Product&& data);
+	ResourceHandle getProduct(text::string_hash id);
 	bool hasProduct(text::string_hash id) const;
 
 private:
@@ -61,7 +67,7 @@ private:
 // Implementation
 
 template<typename Product>
-inline void ResourceLoader<Product>::clearGarbage()
+inline void ResourceLoader<Product>::collectGarbage()
 {
 	// Removes all non-referenced resources.
 
@@ -81,8 +87,16 @@ template<typename Product>
 inline typename ResourceLoader<Product>::ResourceHandle ResourceLoader<Product>
 	::addProduct(text::string_hash id, Product&& data)
 {
-	return ResourceHandle(std::make_pair( id, {0, std::move(data)} ));
+	return ResourceHandle(_loaded.insert(std::make_pair( id, Res{0, std::move(data)} )).first);
 }
+
+template<typename Product>
+inline typename ResourceLoader<Product>::ResourceHandle ResourceLoader<Product>
+	::getProduct(text::string_hash id)
+{
+	return _loaded.find(id);
+}
+
 
 template<typename Product>
 inline bool ResourceLoader<Product>::hasProduct(text::string_hash id) const
