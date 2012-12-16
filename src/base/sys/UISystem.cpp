@@ -51,7 +51,8 @@ bool UISystemRunner::update()
 
 	while (_window.inputSource().handleInput())
 	{
-		if (TimeDuration::between(start, TimeStamp::now()) > settings::uiSystemSync)
+		if (TimeDuration::between(start, TimeStamp::now())
+			> TimeDuration::millis(settings::sys::uiSystemSyncMillis))
 			break;
 	}
 

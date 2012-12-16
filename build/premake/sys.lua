@@ -21,6 +21,7 @@ sys =
 			assert(input ~= nil)
 			assert(concurrency ~= nil)
 
+			ext.doDeclarations()
 			gr.doDeclarations()
 			input.doDeclarations()
 			concurrency.doDeclarations()

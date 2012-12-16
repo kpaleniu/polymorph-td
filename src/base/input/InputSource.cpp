@@ -5,7 +5,7 @@
 
 #include "input/InputSource.hpp"
 
-#include "Assert.hpp"
+#include <Assert.hpp>
 
 #include <algorithm>
 

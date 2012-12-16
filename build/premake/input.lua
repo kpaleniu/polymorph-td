@@ -16,6 +16,7 @@ input =
 
 			assert(input ~= nil)
 			
+			ext.doDeclarations()
 			input.doDeclarations()
 
 			files { projPath .. "/src/base/input/**.cpp" }

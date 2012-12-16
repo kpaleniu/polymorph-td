@@ -4,7 +4,7 @@
  */
 
 #include "game/Entity.hpp"
-#include "Assert.hpp"
+#include <Assert.hpp>
 
 namespace game {
 

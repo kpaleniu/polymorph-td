@@ -73,11 +73,11 @@ protected:
 
 	std::atomic<Runner*> _runnerAccess;
 
+	const TimeDuration _sync;
+
 private:
 	bool _started;
 	concurrency::Condition _startupCond;
-
-	const TimeDuration _sync;
 
 	/**
 	 * Calls runner's update method.
@@ -93,12 +93,12 @@ System<Runner>::System(const TimeDuration &sync,
                              size_t bufferSize,
 							 T1&& arg1)
 :	Thread(),
-	 _factory(),
-	 _actions(bufferSize),
-	 _runnerAccess(nullptr),
-	 _started(false),
-	 _startupCond(),
-	 _sync(sync)
+	_factory(),
+	_actions(bufferSize),
+	_runnerAccess(nullptr),
+	_sync(sync),
+	_started(false),
+	_startupCond()
 {
 	// NOTE: due to a limitation in the VC++11's implementation of
 	// lambdas the template parameter is not visible inside the lambda
@@ -112,9 +112,9 @@ System<Runner>::System(System&& system)
 	_factory(system._factory),
 	_actions(std::move(system._actions)),
 	_runnerAccess(system._runnerAccess.load()),
+	_sync(system._sync),
 	_started(system._started),
-	_startupCond(), // Conditions can't be moved.
-	_sync(system._sync)
+	_startupCond() // Conditions can't be moved.
 {
 	system._runnerAccess = nullptr;
 }

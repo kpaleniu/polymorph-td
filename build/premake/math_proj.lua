@@ -11,7 +11,7 @@ math_proj =
 	end,
 	
 	doProject = function()
-		project "math"
+		project "math_proj"
 			kind "StaticLib"
 			language "C++"
 			

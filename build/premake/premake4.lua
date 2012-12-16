@@ -69,10 +69,11 @@ end
 projects = { "ext",
 			 "text",
 			 "concurrency",
+			 "sys",
 			 "gr",
+			 "game",
 			 "input",
 			 "profiler",
-			 "sys",
 			 "math_proj",
 			 "resource" }
 
@@ -158,7 +159,7 @@ solution "polymorph-td"
 		
 		configuration "windows"
 			includedirs { projPath .. "/include/win32" }
-			files { projPath .. "/src/win32/**.cpp" }
+			files { projPath .. "/src/win32/win_main.cpp" }
 			flags { "WinMain" }
 		
 		configuration "macosx"
@@ -174,7 +175,7 @@ solution "polymorph-td"
 			libdirs { "/opt/local/lib" }
 			links { "Cocoa.framework" }
 
-		configuration {"macosx", "with-opengl"}
+		configuration {"macosx", "opengl"}
 			links { "OpenGL.framework" }
 
 	-- Project for PolyMorphTD unit tests
