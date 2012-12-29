@@ -19,7 +19,11 @@ public:
 	{
 	public:
 		DataWriter(std::vector<T>& dataSource);
-		DataWriter<T>& operator<<(const std::vector<T>& data);
+
+		template <typename C>
+		DataWriter<T>& operator<<(const C& data);
+
+		DataWriter<T>& write(const T* data, size_t size);
 
 		// To avoid re-writing constant data (not able to do this with current implementation).
 		//VertexWriter& keep(size_t vertexCount, size_t vertexCount);
@@ -44,6 +48,8 @@ public:
 	 * This should be called once per frame.
 	 */
 	void flush();
+
+	size_t getVertexCount() const;
 
 private:
 	VertexBuffer& _vertices;
@@ -97,12 +103,25 @@ VertexWriter::DataWriter<T>::DataWriter(std::vector<T>& dataSource)
 }
 
 template<typename T>
-VertexWriter::DataWriter<T>& VertexWriter::DataWriter<T>::operator<<(const std::vector<T>& vertices)
+template<typename C>
+VertexWriter::DataWriter<T>& VertexWriter::DataWriter<T>::operator<<(const C& vertices)
 {
-	for (auto real : vertices)
+	for (const auto& real : vertices)
 		_dataSource.push_back(real);
+
 	return *this;
 }
+
+template<typename T>
+VertexWriter::DataWriter<T>& VertexWriter::DataWriter<T>::write(const T* data, size_t size)
+{
+	for (size_t i = 0; i < size; ++i)
+		_dataSource.push_back(data[i]);
+
+	return *this;
+}
+
+
 
 }
 

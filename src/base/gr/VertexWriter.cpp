@@ -149,5 +149,13 @@ void VertexWriter::flush()
 	//
 }
 
+size_t VertexWriter::getVertexCount() const
+{
+	ASSERT(_vertBuffer.size() / getVertexFormatData(_vertices.getVertexFormat()).vertDim == 0,
+	       "Vertex buffer is corrupt.");
+
+	return _vertBuffer.size() / getVertexFormatData(_vertices.getVertexFormat()).vertDim;
+}
+
 }
 
