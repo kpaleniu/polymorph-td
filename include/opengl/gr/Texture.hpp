@@ -14,7 +14,7 @@
 
 namespace gr {
 
-class Texture
+class Texture : NonCopyable
 {
 public:
 	typedef Scoped BindLock;
@@ -24,6 +24,7 @@ public:
 		enum Wrap : GLint
 		{
 			CLAMP = GL_CLAMP,
+			CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
 			REPEAT = GL_REPEAT,
 		} sWrap, tWrap;
 
@@ -39,7 +40,7 @@ public:
 	Texture(Texture&& other);
 	~Texture();
 
-	BindLock bindLock();
+	BindLock bindLock() const;
 
 private:
 	GLuint _texID;

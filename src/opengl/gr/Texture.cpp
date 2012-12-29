@@ -39,7 +39,7 @@ Texture::~Texture()
 		glDeleteTextures(1, &_texID);
 }
 
-Texture::BindLock Texture::bindLock()
+Texture::BindLock Texture::bindLock() const
 {
 	return BindLock([this]{ glBindTexture(GL_TEXTURE_2D, _texID); },
 	                [this]{ glBindTexture(GL_TEXTURE_2D, 0); });
