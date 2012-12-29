@@ -6,7 +6,6 @@
 #ifndef ANY_HPP_
 #define ANY_HPP_
 
-
 class AnyType
 {
 public:
@@ -15,7 +14,7 @@ public:
 	AnyType() 				: i(0) {}
 	AnyType(int i_)			: i(i_) {}
 	AnyType(float f_)		: f(f_) {}
-	AnyType(char c_)		: c(c_) {}
+	AnyType(bool b_)		: b(b_) {}
 	AnyType(void* ptr_)		: ptr(ptr_) {}
 	AnyType(size_t size_)	: size(size_) {}
 
@@ -39,10 +38,10 @@ public:
 	const size_t& asSize() const
 	{ return size; }
 
-	char& asChar()
-	{ return c; }
-	const char& asChar() const
-	{ return c; }
+	bool& asBool()
+	{ return b; }
+	const bool& asBool() const
+	{ return b; }
 
 private:
 
@@ -52,7 +51,7 @@ private:
 		float f;
 		pointer ptr;
 		size_t size;
-		char c;
+		bool b;
 	};
 };
 
