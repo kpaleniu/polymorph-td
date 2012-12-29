@@ -4,47 +4,66 @@
  */
 
 #include "game/Entity.hpp"
+
+#include <Debug.hpp>
 #include <Assert.hpp>
 
 namespace game {
 
 namespace {
-
-const int writeIndex = 0;
-const int readIndex = 1;
-
+const char* TAG = "EntityManager";
 }
 
-EntityManager::EntityView::EntityView(Components& writeBuffer,
-                                      const Components* readBuffer)
-		: _readBuffer(readBuffer),
-		  _writeBuffer(writeBuffer)
+// EntityReadView
+
+EntityManager::EntityReadView::EntityReadView(const Components& readBuffer)
+:	_readBuffer(readBuffer)
 {
 }
 
-Component::Writer EntityManager::EntityView::addComponent(component_id compId)
+bool EntityManager::EntityReadView::hasComponent(component_id compId) const
 {
-	auto it = _writeBuffer.insert(std::pair<
-	        component_id, Component>(compId,
-	                                 Component())).first;
-	return Component::Writer((*it).second);
+	return _readBuffer.find(compId) != _readBuffer.end();
 }
 
-void EntityManager::EntityView::removeComponent(component_id compId)
+const Component::Reader EntityManager::EntityReadView::findReader(component_id compId) const
 {
-	_writeBuffer.erase(compId);
+	return Component::Reader(_readBuffer.at(compId));
 }
 
-Component::Writer EntityManager::EntityView::findWriter(component_id compId)
+// EntityWriteView
+
+EntityManager::EntityWriteView::EntityWriteView(Components& writeBuffer)
+:	_writeBuffer(writeBuffer)
+{
+}
+
+Component::Writer EntityManager::EntityWriteView::findWriter(component_id compId)
 {
 	return Component::Writer(_writeBuffer.at(compId));
 }
 
-const Component::Reader EntityManager::EntityView::findReader(component_id compId) const
+Component::Writer EntityManager::EntityWriteView::addComponent(component_id compId)
 {
-	ASSERT(_readBuffer != nullptr, "Reader not created yet, flip buffers first.");
-	return Component::Reader(_readBuffer->at(compId));
+	auto it = _writeBuffer.insert(
+				std::pair<component_id, Component>(compId, Component())).first;
+	return Component::Writer((*it).second);
 }
+
+void EntityManager::EntityWriteView::removeComponent(component_id compId)
+{
+	_writeBuffer.erase(compId);
+}
+
+// EntityView
+
+EntityManager::EntityView::EntityView(const Components& readBuffer, Components& writeBuffer)
+:	EntityReadView(readBuffer),
+ 	EntityWriteView(writeBuffer)
+{
+}
+
+// EntityManager
 
 concurrency::Mutex& EntityManager::flipMutex() const
 {
@@ -54,7 +73,8 @@ concurrency::Mutex& EntityManager::flipMutex() const
 void EntityManager::flipBuffers()
 {
 	concurrency::MutexLockGuard lock(_flipMutex);
-	_entitiesBuffer[readIndex] = _entitiesBuffer[writeIndex];
+
+	_readBuffer = _writeBuffer; // Invalidates iterators?
 }
 
 bool EntityManager::tryFlipBuffers()
@@ -66,26 +86,25 @@ bool EntityManager::tryFlipBuffers()
 
 EntityManager::EntityView EntityManager::findEntity(entity_id entId)
 {
-	Entities::iterator itRead = _entitiesBuffer[readIndex].find(entId);
-
-	if (itRead == _entitiesBuffer[readIndex].end())
-		return EntityView(_entitiesBuffer[writeIndex].at(entId));
-	else
-		return EntityView(_entitiesBuffer[writeIndex].at(entId),
-		                  &itRead->second);
+	return EntityView(_readBuffer.at(entId), _writeBuffer.at(entId));
 }
 
-EntityManager::EntityView EntityManager::addEntity(entity_id entId)
+EntityManager::EntityReadView EntityManager::findEntity(entity_id entId) const
+{
+	return EntityReadView(_readBuffer.at(entId));
+}
+
+EntityManager::EntityWriteView EntityManager::addEntity(entity_id entId)
 {
 	Entities::iterator itWrite =
-		_entitiesBuffer[writeIndex].insert(std::pair<entity_id, Components>(entId, Components())).first;
+		_writeBuffer.insert(std::pair<entity_id, Components>(entId, Components())).first;
 
-	return EntityView(itWrite->second);
+	return EntityWriteView(itWrite->second);
 }
 
 void EntityManager::removeEntity(entity_id entId)
 {
-	_entitiesBuffer[writeIndex].erase(entId);
+	_writeBuffer.erase(entId);
 }
 
 }
