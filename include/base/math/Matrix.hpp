@@ -97,9 +97,9 @@ public:
 	const EigenDerived& asEigen() const
 	{ return *this; }
 
-private:
-
 	Matrix(const EigenDerived& mat);
+
+private:
 
 	template<typename _S, unsigned int _Rows, unsigned int _Cols, bool _RowMajor>
 	friend class Matrix;

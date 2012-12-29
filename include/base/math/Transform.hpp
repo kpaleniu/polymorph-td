@@ -42,6 +42,7 @@ public:
 	Transform(const Transform&) 			= default;
 	Transform& operator=(const Transform&) 	= default;
 
+	Matrix<S, 3u, 1u, false> operator*(const Matrix<S, 3u, 1u, false>& vec3) const;
 	Transform<S, RowMajor> operator*(const Transform<S, RowMajor>& other) const;
 	Transform<S, RowMajor>& operator*=(const Transform<S, RowMajor>& other);
 
@@ -71,6 +72,12 @@ template<typename S, bool RowMajor>
 inline Transform<S, RowMajor>::Transform(const Transform::EigenDerived& data)
 :	EigenDerived(data)
 {}
+
+template<typename S, bool RowMajor>
+inline Matrix<S, 3u, 1u, false> Transform<S, RowMajor>::operator*(const Matrix<S, 3u, 1u, false>& vec3) const
+{
+	return Matrix<S, 3u, 1u, false>(EigenDerived::operator*(vec3.asEigen()));
+}
 
 template<typename S, bool RowMajor>
 inline Transform<S, RowMajor> Transform<S, RowMajor>::operator*(const Transform<S, RowMajor>& other) const
