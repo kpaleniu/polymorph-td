@@ -42,6 +42,9 @@ public:
 
 	BindLock bindLock() const;
 
+	void bind() const;
+	void unbind() const;
+
 private:
 	GLuint _texID;
 };

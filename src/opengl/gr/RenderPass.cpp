@@ -5,6 +5,7 @@
 
 #include "gr/RenderPass.hpp"
 #include "gr/opengl.hpp"
+#include "gr/Texture.hpp"
 
 namespace gr {
 
@@ -24,7 +25,8 @@ RenderPass::RenderPass(BufferManager& bufferManager,
  	_transformDesc(transformDesc),
  	_vertexSuppliers(),
  	_preRenderHook(),
- 	_postRenderHook()
+ 	_postRenderHook(),
+ 	_needUpdate(true)
 {
 }
 
@@ -40,7 +42,8 @@ void RenderPass::removeVertexSupplier(VertexSupplierHandle handle)
 
 void RenderPass::render()
 {
-	updateVertices();
+	if (_needUpdate)
+		updateVertices();
 
 	if (_preRenderHook)
 		_preRenderHook();
@@ -56,9 +59,8 @@ void RenderPass::render()
 	glMultMatrixf(_transformDesc.model.data());
 
 	if (_materialDesc.texture != nullptr)
-	{
-		// TODO Implement
-	}
+		_materialDesc.texture->bind();
+
 	if (_materialDesc.shader != nullptr)
 	{
 		// TODO Implement
@@ -67,8 +69,13 @@ void RenderPass::render()
 	if ( !_vertices.isEmpty() )
 		_vertices.draw(_shape, _indices);
 
+	if (_materialDesc.texture != nullptr)
+		_materialDesc.texture->unbind();
+
 	if (_postRenderHook)
 		_postRenderHook();
+
+	_needUpdate = true;
 }
 
 void RenderPass::preRender(Hook hook)
@@ -88,6 +95,8 @@ void RenderPass::updateVertices()
 		supplier->writeVertices(_vertexWriter);
 
 	_vertexWriter.flush();
+
+	_needUpdate = false;
 }
 
 }

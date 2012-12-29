@@ -1,6 +1,8 @@
 #include "gr/Texture.hpp"
 #include "gr/GraphicsException.hpp"
 
+#include <Assert.hpp>
+
 namespace gr {
 
 Texture::Texture(const Image& source,
@@ -41,8 +43,19 @@ Texture::~Texture()
 
 Texture::BindLock Texture::bindLock() const
 {
-	return BindLock([this]{ glBindTexture(GL_TEXTURE_2D, _texID); },
-	                [this]{ glBindTexture(GL_TEXTURE_2D, 0); });
+	return BindLock([this]{ bind(); },
+	                [this]{ unbind(); });
+}
+
+void Texture::bind() const
+{
+	ASSERT(_texID != 0, "Trying to bind invalid texture.");
+	glBindTexture(GL_TEXTURE_2D, _texID);
+}
+
+void Texture::unbind() const
+{
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 }

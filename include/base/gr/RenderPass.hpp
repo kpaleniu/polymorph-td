@@ -65,13 +65,13 @@ public:
 	VertexSupplierHandle addVertexSupplier(VertexSupplier& vertexSupplier);
 	void removeVertexSupplier(VertexSupplierHandle handle);
 
+	void updateVertices();
 	void render();
 
 	void preRender(Hook hook);
 	void postRender(Hook hook);
 
 private:
-	void updateVertices();
 
 	BufferManager& _bufferManager;
 
@@ -90,6 +90,8 @@ private:
 
 	Hook _preRenderHook;
 	Hook _postRenderHook;
+
+	bool _needUpdate;
 };
 
 }
