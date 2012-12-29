@@ -24,12 +24,18 @@ game =
 			kind "WindowedApp"
 			language "C++"
 			
-			links { "ext", "concurrency" }
+			links { "gr", "ext", "concurrency", "text" }
 			
 			concurrency.doDeclarations()
 			ext.doDeclarations()
 			gr.doDeclarations()
+			sys.doDeclarations()
 			
-			------- TODO
+			includedirs { projPath .. "/include/test" }
+			
+			files { projPath .. "/src/base/game/**.cpp",
+					projPath .. "/src/test/gr/TestWindow.cpp",
+					projPath .. "/src/test/game/test_Game_main.cpp" }
+			
 	end
 }
