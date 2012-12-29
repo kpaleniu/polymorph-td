@@ -4,13 +4,18 @@
  */
 
 #include "game/Component.hpp"
-#include "Assert.hpp"
+#include <Assert.hpp>
 
 namespace game {
 
 Component::Reader::Reader(const Component& comp)
 :	_comp(comp)
 {
+}
+
+size_t Component::Reader::getSize() const
+{
+	return _comp._data.size();
 }
 
 const AnyType& Component::Reader::read(int index) const
@@ -21,6 +26,11 @@ const AnyType& Component::Reader::read(int index) const
 Component::Writer::Writer(Component& comp)
 :	_comp(comp)
 {
+}
+
+size_t Component::Writer::getSize() const
+{
+	return _comp._data.size();
 }
 
 Component::Writer& Component::Writer::write(const AnyType& data, int index)
@@ -52,6 +62,11 @@ Component::Writer& Component::Writer::insert(const std::vector<AnyType>& data)
 		_comp._data.push_back(any);
 
 	return *this;
+}
+
+Component::Component()
+:	_data()
+{
 }
 
 }

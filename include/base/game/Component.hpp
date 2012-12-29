@@ -6,10 +6,10 @@
 #ifndef COMPONENT_HPP_
 #define COMPONENT_HPP_
 
-#include "concurrency/Mutex.hpp"
-#include "text/util.hpp"
-#include "Scoped.hpp"
-#include "Any.hpp"
+#include <concurrency/Mutex.hpp>
+#include <text/util.hpp>
+#include <Scoped.hpp>
+#include <Any.hpp>
 
 #include <stddef.h>
 #include <map>
@@ -17,16 +17,17 @@
 
 namespace game {
 
-typedef text::string_hash prop_type_id;
-
 class Component
 {
 public:
+	Component();
+
 	class Reader
 	{
 	public:
 		Reader(const Component& comp);
 
+		size_t getSize() const;
 		const AnyType& read(int index=0) const;
 
 	private:
@@ -37,6 +38,8 @@ public:
 	{
 	public:
 		Writer(Component& comp);
+
+		size_t getSize() const;
 
 		Writer& write(const AnyType& data, int index=0);
 		Writer& write(const std::vector<AnyType>& data);
