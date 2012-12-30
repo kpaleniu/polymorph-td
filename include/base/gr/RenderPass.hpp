@@ -13,12 +13,13 @@
 #include "gr/VertexSupplier.hpp"
 
 #include <PrivateHandle.hpp>
+#include <NonCopyable.hpp>
 
 #include <list>
 
 namespace gr {
 
-class RenderPass
+class RenderPass : NonCopyable
 {
 public:
 	typedef std::list<VertexSupplier*>::iterator vertex_supplier_iterator;
@@ -61,6 +62,8 @@ public:
 	            const TransformDesc& transformDesc = {Projection::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f),
 	                                                 Transform::identity(),
 	                                                 Transform::identity()} );
+
+	RenderPass(RenderPass&& other);
 
 	VertexSupplierHandle addVertexSupplier(VertexSupplier& vertexSupplier);
 	void removeVertexSupplier(VertexSupplierHandle handle);

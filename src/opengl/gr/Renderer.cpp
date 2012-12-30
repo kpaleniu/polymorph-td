@@ -10,8 +10,8 @@
 
 #include "gr/opengl.hpp"
 
-#include "Assert.hpp"
-#include "Debug.hpp"
+#include <Assert.hpp>
+#include <Debug.hpp>
 
 namespace gr {
 
@@ -32,7 +32,8 @@ const char* TAG = "Renderer";
 Renderer::Renderer(Surface &surface)
 :	_surface(surface),
 	_debugDraw(),
-	_bufferManager()
+	_bufferManager(),
+	_renderPassManager()
 {
 	_surface.activate(true);
 
@@ -46,7 +47,10 @@ Renderer::Renderer(Surface &surface)
 }
 
 Renderer::Renderer(Renderer&& renderer)
-:	_surface(renderer._surface) // TODO Move the rest
+:	_surface(renderer._surface),
+ 	_debugDraw(),
+ 	_bufferManager(),
+ 	_renderPassManager(std::move(renderer._renderPassManager))
 {
 }
 
@@ -60,11 +64,6 @@ void Renderer::setClearColor(float r, float g, float b, float a)
 	glClearColor(r, g, b, a);
 }
 
-void Renderer::clearBuffers()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
 void Renderer::flipBuffers()
 {
 	_surface.flipBuffers();
@@ -72,35 +71,13 @@ void Renderer::flipBuffers()
 
 void Renderer::render()
 {
-	clearBuffers();
-/*
-	_renderObjects.erase(
-			std::remove_if(_renderObjects.begin(),
-			               _renderObjects.end(),
-			               [this](const RenderAction& action) -> bool
-						   { return !action(*this); }),
-			_renderObjects.end());
-*/
+
+
 #ifdef _DEBUG
 	GLenum errCode = glGetError();
 	if (errCode != GL_NO_ERROR)
 		throw GraphicsException(std::string((char*) gluErrorString(errCode)));
 #endif
-}
-/*
-Renderer::RenderObjectHandle Renderer::addRenderObject(RenderObject&& object)
-{
-	render_variant_iterator it =
-		_renderObjects.insert(
-			std::make_pair(object.material(),
-			               RenderVariant(object)));
-
-	return RenderObjectHandle(it);
-}
-*/
-void Renderer::removeRenderObject(Renderer::RenderObjectHandle handle)
-{
-	_renderObjects.erase(handle);
 }
 
 DebugDraw& Renderer::debugDraw()
@@ -111,6 +88,11 @@ DebugDraw& Renderer::debugDraw()
 BufferManager& Renderer::bufferManager()
 {
 	return _bufferManager;
+}
+
+RenderPassManager& Renderer::renderPassManager()
+{
+	return _renderPassManager;
 }
 
 

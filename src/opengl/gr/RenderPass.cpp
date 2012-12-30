@@ -30,6 +30,22 @@ RenderPass::RenderPass(BufferManager& bufferManager,
 {
 }
 
+RenderPass::RenderPass(RenderPass&& other)
+:	_bufferManager(other._bufferManager),
+ 	_shape(other._shape),
+ 	_vertices(std::move(other._vertices)),
+ 	_indices(std::move(other._indices)),
+ 	_vertexWriter(_vertices, _indices),
+ 	_materialDesc(other._materialDesc),
+ 	_bufferDesc(other._bufferDesc),
+ 	_transformDesc(other._transformDesc),
+ 	_vertexSuppliers(std::move(other._vertexSuppliers)),
+ 	_preRenderHook(other._preRenderHook),
+ 	_postRenderHook(other._postRenderHook),
+ 	_needUpdate(other._needUpdate)
+{
+}
+
 RenderPass::VertexSupplierHandle RenderPass::addVertexSupplier(VertexSupplier& vertexSupplier)
 {
 	return VertexSupplierHandle(_vertexSuppliers.insert(_vertexSuppliers.end(), &vertexSupplier));
