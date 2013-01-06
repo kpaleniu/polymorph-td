@@ -21,6 +21,7 @@ typedef GLenum 	enum_t;
 
 typedef math::Projection<real_t, true> 	Projection;
 typedef math::Transform<real_t, true> 	Transform;
+typedef math::Matrix<real_t, 2, 1> 		Vector2_r;
 typedef math::Matrix<real_t, 3, 1> 		Vector3_r;
 
 const enum_t REAL_TYPE 	= GL_FLOAT;
