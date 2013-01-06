@@ -5,8 +5,6 @@
 #include "gr/BufferManager.hpp"
 #include "gr/RenderPassManager.hpp"
 
-#include "gr/RenderObject.hpp"
-
 #include <PrivateHandle.hpp>
 #include <NonCopyable.hpp>
 
