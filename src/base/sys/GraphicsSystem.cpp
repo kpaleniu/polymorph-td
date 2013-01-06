@@ -21,8 +21,6 @@ namespace { const char* TAG_RUNNER = "GraphicsSystemRunner";
 GraphicsSystemRunner::GraphicsSystemRunner(Window& win)
 : _surface(win.surface()), _renderer(_surface)
 {
-	_renderer.clearBuffers();
-
 	DEBUG_OUT(TAG_RUNNER, "Constructed");
 }
 
