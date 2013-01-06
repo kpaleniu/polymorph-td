@@ -25,6 +25,8 @@ public:
 
 	const Texture& texture() const;
 
+	const std::array<gr::real_t, 8>& coordsFor(sprite_id_t spriteID) const;
+
 private:
 	Texture _tex;
 	std::map<sprite_id_t, std::array<gr::real_t, 8>> _texCoords;
