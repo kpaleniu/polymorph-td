@@ -130,9 +130,9 @@ void VertexWriter::flush()
 	if (formatFlags.colorDim > 0)
 		_vertices.writeColors(0, _colorBuffer.size() / formatFlags.colorDim, _colorBuffer.data());
 	if (formatFlags.textDim > 0)
-		_vertices.writeColors(0, _texCoordBuffer.size() / formatFlags.textDim, _texCoordBuffer.data());
+		_vertices.writeTextureCoords(0, _texCoordBuffer.size() / formatFlags.textDim, _texCoordBuffer.data());
 	if (formatFlags.normalDim > 0)
-		_vertices.writeColors(0, _normalBuffer.size() / formatFlags.normalDim, _normalBuffer.data());
+		_vertices.writeNormals(0, _normalBuffer.size() / formatFlags.normalDim, _normalBuffer.data());
 
 	_indices.writeIndices(0, _indexBuffer.size(), _indexBuffer.data());
 
