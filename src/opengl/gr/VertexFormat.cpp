@@ -22,17 +22,17 @@ const VertexFormatData vertexFormatData[size_t(VertexFormat::VERTEX_ENUM_SIZE)] 
 //
 //	  S  V  C  T  N  ARRAY FLAGS
 	{ 2, 2, 0, 0, 0, format_flags(VertexFormatFlag::VERT_FLAG) },	// V2
-	{ 5, 2, 3, 0, 0, format_flags(VertexFormatFlag::VERT_FLAG) &
+	{ 5, 2, 3, 0, 0, format_flags(VertexFormatFlag::VERT_FLAG) |
 					 format_flags(VertexFormatFlag::COLOR_FLAG) },	// V2_C3
-	{ 6, 2, 4, 0, 0, format_flags(VertexFormatFlag::VERT_FLAG) &
+	{ 6, 2, 4, 0, 0, format_flags(VertexFormatFlag::VERT_FLAG) |
 					 format_flags(VertexFormatFlag::COLOR_FLAG) },	// V2_C4
-	{ 4, 2, 0, 2, 0, format_flags(VertexFormatFlag::VERT_FLAG) &
+	{ 4, 2, 0, 2, 0, format_flags(VertexFormatFlag::VERT_FLAG) |
 					 format_flags(VertexFormatFlag::TEXT_FLAG) },	// V2_T2
-	{ 7, 2, 3, 2, 0, format_flags(VertexFormatFlag::VERT_FLAG) &
-					 format_flags(VertexFormatFlag::COLOR_FLAG) &
+	{ 7, 2, 3, 2, 0, format_flags(VertexFormatFlag::VERT_FLAG) |
+					 format_flags(VertexFormatFlag::COLOR_FLAG) |
 					 format_flags(VertexFormatFlag::TEXT_FLAG) },	// V2_C3_T2
-	{ 8, 2, 4, 2, 0, format_flags(VertexFormatFlag::VERT_FLAG) &
-					 format_flags(VertexFormatFlag::COLOR_FLAG) &
+	{ 8, 2, 4, 2, 0, format_flags(VertexFormatFlag::VERT_FLAG) |
+					 format_flags(VertexFormatFlag::COLOR_FLAG) |
 					 format_flags(VertexFormatFlag::TEXT_FLAG) } 	// V2_C4_T2
 };
 
