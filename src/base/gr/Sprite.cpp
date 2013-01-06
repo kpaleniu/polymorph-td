@@ -38,7 +38,10 @@ void Sprite::writeVertices(VertexWriter& writer)
 	size_t nextIndex = writer.getVertexCount();
 
 	for (const Vector3_r& vert : spriteBounds)
-		writer.vertices().write( (_transform * vert).data(), 3 );
+	{
+		Vector3_r wr = _transform * vert;
+		writer.vertices().write( wr.data(), 2 ); // Write only x and y.
+	}
 
 	writer.texCoords() << _texCoords;
 
