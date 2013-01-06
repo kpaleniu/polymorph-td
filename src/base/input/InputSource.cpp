@@ -75,8 +75,8 @@ void InputSource::notifyKeyUp(key_type key)
 
 void InputSource::notifyPointerDown(pointer_id id,
                                     pointer_button button,
-                                    int x,
-                                    int y)
+                                    long x,
+                                    long y)
 {
 	if (_pointerListener != nullptr)
 		_pointerListener->onPointerDown(id, button, x, y);
@@ -99,11 +99,12 @@ void InputSource::notifyPointerDrag(pointer_id id,
 }
 
 void InputSource::notifyPointerUp(pointer_id id,
-                                  int x,
-                                  int y)
+                                  pointer_button button,
+                                  long x,
+                                  long y)
 {
 	if (_pointerListener != nullptr)
-		_pointerListener->onPointerUp(id, x, y);
+		_pointerListener->onPointerUp(id, button, x, y);
 }
 
 void InputSource::notifyPointerZoom(int dz)

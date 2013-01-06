@@ -23,6 +23,30 @@ input =
 
 			configuration "windows"
 				files { projPath .. "/src/win32/input/**.cpp" }
+	end,
+	
+	doTestProjects = function()
+		project "WindowInputTest"
+			kind "WindowedApp"
+			language "C++"
+			
+			links { "sys", "profiler", "gr", "ext", "concurrency", "text" }
+			
+			resource.doDeclarations()
+			concurrency.doDeclarations()
+			gr.doDeclarations()
+			ext.doDeclarations()
+			sys.doDeclarations()
+			input.doDeclarations()
+			profiler.doDeclarations()
+			
+			files { projPath .. "/src/base/input/**.cpp",
+					projPath .. "/src/test/input/test_WindowInput_main.cpp" }
+
+			configuration "windows"
+				files { projPath .. "/src/win32/input/**.cpp" }
+			
+			includedirs { projPath .. "/include/test" }			
 	end
 }
 

@@ -4,15 +4,37 @@
  */
 
 #include "input/WindowInputSource.hpp"
-#include "sys/WindowException.hpp"
 
+#include <sys/WindowException.hpp>
+
+#include <Debug.hpp>
+#include <Assert.hpp>
+
+#include <array>
 
 namespace input {
 
 namespace {
 
+const char* TAG = "WindowInputSource";
+
+constexpr std::array<USHORT, 3> downButtons =
+{{
+	RI_MOUSE_LEFT_BUTTON_DOWN,
+	RI_MOUSE_RIGHT_BUTTON_DOWN,
+	RI_MOUSE_MIDDLE_BUTTON_DOWN
+}};
+constexpr std::array<USHORT, 3> upButtons =
+{{
+	RI_MOUSE_LEFT_BUTTON_UP,
+	RI_MOUSE_RIGHT_BUTTON_UP,
+	RI_MOUSE_MIDDLE_BUTTON_UP
+}};
+
+constexpr pointer_id mouseID = 1;
+
 // NOTE: return type and user data index macro of GetWindowLongPtr()
-// are dependant on target architecture (64-bit or 32-bit).
+// are dependent on target architecture (64-bit or 32-bit).
 #ifdef _WIN64
 	#define USERDATA GWLP_USERDATA
 	typedef LONG_PTR user_data;
@@ -37,69 +59,15 @@ void setUserData(HWND window, T ud)
 		throw sys::WindowException("Unable to set window user data");
 }
 
-bool handleKeyInput(HWND /*window*/, UINT, WPARAM /*wParam*/, LPARAM)
-{
-	// Window* thiz = getUserData<Window*>(window);
-	// auto key = convertKeyCode(wParam);
-	// thiz->_winEventQueue.push(KeyEvent(key));
-	// TODO Remove this function and call WindowInputSource::keyboardInput directly.
-	return true;
-}
-
-bool handleMouseInput(HWND /*window*/, const RAWMOUSE& mouse)
-{
-	// TODO Remove this function and call WindowInputSource::mouseInput directly.
-	return true;
-}
-
-bool handleRawInput(HWND window, UINT, WPARAM wParam, LPARAM lParam)
-{
-	// only process input when the application is on the foreground
-	if (wParam != RIM_INPUT)
-		return false;
-
-	RAWINPUT input;
-	UINT szData = sizeof(input), szHeader = sizeof(RAWINPUTHEADER);
-	HRAWINPUT handle = reinterpret_cast<HRAWINPUT>(lParam);
-
-	if (GetRawInputData(handle, RID_INPUT, &input, &szData, szHeader) != szData)
-		return false;   // error occurred
-
-	if (input.header.dwType != RIM_TYPEMOUSE)
-		return false;   // process only mouse events (for now)
-
-	return handleMouseInput(window, input.data.mouse);
-}
-
 }	// anonymous namespace
-
-
-// TODO: implement a timeout for the event loop so move/resize events
-// don't starve routines running on the same thread
-bool handleEvents(HWND window)
-{
-	MSG msg;
-	while (PeekMessage(&msg, window, 0, 0, PM_REMOVE))
-	{
-		if (msg.message == WM_QUIT)
-		{
-			// _winEventQueue.push(WindowEvent(QUIT_REQUEST, 0, 0));
-			// exitCode = msg.wParam;
-			return false;
-		}
-
-		TranslateMessage(&msg); // translate and dispatch to event queue
-		DispatchMessage(&msg);
-	}
-
-	return true;
-}
 
 LRESULT CALLBACK handler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg) {
 	case WM_CREATE:
 	{
+		// DEBUG_OUT(TAG, "WM_CREATE");
+
 		// set pointer to Window as the HWND user data
 		// NOTE: receives last argument of CreateWindowEx() as lpCreateParams
 		CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
@@ -109,6 +77,8 @@ LRESULT CALLBACK handler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_ACTIVATE:
 	{
+		// DEBUG_OUT(TAG, "WM_ACTIVATE");
+
 		//Window* thiz = getUserData<Window*>(hwnd);
 		//bool active = LOWORD(wParam) != WA_INACTIVE;
 		//bool minimized = HIWORD(wParam);
@@ -130,12 +100,16 @@ LRESULT CALLBACK handler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CLOSE:
+		// DEBUG_OUT(TAG, "WM_CLOSE");
+
 		// TODO: show confirmation dialog?
 		PostQuitMessage(0);
 		return 0;
 
 	case WM_SIZE:
 	{
+		// DEBUG_OUT(TAG, "WM_SIZE");
+
 		//Window* thiz = getUserData<Window*>(hwnd);
 		//int width  = LOWORD(lParam);
 		//int height = HIWORD(lParam);
@@ -145,15 +119,20 @@ LRESULT CALLBACK handler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_CHAR:
 	{
+		// DEBUG_OUT(TAG, "WM_CHAR");
+
 		WindowInputSource* thiz = getUserData<WindowInputSource*>(hwnd);
 		thiz->keyboardInput(msg, wParam, lParam);
 		return 0;
 	}
 	case WM_INPUT:
-		if (handleRawInput(hwnd, msg, wParam, lParam))
-			return 0;
-		break;
+	{
+		WindowInputSource* thiz = getUserData<WindowInputSource*>(hwnd);
+		thiz->handleRawInput(wParam, lParam);
+		return 0;
+	}
 	default:
+		// DEBUG_OUT(TAG, "Unhandled message.");
 		break;
 	}
 
@@ -163,8 +142,16 @@ LRESULT CALLBACK handler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 
 WindowInputSource::WindowInputSource(HWND window)
-: _window(window)
+:	_window(window),
+ 	_mouseState({0})
 {
+	// get raw input data from the mouse/pointer device
+	RAWINPUTDEVICE rid;
+	rid.usUsagePage = 0x01;
+	rid.usUsage     = 0x02;
+	rid.dwFlags     = RIDEV_INPUTSINK;
+	rid.hwndTarget  = _window;
+	VERIFY(RegisterRawInputDevices(&rid, 1, sizeof(rid)));
 }
 
 bool WindowInputSource::handleInput()
@@ -189,31 +176,74 @@ bool WindowInputSource::handleInput()
 
 void WindowInputSource::mouseInput(const RAWMOUSE& mouse)
 {
-    // TODO Implement
+	bool buttonDownEvents[downButtons.size()] = {false, false, false};
+	bool buttonUpEvents[upButtons.size()] = {false, false, false};
 
-	// mouse button up/down masks
-	const USHORT DOWN_MASK = RI_MOUSE_BUTTON_1_DOWN | RI_MOUSE_BUTTON_2_DOWN;
-	const USHORT UP_MASK   = RI_MOUSE_BUTTON_1_UP   | RI_MOUSE_BUTTON_2_UP;
+	// Update _mouseState
 
-	// NOTE: MOUSE_MOVE_RELATIVE == 0x0
-	//if (!mouse.usFlags && (mouse.lLastX || mouse.lLastY))
-		// TODO: handle relative mouse movement
+	for (size_t i = 0; i < downButtons.size(); ++i)
+	{
+		if ( (mouse.usButtonFlags & downButtons[i]) != 0)
+		{
+			buttonDownEvents[i] = true;
+			_mouseState.buttonDownFlags |= downButtons[i];
+		}
+	}
+	for (size_t i = 0; i < upButtons.size(); ++i)
+	{
+		if ( (mouse.usButtonFlags & upButtons[i]) != 0)
+		{
+			buttonUpEvents[i] = true;
+			_mouseState.buttonDownFlags &= ~downButtons[i];
+		}
+	}
 
-	if (mouse.usButtonFlags & DOWN_MASK)
+	//
+
+	// Notify button up / down events
+
+	POINT cursorPoint;
+	if ( !GetCursorPos(&cursorPoint) )
+		throw sys::WindowException("Unable to get cursor position.");
+
+	if ( !ScreenToClient(_window, &cursorPoint))
+		throw sys::WindowException("Unable to map cursor to window.");
+
+	for (size_t i = 0; i < downButtons.size(); ++i)
 	{
-		//pointer_button key = convertMouseKey(mouse.usButtonFlags);
-		//notifyPointerDown(0, key, int(mouse.lLstX), int(mouse.lLastY))
+		if (buttonDownEvents[i])
+		{
+			notifyPointerDown(mouseID, pointer_button(i), cursorPoint.x, cursorPoint.y);
+		}
+		else if (buttonUpEvents[i])
+		{
+			notifyPointerUp(mouseID, pointer_button(i), cursorPoint.x, cursorPoint.y);
+		}
 	}
-	else if (mouse.usButtonFlags & UP_MASK)
+
+	//
+
+	// Notify pointer move / drag
+
+	int dx = int(mouse.lLastX);
+	int dy = int(mouse.lLastY);
+
+	if (dx != 0 && dy != 0)
 	{
-		//pointer_button key = convertMouseKey(mouse.usButtonFlags);
-		//notifyPointerUp(0, key, int(mouse.lLastX), int(mouse.lLastY));
+		bool dragging = (_mouseState.buttonDownFlags & downButtons[0]) != 0;
+
+		if (dragging)
+			notifyPointerDrag(mouseID, dx, dy);
+		else
+			notifyPointerMove(mouseID, dx, dy);
 	}
-	else if (mouse.usButtonFlags & RI_MOUSE_WHEEL)
-	{
-		//auto delta = static_cast<SHORT>(mouse.usButtonData);
-		//notifyPointerZoom(int(delta));
-	}
+
+	//
+
+	// Notify wheel (zoom)
+	if ( (mouse.usButtonFlags & RI_MOUSE_WHEEL) != 0 )
+		notifyPointerZoom( short(mouse.usButtonData) / WHEEL_DELTA );
+	//
 }
 
 void WindowInputSource::keyboardInput(UINT unsignedInt,
@@ -221,6 +251,27 @@ void WindowInputSource::keyboardInput(UINT unsignedInt,
                                       LPARAM longInt)
 {
     // TODO Implement
+}
+
+void WindowInputSource::handleRawInput(WPARAM wParam, LPARAM lParam)
+{
+	// Only process input when the application is on the foreground.
+	if (wParam != RIM_INPUT)
+		return;
+
+	RAWINPUT input;
+	UINT szData = sizeof(input), szHeader = sizeof(RAWINPUTHEADER);
+	HRAWINPUT handle = reinterpret_cast<HRAWINPUT>(lParam);
+
+	if (GetRawInputData(handle, RID_INPUT, &input, &szData, szHeader) != szData)
+		throw sys::WindowException("Unable to get raw input data.");
+
+	switch (input.header.dwType)
+	{
+		case RIM_TYPEMOUSE:
+			mouseInput(input.data.mouse);
+			break;
+	}
 }
 
 }	// namespace input

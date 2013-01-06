@@ -40,10 +40,10 @@ protected:
 	void notifyKeyDown(key_type key);
 	void notifyKeyUp(key_type key);
 
-	void notifyPointerDown(pointer_id id, pointer_button button, int x, int y);
+	void notifyPointerDown(pointer_id id, pointer_button button, long x, long y);
 	void notifyPointerMove(pointer_id id, int dx, int dy);
 	void notifyPointerDrag(pointer_id id, int dx, int dy);
-	void notifyPointerUp(pointer_id id, int x, int y);
+	void notifyPointerUp(pointer_id id, pointer_button button, long x, long y);
 	void notifyPointerZoom(int dz);
 
 protected:
