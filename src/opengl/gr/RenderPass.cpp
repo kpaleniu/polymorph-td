@@ -75,7 +75,10 @@ void RenderPass::render()
 	glMultMatrixf(_transformDesc.model.data());
 
 	if (_materialDesc.texture != nullptr)
+	{
+		glEnable(GL_TEXTURE_2D);
 		_materialDesc.texture->bind();
+	}
 
 	if (_materialDesc.shader != nullptr)
 	{
@@ -86,7 +89,10 @@ void RenderPass::render()
 		_vertices.draw(_shape, _indices);
 
 	if (_materialDesc.texture != nullptr)
+	{
 		_materialDesc.texture->unbind();
+		glDisable(GL_TEXTURE_2D);
+	}
 
 	if (_postRenderHook)
 		_postRenderHook();

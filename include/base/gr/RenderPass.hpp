@@ -6,11 +6,12 @@
 #ifndef RENDERPASS_HPP_
 #define RENDERPASS_HPP_
 
-#include "gr/Material.hpp"
 #include "gr/VertexBuffer.hpp"
 #include "gr/IndexBuffer.hpp"
 #include "gr/BufferManager.hpp"
 #include "gr/VertexSupplier.hpp"
+#include "gr/Texture.hpp"
+#include "gr/Shader.hpp"
 
 #include <PrivateHandle.hpp>
 #include <NonCopyable.hpp>
@@ -50,8 +51,8 @@ public:
 
 	struct MaterialDesc
 	{
-		Texture* texture;
-		Shader*  shader;
+		const Texture* texture;
+		const Shader*  shader;
 	};
 
 	RenderPass( BufferManager& bufferManager,
