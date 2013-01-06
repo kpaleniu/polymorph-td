@@ -34,7 +34,7 @@ private:
 
 template <typename S>
 inline constexpr Rect<S>::Rect(S left, S bottom, S width, S height)
-:	_data(left, bottom, width, height)
+:	_data{left, bottom, width, height}
 {}
 
 template <typename S>
