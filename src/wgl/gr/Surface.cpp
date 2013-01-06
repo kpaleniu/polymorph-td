@@ -156,4 +156,12 @@ void Surface::flipBuffers()
 	VERIFY(SwapBuffers(_deviceHandle.get()));
 }
 
+Rect<long> Surface::getScreenRect() const
+{
+	RECT rect;
+	GetClientRect(_win, &rect);
+
+	return Rect<long>(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+}
+
 }

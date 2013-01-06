@@ -6,7 +6,9 @@
 #ifndef SURFACE_HPP_
 #define SURFACE_HPP_
 
-#include "NonCopyable.hpp"
+#include <NonCopyable.hpp>
+#include <Rect.hpp>
+
 #include <memory>
 #include <windows.h>
 #include <wingdi.h>
@@ -66,6 +68,11 @@ public:
 	void activate(bool activate = true);
 
 	void flipBuffers();
+
+	/**
+	 * Gets the drawable area in window coordinates, usually from (0, 0) to window dimension.
+	 */
+	Rect<long> getScreenRect() const;
 
 private:
 	HWND _win;
