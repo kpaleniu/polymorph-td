@@ -13,11 +13,7 @@ public:
 	typedef ResourceLoader<gr::Image>::ResourceHandle ImageHandle;
 
 	ImageHandle getImage(text::string_hash id);
-
-private:
 };
-
-
 
 }
 
