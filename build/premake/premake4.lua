@@ -75,7 +75,8 @@ projects = { "ext",
 			 "input",
 			 "profiler",
 			 "math_proj",
-			 "resource" }
+			 "resource",
+			 "gui" }
 
 solution "polymorph-td"
 	configurations { "Debug", "Release" }
