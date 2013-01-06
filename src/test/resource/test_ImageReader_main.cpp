@@ -11,7 +11,9 @@
 
 // print tag
 namespace {
+
 const char* TAG = "ImageReaderTest";
+
 }
 
 /**
@@ -27,25 +29,23 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	createTestWindow(hInstance);
 
-	GLuint texId = 0;
-
 	try
 	{
 		static text::string_hash urlHash = text::intern( R"(.\data\images\test.png)" );
 
 		auto surface = createSurface();
 
+		glEnable(GL_TEXTURE_2D);
+
 		ImageReader imReader;
 		auto imageHandle = imReader.getImage(urlHash);
 
-		glEnable(GL_TEXTURE_2D);
-
 		Texture tex(*imageHandle,
-		            Texture::TextureParams
-		            { Texture::TextureParams::CLAMP,
-					  Texture::TextureParams::CLAMP,
-					  Texture::TextureParams::LINEAR,
-					  Texture::TextureParams::LINEAR });
+		            Texture::Params
+		            { Texture::Params::CLAMP,
+					  Texture::Params::CLAMP,
+					  Texture::Params::LINEAR,
+					  Texture::Params::LINEAR });
 
 		while (updateTestWindow())
 		{
@@ -73,9 +73,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	{
 		DEBUG_OUT(::TAG, "Error");
 	}
-
-	if (texId != 0)
-		glDeleteTextures(1, &texId);
 
 	destroyTestWindow();
 

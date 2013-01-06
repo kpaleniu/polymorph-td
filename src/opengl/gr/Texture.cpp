@@ -6,7 +6,7 @@
 namespace gr {
 
 Texture::Texture(const Image& source,
-                 const TextureParams& texParams)
+                 const Params& texParams)
 :	_texID(0)
 {
 	glGenTextures(1, &_texID);

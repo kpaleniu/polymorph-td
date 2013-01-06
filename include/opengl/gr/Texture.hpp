@@ -19,7 +19,7 @@ class Texture : NonCopyable
 public:
 	typedef Scoped BindLock;
 
-	struct TextureParams
+	struct Params
 	{
 		enum Wrap : GLint
 		{
@@ -36,7 +36,7 @@ public:
 	};
 
 public:
-	Texture(const Image& source, const TextureParams& texParams);
+	Texture(const Image& source, const Params& texParams);
 	Texture(Texture&& other);
 	~Texture();
 

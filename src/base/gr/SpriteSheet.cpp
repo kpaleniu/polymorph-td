@@ -43,10 +43,10 @@ convertAreas(unsigned int imageW,
 SpriteSheet::SpriteSheet(const Image& sourceImage,
                          const std::map<sprite_id_t, Rect<unsigned int>>& spriteAreas)
 :	_tex(sourceImage,
- 	     Texture::TextureParams { Texture::TextureParams::CLAMP_TO_EDGE,
-								  Texture::TextureParams::CLAMP_TO_EDGE,
-								  Texture::TextureParams::LINEAR,
-								  Texture::TextureParams::LINEAR }),
+ 	     Texture::Params { Texture::Params::CLAMP/*_TO_EDGE*/,
+								  Texture::Params::CLAMP/*_TO_EDGE*/,
+								  Texture::Params::LINEAR,
+								  Texture::Params::LINEAR }),
 	_texCoords( std::move(convertAreas(sourceImage.getWidth(),
 	                                   sourceImage.getHeight(),
 	                                   spriteAreas)) )
@@ -56,6 +56,11 @@ SpriteSheet::SpriteSheet(const Image& sourceImage,
 const Texture& SpriteSheet::texture() const
 {
 	return _tex;
+}
+
+const std::array<gr::real_t, 8>& SpriteSheet::coordsFor(sprite_id_t spriteID) const
+{
+	return _texCoords.at(spriteID);
 }
 
 
