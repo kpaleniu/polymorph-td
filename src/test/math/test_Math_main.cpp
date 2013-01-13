@@ -86,7 +86,13 @@ void testProjection()
 {
 	cout << "============== 4 ==============" << endl;
 	{
-		auto proj1 = Projection<real_t>::ortho(-1, 1, -1, 1, 1, -1);
+		auto proj1 = Projection<real_t>::ortho(0, 5, 0, 5, 1, -1);
+		cout << "Projection: " << proj1 << endl;
+
+		Matrix<real_t, 3u, 1u, false> vec(array<float, 3>{{1,1,1}});
+
+		auto projVec = proj1 * vec;
+		cout << "After proj: " << projVec << endl;
 	}
 }
 
