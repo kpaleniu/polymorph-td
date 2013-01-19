@@ -12,8 +12,8 @@ namespace gr {
 RenderPass::RenderPass(BufferManager& bufferManager,
                        VertexFormat format,
                        Primitive shape,
-                       const MaterialDesc& materialDesc,
-                       const BufferDesc& bufferDesc,
+                       MaterialDesc materialDesc,
+                       BufferDesc bufferDesc,
                        const TransformDesc& transformDesc)
 :	_bufferManager(bufferManager),
  	_shape(shape),
@@ -22,7 +22,12 @@ RenderPass::RenderPass(BufferManager& bufferManager,
  	_vertexWriter(_vertices, _indices),
  	_materialDesc(materialDesc),
  	_bufferDesc(bufferDesc),
- 	_transformDesc(transformDesc),
+ 	_transformDesc( {transformDesc.projection,
+					 transformDesc.view,
+					 transformDesc.model} ),
+ 	_invTransformDesc( {transformDesc.projection.inverse(),
+						transformDesc.view.inverse(),
+						transformDesc.model.inverse()} ),
  	_vertexSuppliers(),
  	_preRenderHook(),
  	_postRenderHook(),
@@ -38,7 +43,12 @@ RenderPass::RenderPass(RenderPass&& other)
  	_vertexWriter(_vertices, _indices),
  	_materialDesc(other._materialDesc),
  	_bufferDesc(other._bufferDesc),
- 	_transformDesc(other._transformDesc),
+ 	_transformDesc( {other._transformDesc.projection,
+					 other._transformDesc.view,
+					 other._transformDesc.model}),
+	_invTransformDesc( {other._transformDesc.projection.inverse(),
+						other._transformDesc.view.inverse(),
+						other._transformDesc.model.inverse()} ),
  	_vertexSuppliers(std::move(other._vertexSuppliers)),
  	_preRenderHook(other._preRenderHook),
  	_postRenderHook(other._postRenderHook),
@@ -54,6 +64,16 @@ RenderPass::VertexSupplierHandle RenderPass::addVertexSupplier(VertexSupplier& v
 void RenderPass::removeVertexSupplier(VertexSupplierHandle handle)
 {
 	_vertexSuppliers.erase((vertex_supplier_iterator) handle);
+}
+
+void RenderPass::updateVertices()
+{
+	for (auto supplier : _vertexSuppliers)
+		supplier->writeVertices(_vertexWriter);
+
+	_vertexWriter.flush();
+
+	_needUpdate = false;
 }
 
 void RenderPass::render()
@@ -110,15 +130,25 @@ void RenderPass::postRender(Hook hook)
 	_postRenderHook = hook;
 }
 
-
-void RenderPass::updateVertices()
+ModelVector RenderPass::unProject(const SurfaceVector& surfaceVec, real_t depth) const
 {
-	for (auto supplier : _vertexSuppliers)
-		supplier->writeVertices(_vertexWriter);
+	Vector3_r sVec( std::array<real_t, 3>{{ static_cast<const Vector2_r&>(surfaceVec)(0,0),
+											static_cast<const Vector2_r&>(surfaceVec)(1,0),
+											depth }} );
 
-	_vertexWriter.flush();
+	Vector3_r v = _invTransformDesc.model
+					* (_invTransformDesc.view
+						* (_invTransformDesc.projection * sVec));
+	return ModelVector(v);
+}
 
-	_needUpdate = false;
+SurfaceVector RenderPass::project(const ModelVector& modelVec) const
+{
+	Vector3_r v = _transformDesc.projection
+	                * (_transformDesc.view
+	               	  * (_transformDesc.model * static_cast<const Vector3_r&>(modelVec)));
+
+	return SurfaceVector( std::array<real_t, 2>{{v(0, 0), v(1, 0)}} );
 }
 
 }

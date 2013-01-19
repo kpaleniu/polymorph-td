@@ -6,6 +6,7 @@
 #ifndef RENDERPASS_HPP_
 #define RENDERPASS_HPP_
 
+#include "gr/types.hpp"
 #include "gr/VertexBuffer.hpp"
 #include "gr/IndexBuffer.hpp"
 #include "gr/BufferManager.hpp"
@@ -51,18 +52,18 @@ public:
 
 	struct MaterialDesc
 	{
-		const Texture* texture;
-		const Shader*  shader;
+		Texture* texture;
+		Shader*  shader;
 	};
 
 	RenderPass( BufferManager& bufferManager,
 	            VertexFormat format,
 	            Primitive shape = Primitive::TRIANGLES,
-			    const MaterialDesc& materialDesc = {nullptr, nullptr},
-	            const BufferDesc& bufferDesc = {enum_t(BufferFlag::ALL), enum_t(BufferFlag::ALL)},
+			    MaterialDesc materialDesc = {nullptr, nullptr},
+	            BufferDesc bufferDesc = {enum_t(BufferFlag::ALL), enum_t(BufferFlag::ALL)},
 	            const TransformDesc& transformDesc = {Projection::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f),
-	                                                 Transform::identity(),
-	                                                 Transform::identity()} );
+	                                           Transform::identity(),
+	                                           Transform::identity()} );
 
 	RenderPass(RenderPass&& other);
 
@@ -75,6 +76,9 @@ public:
 	void preRender(Hook hook);
 	void postRender(Hook hook);
 
+	ModelVector unProject(const SurfaceVector& surfaceVec, real_t depth = real_t(0)) const;
+	SurfaceVector project(const ModelVector& modelVec) const;
+
 private:
 
 	BufferManager& _bufferManager;
@@ -86,9 +90,10 @@ private:
 
 	VertexWriter _vertexWriter;
 
-	const MaterialDesc& 	_materialDesc;
-	const BufferDesc& 		_bufferDesc;
-	const TransformDesc& 	_transformDesc;
+	MaterialDesc 	_materialDesc;
+	BufferDesc 		_bufferDesc;
+	TransformDesc 	_transformDesc;
+	TransformDesc	_invTransformDesc;
 
 	std::list<VertexSupplier*> _vertexSuppliers;
 
