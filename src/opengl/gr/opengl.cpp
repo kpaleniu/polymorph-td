@@ -1,5 +1,5 @@
 
-#include "gr/opengl.hpp"
+#include "gr/types.hpp"
 
 #include <Assert.hpp>
 #include <Debug.hpp>
