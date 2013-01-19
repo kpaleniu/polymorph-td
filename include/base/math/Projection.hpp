@@ -43,6 +43,8 @@ public:
 	Matrix<S, 3u, 1u, false> operator*(const Matrix<S, 3u, 1u, false>& vec3) const;
 	Matrix<S, 4u, 1u, false> operator*(const Matrix<S, 4u, 1u, false>& vec4) const;
 
+	Projection inverse() const;
+
 	/** @name Factories
 	 * Public constructors.
 	 */
@@ -87,6 +89,12 @@ template<typename S, bool RowMajor>
 inline Matrix<S, 4u, 1u, false> Projection<S, RowMajor>::operator*(const Matrix<S, 4u, 1u, false>& vec4) const
 {
 	return Matrix<S, 4u, 1u, false>(EigenDerived::operator*(vec4.asEigen()));
+}
+
+template<typename S, bool RowMajor>
+inline Projection<S, RowMajor> Projection<S, RowMajor>::inverse() const
+{
+	return Projection<S, RowMajor>(EigenDerived::inverse());
 }
 
 template<typename S, bool RowMajor>

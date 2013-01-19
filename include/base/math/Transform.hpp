@@ -39,14 +39,13 @@ public:
 
 	typedef S radian_t;
 
-	Transform(const Transform&) 			= default;
-	Transform& operator=(const Transform&) 	= default;
-
 	Matrix<S, 3u, 1u, false> operator*(const Matrix<S, 3u, 1u, false>& vec3) const;
 	Transform<S, RowMajor> operator*(const Transform<S, RowMajor>& other) const;
 	Transform<S, RowMajor>& operator*=(const Transform<S, RowMajor>& other);
 
 	const S* data() const;
+
+	Transform<S, RowMajor> inverse() const;
 
 	/** @name Factories
 	 * Public constructors.
@@ -96,6 +95,12 @@ template<typename S, bool RowMajor>
 inline const S* Transform<S, RowMajor>::data() const
 {
 	return EigenDerived::data();
+}
+
+template<typename S, bool RowMajor>
+inline Transform<S, RowMajor> Transform<S, RowMajor>::inverse() const
+{
+	return Transform<S, RowMajor>(EigenDerived::inverse());
 }
 
 template<typename S, bool RowMajor>

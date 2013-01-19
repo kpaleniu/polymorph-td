@@ -79,6 +79,8 @@ void testTransform()
 
 		cout << "Before translation: " << vec2 << endl;
 		cout << "After translation: " << (trans2 * vec2) << endl;
+		cout << "Identity transform: " << ( trans2.inverse() * (trans2 * vec2) ) << endl;
+
 	}
 }
 
@@ -92,7 +94,12 @@ void testProjection()
 		Matrix<real_t, 3u, 1u, false> vec(array<float, 3>{{1,1,1}});
 
 		auto projVec = proj1 * vec;
+		cout << vec << endl;
 		cout << "After proj: " << projVec << endl;
+
+		auto invProj = proj1.inverse();
+		auto projVec2 = invProj * projVec;
+		cout << "After inverse: " << projVec2 << endl;
 	}
 }
 
