@@ -134,8 +134,11 @@ template<typename Runner>
 void System<Runner>::threadMain()
 {
 	// Strings for profiler.
-	static text::string_hash updateName = text::intern(std::string(Runner::getSystemName()) + ": update");
-	static text::string_hash actionName = text::intern(std::string(Runner::getSystemName()) + ": action");
+	static text::string_hash updateName =
+			text::intern(std::string(Runner::getSystemName()) + ": update");
+
+	static text::string_hash actionName =
+			text::intern(std::string(Runner::getSystemName()) + ": action");
 	//
 
 	static const char* TAG = "System";
@@ -152,16 +155,14 @@ void System<Runner>::threadMain()
 	}
 	_startupCond.notifyAll();
 
-	DEBUG_OUT("System", "Started thread main loop");
+	//---------------- Main system loop ----------------//
+
+	DEBUG_OUT(TAG, "Started thread main loop");
 	for (;;)
 	{
 		TimeStamp t0 = TimeStamp::now();
 
-		while (!_actions.isEmpty())
-		{
-			auto profileBlock = profiler::ThreadProfiler::profileBlock(actionName);
-			_actions.doAction(runner);
-		}
+		//---------------- Runner updating ----------------//
 
 		{
 			auto profileBlock = profiler::ThreadProfiler::profileBlock(updateName);
@@ -170,17 +171,19 @@ void System<Runner>::threadMain()
 				return;
 		}
 
+		//---------------- Action updating ----------------//
+
 		TimeDuration realDT = TimeDuration::between(t0, TimeStamp::now());
 		TimeDuration waitDuration = _sync - realDT;
 
-		if (waitDuration.isPositive())
+		while ( _actions.pushCondition().waitUntil([&]{ return !_actions.isEmpty(); },
+		                                           waitDuration) )
 		{
-			Thread::sleep(waitDuration);
-		}
-		else
-		{
-			VERBOSE_OUT(TAG, "Time budget miss by %ld", realDT - _sync);
-			Thread::interruptionPoint();
+			auto profileBlock = profiler::ThreadProfiler::profileBlock(actionName);
+			_actions.doAction(runner);
+
+			realDT = TimeDuration::between(t0, TimeStamp::now());
+			waitDuration = _sync - realDT;
 		}
 	}
 }

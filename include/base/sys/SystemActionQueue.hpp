@@ -6,11 +6,11 @@
 #ifndef SYSTEM_ACTION_QUEUE_HPP
 #define SYSTEM_ACTION_QUEUE_HPP
 
-#include "stream/StreamException.hpp"
+#include <stream/StreamException.hpp>
 
-#include "concurrency/Mutex.hpp"
+#include <concurrency/Condition.hpp>
 
-#include "Debug.hpp"
+#include <Debug.hpp>
 
 #include <functional>
 #include <vector>
@@ -41,6 +41,8 @@ public:
 
 	bool isEmpty() const;
 
+	concurrency::Condition& pushCondition() const;
+
 private:
 	std::vector<RunnerAction> _runnerInput;
 
@@ -48,7 +50,7 @@ private:
 	size_t _readIndex;
 	size_t _unreadActions;
 
-	mutable concurrency::Mutex _rwMutex;
+	mutable concurrency::Condition _pushCondition;
 };
 
 // Implementation
@@ -59,7 +61,7 @@ SystemActionQueue<Runner>::SystemActionQueue(size_t actionCapacity)
  	_writeIndex(0),
  	_readIndex(0),
  	_unreadActions(0),
- 	_rwMutex()
+ 	_pushCondition()
 {
 }
 
@@ -69,25 +71,29 @@ SystemActionQueue<Runner>::SystemActionQueue(SystemActionQueue&& actionQueue)
  	_writeIndex(actionQueue._writeIndex),
  	_readIndex(actionQueue._readIndex),
  	_unreadActions(actionQueue._unreadActions),
- 	_rwMutex() // Can't move mutex.
+ 	_pushCondition()
 {
 }
 
 template<typename Runner>
 void SystemActionQueue<Runner>::pushAction(RunnerAction action)
 {
-	concurrency::MutexLockGuard lock(_rwMutex);
-
-	if (_unreadActions >= _runnerInput.size())
 	{
-		// Should resize ?
-		throw stream::StreamException("SystemActionQueue out of space");
+		concurrency::MutexLockGuard lock(_pushCondition.mutex());
+
+		if (_unreadActions >= _runnerInput.size())
+		{
+			// Should resize ?
+			throw stream::StreamException("SystemActionQueue out of space");
+		}
+
+		_runnerInput[_writeIndex++] = action;
+		_writeIndex %= _runnerInput.size();
+
+		++_unreadActions;
 	}
 
-	_runnerInput[_writeIndex++] = action;
-	_writeIndex %= _runnerInput.size();
-
-	++_unreadActions;
+	_pushCondition.notifyAll();
 }
 
 template<typename Runner>
@@ -96,7 +102,7 @@ void SystemActionQueue<Runner>::doAction(Runner& runner)
 	RunnerAction action;
 
 	{
-		concurrency::MutexLockGuard lock(_rwMutex);
+		concurrency::MutexLockGuard lock(_pushCondition.mutex());
 
 		if (_unreadActions == 0)
 		{
@@ -115,8 +121,14 @@ void SystemActionQueue<Runner>::doAction(Runner& runner)
 template<typename Runner>
 bool SystemActionQueue<Runner>::isEmpty() const
 {
-	concurrency::MutexLockGuard lock(_rwMutex);
+	concurrency::MutexLockGuard lock(_pushCondition.mutex());
 	return _unreadActions == 0;
+}
+
+template<typename Runner>
+concurrency::Condition& SystemActionQueue<Runner>::pushCondition() const
+{
+	return _pushCondition;
 }
 
 

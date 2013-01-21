@@ -38,8 +38,11 @@ public:
 	void waitUntil(std::function<bool()> callable);
 	/**
 	 * Waits until the callable is true or when specified time has passed.
+	 *
+	 * @param callable	A callable object that returns a bool.
+	 * @returns 		True if condition was met, false if timeout occurred.
 	 */
-	void waitUntil(std::function<bool()> callable, TimeDuration timeout);
+	bool waitUntil(std::function<bool()> callable, TimeDuration timeout);
 
 	/**
 	 * Notifies that the condition has been updated.
