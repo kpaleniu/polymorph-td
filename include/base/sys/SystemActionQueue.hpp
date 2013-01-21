@@ -121,7 +121,6 @@ void SystemActionQueue<Runner>::doAction(Runner& runner)
 template<typename Runner>
 bool SystemActionQueue<Runner>::isEmpty() const
 {
-	concurrency::MutexLockGuard lock(_pushCondition.mutex());
 	return _unreadActions == 0;
 }
 

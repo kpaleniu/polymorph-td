@@ -179,11 +179,16 @@ void System<Runner>::threadMain()
 		while ( _actions.pushCondition().waitUntil([&]{ return !_actions.isEmpty(); },
 		                                           waitDuration) )
 		{
-			auto profileBlock = profiler::ThreadProfiler::profileBlock(actionName);
-			_actions.doAction(runner);
+			{
+				auto profileBlock = profiler::ThreadProfiler::profileBlock(actionName);
+				_actions.doAction(runner);
+			}
 
 			realDT = TimeDuration::between(t0, TimeStamp::now());
 			waitDuration = _sync - realDT;
+
+			if ( !waitDuration.isPositive() )
+				break;
 		}
 	}
 }
