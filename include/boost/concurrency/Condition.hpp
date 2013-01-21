@@ -7,7 +7,11 @@
 #define CONDITION_HPP_
 
 #include "concurrency/Mutex.hpp"
-#include "NonCopyable.hpp"
+
+#include <Time.hpp>
+#include <NonCopyable.hpp>
+
+#include <functional>
 
 #include <boost/thread.hpp>
 
@@ -31,8 +35,11 @@ public:
 	 *
 	 * @param callable	A callable object that returns a bool.
 	 */
-	template<typename BoolCallable>
-	void waitUntil(BoolCallable callable);
+	void waitUntil(std::function<bool()> callable);
+	/**
+	 * Waits until the callable is true or when specified time has passed.
+	 */
+	void waitUntil(std::function<bool()> callable, TimeDuration timeout);
 
 	/**
 	 * Notifies that the condition has been updated.
@@ -50,17 +57,6 @@ private:
 	Mutex _mutex;
 	boost::condition_variable _cond;
 };
-
-// Template implementation
-
-template<typename BoolCallable>
-void Condition::waitUntil(BoolCallable callable)
-{
-	boost::unique_lock<boost::mutex> lock(_mutex.boostMutex());
-	while (!callable())
-		_cond.wait(lock);
-}
-
 
 }
 
