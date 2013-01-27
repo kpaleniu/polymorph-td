@@ -82,7 +82,7 @@ void RenderPass::render()
 		updateVertices();
 
 	if (_preRenderHook)
-		_preRenderHook();
+		_preRenderHook(*this);
 
 	if ( _bufferDesc.clearFlags != enum_t(BufferFlag::NONE) )
 		glClear( GLenum(_bufferDesc.clearFlags) );
@@ -115,7 +115,7 @@ void RenderPass::render()
 	}
 
 	if (_postRenderHook)
-		_postRenderHook();
+		_postRenderHook(*this);
 
 	_needUpdate = true;
 }
@@ -130,25 +130,21 @@ void RenderPass::postRender(Hook hook)
 	_postRenderHook = hook;
 }
 
-ModelVector RenderPass::unProject(const SurfaceVector& surfaceVec, real_t depth) const
+ModelVector RenderPass::unProject(const ClipVector& clipVec) const
 {
-	Vector3_r sVec( std::array<real_t, 3>{{ static_cast<const Vector2_r&>(surfaceVec)(0,0),
-											static_cast<const Vector2_r&>(surfaceVec)(1,0),
-											depth }} );
-
 	Vector3_r v = _invTransformDesc.model
 					* (_invTransformDesc.view
-						* (_invTransformDesc.projection * sVec));
+						* (_invTransformDesc.projection * static_cast<const Vector3_r&>(clipVec)));
 	return ModelVector(v);
 }
 
-SurfaceVector RenderPass::project(const ModelVector& modelVec) const
+ClipVector RenderPass::project(const ModelVector& modelVec) const
 {
 	Vector3_r v = _transformDesc.projection
 	                * (_transformDesc.view
 	               	  * (_transformDesc.model * static_cast<const Vector3_r&>(modelVec)));
 
-	return SurfaceVector( std::array<real_t, 2>{{v(0, 0), v(1, 0)}} );
+	return ClipVector(v);
 }
 
 }

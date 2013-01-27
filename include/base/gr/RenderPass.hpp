@@ -17,6 +17,7 @@
 #include <PrivateHandle.hpp>
 #include <NonCopyable.hpp>
 
+#include <functional>
 #include <list>
 
 namespace gr {
@@ -31,10 +32,14 @@ public:
 		VertexSupplierHandle () : PrivateHandle<vertex_supplier_iterator>() {}
 		VertexSupplierHandle (const vertex_supplier_iterator& v) : PrivateHandle<vertex_supplier_iterator>(v) {}
 
+#ifdef TEST_BUILD
+		vertex_supplier_iterator getVal() { return _val; }
+#endif
+
 		friend class RenderPass;
 	};
 
-	typedef std::function<void ()> Hook;
+	typedef std::function<void (RenderPass&)> Hook;
 
 public:
 	struct BufferDesc
@@ -52,8 +57,8 @@ public:
 
 	struct MaterialDesc
 	{
-		Texture* texture;
-		Shader*  shader;
+		const Texture* texture;
+		const Shader*  shader;
 	};
 
 	RenderPass( BufferManager& bufferManager,
@@ -76,8 +81,8 @@ public:
 	void preRender(Hook hook);
 	void postRender(Hook hook);
 
-	ModelVector unProject(const SurfaceVector& surfaceVec, real_t depth = real_t(0)) const;
-	SurfaceVector project(const ModelVector& modelVec) const;
+	ModelVector unProject(const ClipVector& ndcVec) const;
+	ClipVector project(const ModelVector& modelVec) const;
 
 private:
 
