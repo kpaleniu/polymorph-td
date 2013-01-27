@@ -18,36 +18,40 @@ namespace detail
 		public:
 			typedef std::function<void (const Event&)> ActionType;
 
-			void addAction(ActionType action)
-			{
-				_eventActions.push_back(action);
-			}
-
 			void triggerEvent(const Event& event)
 			{
 				for (auto& action : _eventActions)
 					action(event);
 			}
 
+			std::list<ActionType>& actionBindings()
+			{ return _eventActions; }
+
+			const std::list<ActionType>& actionBindings() const
+			{ return _eventActions; }
+
 		private:
 			std::list<ActionType> _eventActions;
 		};
 	};
-
-	struct BindingType
-	{
-		template<typename Event>
-		struct type
-		{
-			std::list<typename ManagerType::type<Event>::ActionType> actionBinding;
-		};
-	};
 }
 
-template<typename... Events>
-using EventManager = InheritanceIterator<detail::ManagerType, Events...>;
+template<typename Event>
+using ManagerFor = detail::ManagerType::type<Event>;
 
 template<typename... Events>
-using ActionBindings = InheritanceIterator<detail::BindingType, Events...>;
+class EventManager : public InheritanceIterator<detail::ManagerType, Events...>
+{
+public:
+	template<typename Event>
+	ManagerFor<Event>& with()
+	{ return *static_cast<ManagerFor<Event>*>(this); }
+
+	template<typename Event>
+	const ManagerFor<Event>& with() const
+	{ return *static_cast<const ManagerFor<Event>*>(this); }
+};
+
+
 
 #endif

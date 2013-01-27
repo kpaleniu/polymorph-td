@@ -10,9 +10,12 @@
 #include "sys/System.hpp"
 #include "sys/Window.hpp"
 #include "sys/GraphicsSystem.hpp"
+#include "sys/UIEvents.hpp"
 
 #include <NonCopyable.hpp>
 #include <Assert.hpp>
+
+#include <stack>
 
 namespace sys {
 
@@ -27,6 +30,7 @@ public:
 
 	Window& window();
 	GraphicsSystem& graphics();
+	event::UIEventManager& uiEvents();
 
 	static const char* getSystemName()
 	{ return "UISystem"; }
@@ -34,11 +38,19 @@ public:
 private:
 	Window _window;
 	GraphicsSystem _grSys;
+
+	event::UIEventAdapter _eventAdapter;
 };
 
 class UISystem : public System<UISystemRunner>
 {
 public:
+
+	struct StateDesc
+	{
+		event::UIEventManager eventManager;
+	};
+
 	UISystem(Window::ConstructionData& winCtorData);
 
 	/**
@@ -48,13 +60,24 @@ public:
 	 */
 	Window& waitForWindow();
 
-	// TODO: JUST FOR TESTING
+	GraphicsSystem& waitForGraphicsSystem();
+
+
+	void pushState(const StateDesc& newState);
+	void popState();
+
+#ifdef TEST_BUILD
 	SystemActionQueue<UISystemRunner>& actionQueue()
 	{
 		return _actions;
 	}
+#endif
 
-	GraphicsSystem& waitForGraphicsSystem();
+
+private:
+	void setState(const StateDesc& state);
+
+	std::stack<StateDesc> _states;
 };
 
 }
