@@ -6,6 +6,8 @@
 #ifndef SURFACE_HPP_
 #define SURFACE_HPP_
 
+#include "gr/types.hpp"
+
 #include <NonCopyable.hpp>
 #include <Rect.hpp>
 
@@ -73,6 +75,9 @@ public:
 	 * Gets the drawable area in window coordinates, usually from (0, 0) to window dimension.
 	 */
 	Rect<long> getScreenRect() const;
+
+	ClipVector pick(const SurfaceVector& surfVec, real_t depth) const;
+	SurfaceVector unPick(const ClipVector& clipVec) const;
 
 private:
 	HWND _win;

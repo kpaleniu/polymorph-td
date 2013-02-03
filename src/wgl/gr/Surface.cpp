@@ -5,6 +5,7 @@
  */
 
 #include "gr/Surface.hpp"
+
 #include "gr/SurfaceException.hpp"
 
 #include <Assert.hpp>
@@ -158,10 +159,46 @@ void Surface::flipBuffers()
 
 Rect<long> Surface::getScreenRect() const
 {
+	// TODO Check if this is thread safe, maybe getting from OpenGL's viewport is better.
 	RECT rect;
 	GetClientRect(_win, &rect);
 
 	return Rect<long>(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
+ClipVector Surface::pick(const SurfaceVector& surfVec,
+                         real_t depth) const
+{
+	RECT rect;
+	GetClientRect(_win, &rect);
+
+	Vector3_r clipV(std::array<real_t, 3>
+	                {{
+	                	2.0f * (static_cast<const Vector2_r&>(surfVec)(0,0) - real_t(rect.left))
+	                			/ real_t(rect.right - rect.left) - 1.0f,
+						2.0f * (static_cast<const Vector2_r&>(surfVec)(1,0) - real_t(rect.bottom))
+								/ real_t(rect.top - rect.bottom) - 1.0f,
+						2.0f * depth - 1.0f
+	                }});
+
+	return ClipVector(clipV);
 }
+
+SurfaceVector Surface::unPick(const ClipVector& clipVec) const
+{
+	RECT rect;
+	GetClientRect(_win, &rect);
+
+	Vector2_r surfV(std::array<real_t, 2>
+	                {{
+	                	0.5f * real_t(rect.right - rect.left)
+	                	 	 * (static_cast<const Vector3_r&>(clipVec)(0,0) + 1) + real_t(rect.left),
+						0.5f * real_t(rect.top - rect.bottom)
+							 * (static_cast<const Vector3_r&>(clipVec)(1,0) + 1) + real_t(rect.bottom)
+	                }});
+
+	return SurfaceVector(surfV);
+}
+
+}
+
