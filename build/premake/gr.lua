@@ -11,7 +11,10 @@ gr =
 			defines { "GLEW_STATIC" }
 
 		configuration {"macosx", "opengl" }
-			includedirs { "/opt/local/include", projPath .. "/include/cocoa" }
+			includedirs {
+				"/opt/local/include",
+				projPath .. "/include/cocoa"
+			}
 			libdirs { "/opt/local/libs" }
 			links { "Cocoa.framework", "OpenGL.framework" }
 	

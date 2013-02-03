@@ -58,5 +58,15 @@ void Window::applicationDidFinishLaunching()
     /* Make the window visible */
     [_impl->window makeKeyAndOrderFront: _impl->appDelegate];
 }
+    
+input::WindowInputSource& Window::inputSource()
+{
+    return _inputSource;
+}
+
+gr::Surface& Window::surface()
+{
+    return _surface;
+}
 
 } /* namespace sys */
