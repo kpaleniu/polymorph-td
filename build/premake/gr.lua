@@ -38,7 +38,10 @@ gr =
 			ext.doDeclarations()
 			math_proj.doDeclarations()
 			
-			files { projPath .. "/src/base/gr/**.cpp" }
+			files {
+				projPath .. "/src/base/gr/**.cpp",
+				projPath .. "/include/base/gr/**.hpp"
+		   	}
 			
 			configuration {"windows", "opengl"}
 				files { projPath .. "/src/wgl/**.cpp" }
@@ -51,7 +54,10 @@ gr =
 				}
 			
 			configuration "opengl"
-				files { projPath .. "/src/opengl/**.cpp" }
+				files {
+					projPath .. "/src/opengl/**.cpp",
+					projPath .. "/include/opengl/**.hpp"
+			   	}
 	end,
 	
 	doTestProjects = function()
