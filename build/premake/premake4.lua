@@ -1,4 +1,3 @@
-print()
 
 -- Graphics API.
 newoption 
@@ -43,139 +42,121 @@ _OPTIONS["il-api"] = _OPTIONS["il-api"] or "libpng"
 -- Build tests option.
 newoption
 {
-	trigger		= "tests-build",
+	trigger		= "test-build",
 	description	= "Adds tests projects.",
 }
 
--- Tool builds
-newoption
-{
-	trigger		= "tools-build",
-	description	= "Adds tools to build.",
-}
+projPath 		= "../.."
+externalPath	= projPath .. "/external"
 
-projPath		= os.getcwd() .. "/../../"
-externalPath	= projPath .. "external/"
-includePath		= projPath .. "include/"
-sourcePath		= projPath .. "src/"
-modulePath		= os.getcwd() .. "/modules/"
-testPath		= os.getcwd() .. "/tests/"
-toolPath		= os.getcwd() .. "/tools/"
+print("Graphics API")
+print("  " .. _OPTIONS["gfx-api"] .. "\n")
 
-dofile("external.lua")
+print("Extensions API")
+print("  " .. _OPTIONS["ext-api"] .. "\n")
 
-print()
+print("Math API")
+print("  " .. _OPTIONS["math-api"] .. "\n")
 
-if _OPTIONS["tests-build"] then
-	print("Building tests.")
+print("Image loading API")
+print("  " .. _OPTIONS["il-api"] .. "\n")
+
+if _OPTIONS["test-build"] then
+	print("Building tests as well...\n")
 end
 
-if _OPTIONS["tools-build"] then
-	print("Building tools.")
-end
-
-print()
-
-modules =
-{
-	"ext",
-	"text",
-	"concurrency",
-	"sys",
-	"gr",
-	"game",
-	"input",
-	"profiler",
-	"math",
-	"resource",
-	"gui",
-	"os"
-}
-
-tests = 
-{
-	"ext",
-	"game",
-	"gr",
-	"gui",
-	"input",
-	"math",
-	"resource",
-	"os"
-}
-
-tools =
-{
-	"StringHasher",
-	"SpriteDefiner"
-}
+-- Projects to build.
+projects = { "ext",
+			 "text",
+			 "concurrency",
+			 "sys",
+			 "gr",
+			 "game",
+			 "input",
+			 "profiler",
+			 "math_proj",
+			 "resource",
+			 "gui" }
 
 solution "polymorph-td"
 	configurations { "Debug", "Release" }
 	platforms { "Native", "x64" }
-	targetdir (projPath .. "bin")
+	targetdir (projPath .. "/bin")
 	
-	includedirs { includePath .. "base/ext",
-				  includePath .. "base"}
+	-- Assert, Debug, etc. includes
+	includedirs { projPath .. "/include/base/ext" }
 	
 	-- Generate own build directories for each target
-	location (projPath .. "build/" .. _ACTION)
-	objdir ( projPath .. "obj/" .. _ACTION )
+	location (projPath .. "/build/" .. _ACTION)
+	objdir ( projPath .. "/obj/" .. _ACTION )
 	
 	-- C++0x/11 mode has to be explicitly enabled on some platforms
 	configuration "not vs*"
 		buildoptions { "-std=c++0x" }
 		defines { "__GXX_EXPERIMENTAL_CXX0X__" }
 	
-	-- From 'configurations'
+	-- From 'configurations'.
 	configuration "Debug"
 		flags { "Symbols", "ExtraWarnings" }
 		defines { "_DEBUG" }
-		libdirs { projPath .. "lib/Debug" }
+		libdirs { projPath .. "/lib/Debug" }
 	configuration "Release"
 		flags { "Optimize" }
 		defines { "NDEBUG" }
-		libdirs { projPath .. "lib/Release" }
+		libdirs { projPath .. "/lib/Release" }
 	
-	-- API setup
+	configuration "boost"
+		includedirs { externalPath .. "/include/boost" } 
+		libdirs { externalPath .. "/lib/boost" }
+	
+	configuration "libpng"
+		includedirs { externalPath .. "/include/libpng" }
+		libdirs { externalPath .. "/lib/libpng",
+				  externalPath .. "/lib/zlib" }
+	
+	configuration "eigen"
+		includedirs { externalPath .. "/include/eigen" }
+	
+	configuration "test-build"
+		defines { "TEST_BUILD" }
+	
 	configuration "windows"
-		includedirs { includePath .. "win32" }
-		defines { --"WIN32_LEAN_AND_MEAN",
+		defines { "WIN32_LEAN_AND_MEAN",
 				  "WINVER=0x0501",
 				  "_WIN32_WINNT=0x0501",
 				  "_CRT_SECURE_NO_WARNINGS" }
 	
-	configuration "tools-build"
-		defines { "TEST_BUILD" }
-	--
-
-	for _, module in ipairs(modules) do
-		print("Module: " .. module)
-		dofile(modulePath .. module .. ".lua")
+	for _, proj in ipairs(projects) do
+		print("Loading " .. proj)
+		dofile(proj .. ".lua")
 	end
-	print()
-	if _OPTIONS["tests-build"] then
-		for _, test in ipairs(tests) do
-			print("Test: " .. test)
-			dofile(testPath .. test .. ".lua")
-		end
-	end
+	
 	print()
 	
-	links (modules)
-	
-	if _OPTIONS["tools-build"] then
-		for _, tool in ipairs(tools) do
-			print("Tool: " .. tool)
-			dofile(toolPath .. tool .. ".lua")
+	for _, proj in ipairs(projects) do
+		print("Making project " .. proj)
+		_G[proj].doProject()
+		
+		if _OPTIONS["test-build"] then
+			if _G[proj].doTestProjects then
+				print("Making test project for " .. proj)
+				_G[proj].doTestProjects()
+			end
 		end
 	end
+	
 	print()
 	
 	-- Project for the actual game
 	project "PolyMorphTD"
 		kind "WindowedApp"
 		language "C++"
+		
+		links (projects)
+		
+		for _, proj in ipairs(projects) do
+			_G[proj].doDeclarations()
+		end
 		
 		configuration "windows"
 			includedirs { projPath .. "/include/win32" }
@@ -199,7 +180,7 @@ solution "polymorph-td"
 			links { "OpenGL.framework" }
 		
 	-- Project for PolyMorphTD unit tests
-	--[[ Are we ever going to use this?
+	--[[
 	project "PolyMorphTD-testrunner"
 		kind "ConsoleApp"
 		language "C++"
