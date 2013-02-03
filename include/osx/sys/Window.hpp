@@ -37,7 +37,7 @@ public:
 	};
 
 	Window(const ConstructionData& data);
-	//Window(Window&& window);
+	Window(Window&& window);
 
 	~Window();
 
@@ -53,7 +53,9 @@ public:
 
 private:
     /* No pointer-wrapper because of C++/Obj-C mismatches */
-	WindowImpl* _impl;
+    WindowImpl*         _impl;
+    WindowInputSource   _inputSource;
+    gr::Surface         _surface;
 };
 
 } /* namespace sys */
