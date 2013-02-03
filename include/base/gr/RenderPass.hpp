@@ -74,6 +74,7 @@ public:
 
 	VertexSupplierHandle addVertexSupplier(VertexSupplier& vertexSupplier);
 	void removeVertexSupplier(VertexSupplierHandle handle);
+	void clearVertexSuppliers();
 
 	void updateVertices();
 	void render();
@@ -83,6 +84,13 @@ public:
 
 	ModelVector unProject(const ClipVector& ndcVec) const;
 	ClipVector project(const ModelVector& modelVec) const;
+
+	void setProjection(const Projection& projection);
+	void setModelTransform(const Transform& modelTransform);
+	void setViewTransform(const Transform& viewTransform);
+
+	void setTexture(const Texture* tex);
+	void setShader(const Shader* shader);
 
 private:
 

@@ -66,6 +66,11 @@ void RenderPass::removeVertexSupplier(VertexSupplierHandle handle)
 	_vertexSuppliers.erase((vertex_supplier_iterator) handle);
 }
 
+void RenderPass::clearVertexSuppliers()
+{
+	_vertexSuppliers.clear();
+}
+
 void RenderPass::updateVertices()
 {
 	for (auto supplier : _vertexSuppliers)
@@ -147,4 +152,34 @@ ClipVector RenderPass::project(const ModelVector& modelVec) const
 	return ClipVector(v);
 }
 
+
+void RenderPass::setProjection(const Projection& projection)
+{
+	_transformDesc.projection = projection;
+	_invTransformDesc.projection = projection.inverse();
 }
+
+void RenderPass::setModelTransform(const Transform& modelTransform)
+{
+	_transformDesc.model = modelTransform;
+	_invTransformDesc.model = modelTransform.inverse();
+}
+
+void RenderPass::setViewTransform(const Transform& viewTransform)
+{
+	_transformDesc.view = viewTransform;
+	_invTransformDesc.view = viewTransform.inverse();
+}
+
+void RenderPass::setTexture(const Texture* tex)
+{
+	_materialDesc.texture = tex;
+}
+
+void RenderPass::setShader(const Shader* shader)
+{
+	_materialDesc.shader = shader;
+}
+
+}
+
