@@ -165,19 +165,12 @@ solution "polymorph-td"
 		
 		configuration "macosx"
 			-- MacPorts default includes
-			includedirs {
-				"/opt/local/include",
-				projPath .. "/include/cocoa/" }
+			includedirs { "/opt/local/include", projPath .. "/include/osx/", }
 			files {
+				projPath .. "/include/osx/**.hpp",
 				projPath .. "/src/osx/**.cpp",
 				projPath .. "/src/osx/**.mm"
-		   	}
-
-			libdirs { "/opt/local/lib" }
-			links { "Cocoa.framework" }
-
-		configuration {"macosx", "opengl"}
-			links { "OpenGL.framework" }
+			}
 
 	-- Project for PolyMorphTD unit tests
 	--[[
