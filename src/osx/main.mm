@@ -15,7 +15,7 @@
 
 @interface AppDelegate : NSObject
 {
-    sys::Window    window;
+    sys::Window* window;
 }
 @end
 
@@ -25,7 +25,8 @@
 {
     if ( self = [super init] )
     {
-
+        sys::Window::ConstructionData data = { self, { 10, 10, 800, 600 }};
+        window = new sys::Window(data)
     }
     return self;
 }
@@ -38,11 +39,13 @@
 
 -(void) applicationDidFinishLaunching : (NSNotification*) notification
 {
+    
     window->applicationDidFinishLaunching();
 }
 
 -(void) dealloc
 {
+    delete window;
     [super dealloc];
 }
 
