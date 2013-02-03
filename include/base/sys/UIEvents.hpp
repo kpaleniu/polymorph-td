@@ -60,7 +60,7 @@ struct Show {};
 struct Hide {};
 struct Quit	{};
 
-typedef EventManager<event::Hide,
+typedef EventManagers<event::Hide,
 					 event::KeyDown,
 					 event::KeyUp,
 					 event::PointerDown,
@@ -119,15 +119,15 @@ protected:
 	}
 	void onShow()
 	{
-		eventManager.with<Show>().triggerEvent(Show{});
+		eventManager.with<Show>().triggerEvent();
 	}
 	void onHide()
 	{
-		eventManager.with<Hide>().triggerEvent(Hide{});
+		eventManager.with<Hide>().triggerEvent();
 	}
 	void onQuit()
 	{
-		eventManager.with<Quit>().triggerEvent(Quit{});
+		eventManager.with<Quit>().triggerEvent();
 	}
 };
 
