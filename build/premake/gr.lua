@@ -9,6 +9,11 @@ gr =
 			includedirs { projPath .. "/include/wgl" }
 			links { "glew32", "glu32", "opengl32" }
 			defines { "GLEW_STATIC" }
+
+		configuration {"macosx", "opengl" }
+			includedirs { "/opt/local/include", projPath .. "/include/cocoa" }
+			libdirs { "/opt/local/libs" }
+			links { "Cocoa.framework", "OpenGL.framework" }
 	
 		configuration "opengl"
 			includedirs { projPath .. "/include/opengl" }
@@ -34,6 +39,9 @@ gr =
 			
 			configuration {"windows", "opengl"}
 				files { projPath .. "/src/wgl/**.cpp" }
+
+			configuration {"macosx", "opengl"}
+				files { projPath .. "/src/cocoa/**.cpp" }
 			
 			configuration "opengl"
 				files { projPath .. "/src/opengl/**.cpp" }
