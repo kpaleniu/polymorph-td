@@ -25,6 +25,10 @@ private:
 public:
 	class RenderPassHandle : public PrivateHandle<render_pass_iterator>
 	{
+	public:
+		RenderPassHandle(const RenderPassHandle&) = default;
+
+	private:
 		RenderPassHandle() : PrivateHandle<render_pass_iterator>() {}
 		RenderPassHandle(const render_pass_iterator& v) : PrivateHandle<render_pass_iterator>(v) {}
 
