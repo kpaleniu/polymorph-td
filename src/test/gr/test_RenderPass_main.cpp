@@ -40,10 +40,10 @@ void testProjection(const gr::RenderPass& pass)
 	}};
 	static std::array<gr::ClipVector, 4> clipUnitQuad
 	{{
-		gr::ClipVector( std::array<gr::real_t, 2>{{0, 0, 0}} ),
-		gr::ClipVector( std::array<gr::real_t, 2>{{1, 0, 0}} ),
-		gr::ClipVector( std::array<gr::real_t, 2>{{1, 1, 0}} ),
-		gr::ClipVector( std::array<gr::real_t, 2>{{0, 1, 0}} )
+		gr::ClipVector( std::array<gr::real_t, 3>{{0, 0, 0}} ),
+		gr::ClipVector( std::array<gr::real_t, 3>{{1, 0, 0}} ),
+		gr::ClipVector( std::array<gr::real_t, 3>{{1, 1, 0}} ),
+		gr::ClipVector( std::array<gr::real_t, 3>{{0, 1, 0}} )
 	}};
 
 	using namespace std;
@@ -51,12 +51,12 @@ void testProjection(const gr::RenderPass& pass)
 	for (const auto& modelVec : modelUnitQuad)
 	{
 		cout << static_cast<const gr::Vector3_r&>(modelVec) << endl;
-		cout << "Project: " << endl << static_cast<const gr::Vector2_r&>(pass.project(modelVec)) << endl;
+		cout << "Project: " << endl << static_cast<const gr::Vector3_r&>(pass.project(modelVec)) << endl;
 	}
 
 	for (const auto& surfaceVec : clipUnitQuad)
 	{
-		cout << static_cast<const gr::Vector2_r&>(surfaceVec) << endl;
+		cout << static_cast<const gr::Vector3_r&>(surfaceVec) << endl;
 		cout << "Unproject: " << endl << static_cast<const gr::Vector3_r&>(pass.unProject(surfaceVec), 0.0) << endl;
 	}
 }
