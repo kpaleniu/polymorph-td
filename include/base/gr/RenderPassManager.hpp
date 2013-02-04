@@ -9,47 +9,42 @@
 #include "gr/RenderPass.hpp"
 #include "gr/BufferManager.hpp"
 
+#include <text/util.hpp>
+
 #include <PrivateHandle.hpp>
 #include <NonCopyable.hpp>
 
-#include <list>
-#include <queue>
+#include <map>
 
 namespace gr {
 
+/**
+ * Render pass composition.
+ *
+ * TODO Missing functionality for ordering render passes.
+ */
 class RenderPassManager : NonCopyable
 {
-private:
-	typedef std::list<RenderPass>::iterator render_pass_iterator;
-
 public:
-	class RenderPassHandle : public PrivateHandle<render_pass_iterator>
-	{
-	public:
-		RenderPassHandle(const RenderPassHandle&) = default;
-
-	private:
-		RenderPassHandle() : PrivateHandle<render_pass_iterator>() {}
-		RenderPassHandle(const render_pass_iterator& v) : PrivateHandle<render_pass_iterator>(v) {}
-
-		friend class RenderPassManager;
-	};
+	typedef text::string_hash render_pass_id;
 
 	RenderPassManager();
 	RenderPassManager(RenderPassManager&& other);
 
-	RenderPassHandle addRenderPass(RenderPass&& renderPass);
-	void removeRenderPass(RenderPassHandle handle);
+	// May not be called while iterating.
+	void addRenderPass(render_pass_id id, RenderPass&& renderPass);
+	void removeRenderPass(render_pass_id id);
+	//
+
+	RenderPass& pass(render_pass_id id);
 
 	void updateRenderPasses();
 	void executeRenderPasses();
 
 private:
-	std::list<RenderPass> _renderPasses;
+	std::map<render_pass_id, RenderPass> _renderPasses;
 
-#ifdef _DEBUG
-	bool _usingPasses;
-#endif
+	bool _usingPasses; // Safety check.
 };
 
 }

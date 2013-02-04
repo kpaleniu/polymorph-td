@@ -49,6 +49,11 @@ gr::Renderer& GraphicsSystemRunner::renderer()
 	return _renderer;
 }
 
+gr::Surface& GraphicsSystemRunner::surface()
+{
+	return _surface;
+}
+
 //
 
 GraphicsSystem::GraphicsSystem(Window& window)

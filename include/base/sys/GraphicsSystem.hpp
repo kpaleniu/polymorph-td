@@ -11,7 +11,11 @@
 #include <gr/Renderer.hpp>
 #include <gr/Surface.hpp>
 
+#include <concurrency/Task.hpp>
+
 #include <NonCopyable.hpp>
+
+#include <memory>
 
 namespace sys {
 
@@ -25,6 +29,7 @@ public:
 	bool update();
 
 	gr::Renderer& renderer();
+	gr::Surface& surface();
 
 	static const char* getSystemName()
 	{ return "GraphicsSystem"; }
@@ -41,12 +46,10 @@ public:
 	GraphicsSystem(Window& window);
 	GraphicsSystem(GraphicsSystem&& grSys);
 
-	// TODO: JUST FOR TESTING
 	SystemActionQueue<GraphicsSystemRunner>& actionQueue()
 	{
 		return _actions;
 	}
-
 };
 
 }

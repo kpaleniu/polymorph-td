@@ -6,62 +6,48 @@
 namespace gr {
 
 RenderPassManager::RenderPassManager()
-:	_renderPasses()
-#ifdef _DEBUG
- 	, _usingPasses(false)
-#endif
+:	_renderPasses(),
+ 	_usingPasses(false)
 {
 }
 
 RenderPassManager::RenderPassManager(RenderPassManager&& other)
-:	_renderPasses(std::move(other._renderPasses))
-#ifdef _DEBUG
-	, _usingPasses(false)
-#endif
+:	_renderPasses(std::move(other._renderPasses)),
+	_usingPasses(false)
 {
-#ifdef _DEBUG
 	ASSERT(!other._usingPasses, "Trying to move render passes while iterating.");
-#endif
 }
 
-RenderPassManager::RenderPassHandle RenderPassManager::addRenderPass(RenderPass&& renderPass)
+void RenderPassManager::addRenderPass(render_pass_id id, RenderPass&& renderPass)
 {
-#ifdef _DEBUG
 	ASSERT(!_usingPasses, "Trying to insert pass while iterating.");
-#endif
 
-	return _renderPasses.insert(_renderPasses.end(), std::move(renderPass));
+	VERIFY(_renderPasses.insert(std::make_pair(id, std::move(renderPass))).second);
 }
 
-void RenderPassManager::removeRenderPass(RenderPassHandle handle)
+void RenderPassManager::removeRenderPass(render_pass_id id)
 {
-#ifdef _DEBUG
 	ASSERT(!_usingPasses, "Trying to remove pass while iterating.");
-#endif
 
-	_renderPasses.erase(handle);
+	VERIFY(_renderPasses.erase(id));
 }
 
 void RenderPassManager::updateRenderPasses()
 {
-#ifdef _DEBUG
 	Scoped usingScope([this]{_usingPasses = true;},
 	                  [this]{_usingPasses = false;});
-#endif
 
 	for (auto& pass : _renderPasses)
-		pass.updateVertices();
+		pass.second.updateVertices();
 }
 
 void RenderPassManager::executeRenderPasses()
 {
-#ifdef _DEBUG
 	Scoped usingScope([this]{_usingPasses = true;},
 	                  [this]{_usingPasses = false;});
-#endif
 
 	for (auto& pass : _renderPasses)
-		pass.render();
+		pass.second.render();
 }
 
 }
