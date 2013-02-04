@@ -26,19 +26,21 @@ gui =
 			kind "WindowedApp"
 			language "C++"
 			
-			links { "gr", "ext", "concurrency", "text", "resource" }
+			links { "input", "sys", "profiler", "gr", "ext", "concurrency", "text" }
 			
-			gui.doDeclarations()
+			includedirs { projPath .. "/include/test" }	
+			
+			files { projPath .. "/src/base/gui/**.cpp",
+					projPath .. "/src/test/gui/test_GUI_main.cpp" }
+			
 			concurrency.doDeclarations()
-			resource.doDeclarations()
 			gr.doDeclarations()
 			ext.doDeclarations()
-			
-			
-			includedirs { projPath .. "/include/test" }
-			
-			files { projPath .. "/src/base/gr/**.cpp", 
-					projPath .. "/src/test/gui/test_GUI_main.cpp",
-					projPath .. "/src/test/gr/TestWindow.cpp" }
+			sys.doDeclarations()
+			input.doDeclarations()
+			profiler.doDeclarations()
+
+			configuration "windows"
+				files { projPath .. "/src/win32/input/**.cpp" }
 	end
 }
