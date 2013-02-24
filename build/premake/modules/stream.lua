@@ -1,7 +1,6 @@
 
---
--- I/O Stream project. Not needed atm.
---
+-- Depricated module
+
 --[[
 project "stream"
 	kind "StaticLib"
