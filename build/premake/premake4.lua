@@ -54,13 +54,13 @@ newoption
 	description	= "Adds tools to build.",
 }
 
-projPath		= "../../"
+projPath		= os.getcwd() .. "/../../"
 externalPath	= projPath .. "external/"
 includePath		= projPath .. "include/"
-sourcePath		= projPath .. "source/"
-modulePath		= "./modules/"
-testPath		= "./tests/"
-toolPath		= "./tools/"
+sourcePath		= projPath .. "src/"
+modulePath		= os.getcwd() .. "/modules/"
+testPath		= os.getcwd() .. "/tests/"
+toolPath		= os.getcwd() .. "/tools/"
 
 print("Graphics API")
 print("  " .. _OPTIONS["gfx-api"])
