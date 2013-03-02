@@ -15,6 +15,12 @@
 #include <iostream>
 #include <sstream>
 
+#ifdef _WIN32
+	#include <windows.h>
+	#define OS_OUTPUT_IMPL(str) OutputDebugString((str + '\n').c_str())
+#else
+	#define OS_OUTPUT_IMPL(str) std::cout << str << std::endl
+#endif
 
 
 namespace debug {
@@ -83,8 +89,10 @@ void print_impl(
 	append_message(buf, message, buf.tellp());
 
 	concurrency::MutexLockGuard lock(printMutex);
-	std::cout << buf.str() << std::endl;
+	OS_OUTPUT_IMPL(buf.str());
 }
 
 }	// namespace detail
 }	// namespace debug
+
+#undef OUTPUT_IMPL
