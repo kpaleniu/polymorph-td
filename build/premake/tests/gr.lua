@@ -3,6 +3,10 @@ project "RenderPassTest"
 	kind "WindowedApp"
 	language "C++"
 	
+	includedirs { includePath .. "test" }
+	
+	links { "ext", "concurrency" }
+	
 	files { sourcePath .. "base/gr/**.cpp", 
 			sourcePath .. "test/gr/test_RenderPass_main.cpp",
 			sourcePath .. "test/gr/TestWindow.cpp",
@@ -18,8 +22,4 @@ project "RenderPassTest"
 	configuration "opengl"
 		files { sourcePath .. "opengl/**.cpp",
 				includePath .. "opengl/**.hpp" }
-	
-	includedirs { includePath .. "test" }
-	
-	links { "ext", "concurrency" }
 	

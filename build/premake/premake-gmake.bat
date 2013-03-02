@@ -1,2 +1,2 @@
-call premake4 --test-build --tools-build gmake
+call premake4 --tests-build --tools-build gmake
 pause

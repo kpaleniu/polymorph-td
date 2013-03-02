@@ -98,7 +98,8 @@ modules =
 	"profiler",
 	"math",
 	"resource",
-	"gui"
+	"gui",
+	"os"
 }
 
 tests = 
@@ -109,7 +110,8 @@ tests =
 	"gui",
 	"input",
 	"math",
-	"resource"
+	"resource",
+	"os"
 }
 
 tools =
