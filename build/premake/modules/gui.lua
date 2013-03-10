@@ -14,4 +14,5 @@ project "gui"
 	files { sourcePath .. "base/gui/**.cpp",
 			includePath .. "base/gui/**.hpp" }
 	
-	links { "sys", "gr", "input" }
+	useExternalAPI("gfx-api")
+	useExternalAPI("ext-api")

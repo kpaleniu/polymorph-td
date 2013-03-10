@@ -21,3 +21,7 @@ project "gr"
 	configuration "opengl"
 		files { sourcePath .. "opengl/**.cpp",
 				includePath .. "opengl/**.hpp" }
+	
+	useExternalAPI("gfx-api")
+	useExternalAPI("math-api")
+	useExternalAPI("ext-api")

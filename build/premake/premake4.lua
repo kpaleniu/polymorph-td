@@ -62,17 +62,7 @@ modulePath		= os.getcwd() .. "/modules/"
 testPath		= os.getcwd() .. "/tests/"
 toolPath		= os.getcwd() .. "/tools/"
 
-print("Graphics API")
-print("  " .. _OPTIONS["gfx-api"])
-
-print("Extensions API")
-print("  " .. _OPTIONS["ext-api"])
-
-print("Math API")
-print("  " .. _OPTIONS["math-api"])
-
-print("Image loading API")
-print("  " .. _OPTIONS["il-api"])
+dofile("external.lua")
 
 print()
 
@@ -116,7 +106,8 @@ tests =
 
 tools =
 {
-	"StringHasher"
+	"StringHasher",
+	"SpriteDefiner"
 }
 
 solution "polymorph-td"
@@ -136,9 +127,6 @@ solution "polymorph-td"
 		buildoptions { "-std=c++0x" }
 		defines { "__GXX_EXPERIMENTAL_CXX0X__" }
 	
-	configuration "vs*"
-		defines { "NO_CONSTEXPR" }
-	
 	-- From 'configurations'
 	configuration "Debug"
 		flags { "Symbols", "ExtraWarnings" }
@@ -150,38 +138,15 @@ solution "polymorph-td"
 		libdirs { projPath .. "lib/Release" }
 	
 	-- API setup
-	configuration "boost"
-		includedirs { externalPath .. "include/boost",
-					  includePath .. "boost",
-					  includePath .. "boost/ext" }
-		libdirs { externalPath .. "lib/boost" }
-	
-	configuration "libpng"
-		includedirs { externalPath .. "include/libpng",
-					  includePath .. "libpng" }
-		libdirs { externalPath .. "lib/libpng",
-				  externalPath .. "lib/zlib" }
-	
-	configuration "eigen"
-		includedirs { externalPath .. "include/eigen" }
-	
-	configuration "opengl"
-		includedirs { includePath .. "opengl" }
-		libdirs { externalPath .. "lib/glew" }
-	
 	configuration "windows"
 		includedirs { includePath .. "win32" }
-		defines { "WIN32_LEAN_AND_MEAN",
+		defines { --"WIN32_LEAN_AND_MEAN",
 				  "WINVER=0x0501",
 				  "_WIN32_WINNT=0x0501",
 				  "_CRT_SECURE_NO_WARNINGS" }
 	
-	configuration("windows", "opengl")
-		includedirs { includePath .. "wgl" }
-	
 	configuration "tools-build"
 		defines { "TEST_BUILD" }
-	
 	--
 
 	for _, module in ipairs(modules) do
@@ -196,6 +161,9 @@ solution "polymorph-td"
 		end
 	end
 	print()
+	
+	links (modules)
+	
 	if _OPTIONS["tools-build"] then
 		for _, tool in ipairs(tools) do
 			print("Tool: " .. tool)
@@ -208,8 +176,6 @@ solution "polymorph-td"
 	project "PolyMorphTD"
 		kind "WindowedApp"
 		language "C++"
-		
-		links (modules)
 		
 		configuration "windows"
 			includedirs { projPath .. "/include/win32" }

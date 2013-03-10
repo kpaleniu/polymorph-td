@@ -13,3 +13,5 @@ project "text"
 	
 	files { sourcePath .. "base/text/**.cpp",
 			includePath .. "base/text/**.hpp" }
+	
+	useExternalAPI("ext-api")

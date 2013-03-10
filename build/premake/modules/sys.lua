@@ -17,3 +17,8 @@ project "sys"
 	configuration "windows"
 		files { sourcePath .. "win32/sys/**.cpp",
 				includePath .. "win32/sys/**.hpp" }
+	
+	useExternalAPI("il-api")
+	useExternalAPI("gfx-api")
+	useExternalAPI("math-api")
+	useExternalAPI("ext-api")

@@ -17,3 +17,8 @@ project "resource"
 	configuration "libpng"
 		files { sourcePath .. "libpng/resource/**.cpp",
 				includePath .. "libpng/resource/**.hpp" }
+	
+	useExternalAPI("il-api")
+	useExternalAPI("gfx-api")
+	useExternalAPI("math-api")
+	useExternalAPI("ext-api")

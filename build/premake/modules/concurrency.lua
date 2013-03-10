@@ -18,15 +18,5 @@ project "concurrency"
 	configuration "boost"
 		files { sourcePath .. "boost/concurrency/**.cpp",
 				includePath .. "boost/concurrency/**.hpp" }
-
-	configuration { "boost", "not vs*", "Debug" }
-			defines { "BOOST_THREAD_USE_LIB" }
-			links { "boost_thread_d",
-					"boost_chrono_d",
-					"boost_system_d" }
 	
-	configuration { "boost", "not vs*", "Release" }
-			defines { "BOOST_THREAD_USE_LIB" }
-			links { "boost_thread",
-					"boost_chrono",
-					"boost_system" }
+	useExternalAPI("ext-api")

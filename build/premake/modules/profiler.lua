@@ -13,3 +13,5 @@ project "profiler"
 		
 	files { sourcePath .. "base/profiler/**.cpp",
 			includePath .. "base/profiler/**.hpp" }
+	
+	useExternalAPI("ext-api")

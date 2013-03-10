@@ -6,8 +6,7 @@ Description:
 Extensions API specific (currently only Boost).
 
 --]]
-
-		
+	
 project "ext"
 	kind "StaticLib"
 	language "C++"
@@ -18,3 +17,5 @@ project "ext"
 	configuration "boost"
 		files { sourcePath .. "boost/ext/**.cpp",
 				includePath .. "boost/ext/**.hpp" }
+	
+	useExternalAPI("ext-api")
