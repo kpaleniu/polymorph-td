@@ -32,6 +32,14 @@ enum class VertexFormatFlag : format_flags
 	NORMAL_FLAG = (1<<3),
 };
 
+format_flags operator&(format_flags flags, VertexFormatFlag flag);
+format_flags operator&(VertexFormatFlag flag, format_flags flags);
+format_flags operator&(VertexFormatFlag flag1, VertexFormatFlag flag2);
+
+format_flags operator|(format_flags flags, VertexFormatFlag flag);
+format_flags operator|(VertexFormatFlag flag, format_flags flags);
+format_flags operator|(VertexFormatFlag flag1, VertexFormatFlag flag2);
+
 struct VertexFormatData
 {
 	size_t size;

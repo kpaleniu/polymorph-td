@@ -13,8 +13,6 @@
 
 #include <NonCopyable.hpp>
 
-// TODO Check if OpenGL API is available statically.
-
 namespace gr {
 
 class BufferManager;
@@ -22,8 +20,7 @@ class BufferManager;
 class VertexBuffer : NonCopyable
 {
 public:
-	VertexBuffer(BufferManager& manager,
-	             VertexFormat format,
+	VertexBuffer(VertexFormat format,
 	             BufferUsage usage,
 	             size_t vertexCount=0,
 	             const real_t* data=nullptr);
@@ -80,7 +77,6 @@ private:
 	BufferUsage _usage;
 
 	VertexFormat _vertexFormat;
-	BufferManager& _manager;
 };
 
 }

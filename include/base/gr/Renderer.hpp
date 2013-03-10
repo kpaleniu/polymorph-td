@@ -34,14 +34,12 @@ public:
 
 	DebugDraw& debugDraw();
 
-	BufferManager& bufferManager();
 	RenderPassManager& renderPassManager();
 
 private:
 	Surface& _surface;
 
 	DebugDraw _debugDraw;
-	BufferManager _bufferManager;
 	RenderPassManager _renderPassManager;
 };
 

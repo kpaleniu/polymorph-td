@@ -50,6 +50,12 @@ public:
 
 	struct TransformDesc
 	{
+		TransformDesc(Projection p, Transform m, Transform v)
+		:	projection(p),
+			model(m),
+			view(v)
+		{}
+
 		Projection projection;
 		Transform model;
 		Transform view;
@@ -61,14 +67,11 @@ public:
 		const Shader*  shader;
 	};
 
-	RenderPass( BufferManager& bufferManager,
-	            VertexFormat format,
-	            Primitive shape = Primitive::TRIANGLES,
-			    MaterialDesc materialDesc = {nullptr, nullptr},
-	            BufferDesc bufferDesc = {enum_t(BufferFlag::ALL), enum_t(BufferFlag::ALL)},
-	            const TransformDesc& transformDesc = {Projection::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f),
-	                                           Transform::identity(),
-	                                           Transform::identity()} );
+	RenderPass( VertexFormat format,
+	            Primitive shape,
+			    MaterialDesc materialDesc,
+	            BufferDesc bufferDesc,
+	            const TransformDesc& transformDesc );
 
 	RenderPass(RenderPass&& other);
 
@@ -93,9 +96,6 @@ public:
 	void setShader(const Shader* shader);
 
 private:
-
-	BufferManager& _bufferManager;
-
 	Primitive _shape;
 
 	VertexBuffer _vertices;

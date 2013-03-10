@@ -38,6 +38,42 @@ const VertexFormatData vertexFormatData[size_t(VertexFormat::VERTEX_ENUM_SIZE)] 
 
 }
 
+format_flags operator&(format_flags flags,
+                       VertexFormatFlag flag)
+{
+	return flags & format_flags(flag);
+}
+
+format_flags operator&(VertexFormatFlag flag,
+                       format_flags flags)
+{
+	return flags & format_flags(flag);
+}
+
+format_flags operator&(VertexFormatFlag flag1,
+                       VertexFormatFlag flag2)
+{
+	return format_flags(flag1) & format_flags(flag2);
+}
+
+format_flags operator|(format_flags flags,
+                       VertexFormatFlag flag)
+{
+	return flags | format_flags(flag);
+}
+
+format_flags operator|(VertexFormatFlag flag,
+                       format_flags flags)
+{
+	return flags | format_flags(flag);
+}
+
+format_flags operator|(VertexFormatFlag flag1,
+                       VertexFormatFlag flag2)
+{
+	return format_flags(flag1) | format_flags(flag2);
+}
+
 const VertexFormatData& getVertexFormatData(VertexFormat fmt)
 {
 	ASSERT(fmt != VertexFormat::VERTEX_ENUM_SIZE, "Bad vertex format.");

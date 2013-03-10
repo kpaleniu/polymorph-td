@@ -7,17 +7,17 @@
 #include "gr/opengl.hpp"
 #include "gr/Texture.hpp"
 
+#include <Debug.hpp>
+
 namespace gr {
 
-RenderPass::RenderPass(BufferManager& bufferManager,
-                       VertexFormat format,
+RenderPass::RenderPass(VertexFormat format,
                        Primitive shape,
                        MaterialDesc materialDesc,
                        BufferDesc bufferDesc,
                        const TransformDesc& transformDesc)
-:	_bufferManager(bufferManager),
- 	_shape(shape),
- 	_vertices(bufferManager, format, BufferUsage::DYNAMIC),
+:	_shape(shape),
+ 	_vertices(format, BufferUsage::DYNAMIC),
  	_indices(BufferUsage::DYNAMIC),
  	_vertexWriter(_vertices, _indices),
  	_materialDesc(materialDesc),
@@ -36,8 +36,7 @@ RenderPass::RenderPass(BufferManager& bufferManager,
 }
 
 RenderPass::RenderPass(RenderPass&& other)
-:	_bufferManager(other._bufferManager),
- 	_shape(other._shape),
+:	_shape(other._shape),
  	_vertices(std::move(other._vertices)),
  	_indices(std::move(other._indices)),
  	_vertexWriter(_vertices, _indices),
@@ -101,7 +100,7 @@ void RenderPass::render()
 
 	if (_materialDesc.texture != nullptr)
 	{
-		glEnable(GL_TEXTURE_2D);
+		gl::enable(GL_TEXTURE_2D);
 		_materialDesc.texture->bind();
 	}
 
@@ -116,7 +115,7 @@ void RenderPass::render()
 	if (_materialDesc.texture != nullptr)
 	{
 		_materialDesc.texture->unbind();
-		glDisable(GL_TEXTURE_2D);
+		gl::disable(GL_TEXTURE_2D);
 	}
 
 	if (_postRenderHook)

@@ -32,7 +32,6 @@ const char* TAG = "Renderer";
 Renderer::Renderer(Surface &surface)
 :	_surface(surface),
 	_debugDraw(),
-	_bufferManager(),
 	_renderPassManager()
 {
 	_surface.activate(true);
@@ -49,7 +48,6 @@ Renderer::Renderer(Surface &surface)
 Renderer::Renderer(Renderer&& renderer)
 :	_surface(renderer._surface),
  	_debugDraw(),
- 	_bufferManager(),
  	_renderPassManager(std::move(renderer._renderPassManager))
 {
 }
@@ -71,7 +69,8 @@ void Renderer::flipBuffers()
 
 void Renderer::render()
 {
-
+	//_renderPassManager.updateRenderPasses();
+	_renderPassManager.executeRenderPasses();
 
 #ifdef _DEBUG
 	GLenum errCode = glGetError();
@@ -83,11 +82,6 @@ void Renderer::render()
 DebugDraw& Renderer::debugDraw()
 {
 	return _debugDraw;
-}
-
-BufferManager& Renderer::bufferManager()
-{
-	return _bufferManager;
 }
 
 RenderPassManager& Renderer::renderPassManager()
