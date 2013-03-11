@@ -36,7 +36,8 @@ local externalAPI =
 		use = function()
 			configuration "boost"
 				includedirs { externalPath .. "include/boost",
-							  includePath .. "boost" }
+							  includePath .. "boost",
+							  includePath .. "boost/ext" }
 				defines { "BOOST_THREAD_USE_LIB" }
 				libdirs { externalPath .. "lib/boost" }
 			
