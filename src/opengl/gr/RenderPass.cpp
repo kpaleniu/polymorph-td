@@ -91,12 +91,12 @@ void RenderPass::render()
 	if ( _bufferDesc.clearFlags != enum_t(BufferFlag::NONE) )
 		glClear( GLenum(_bufferDesc.clearFlags) );
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(_transformDesc.projection.data());
+	gl::matrixMode(GL_PROJECTION);
+	gl::loadMatrix(_transformDesc.projection.data());
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(_transformDesc.view.data());
-	glMultMatrixf(_transformDesc.model.data());
+	gl::matrixMode(GL_MODELVIEW);
+	gl::loadMatrix(_transformDesc.view.data());
+	gl::multMatrix(_transformDesc.model.data());
 
 	if (_materialDesc.texture != nullptr)
 	{

@@ -4,7 +4,49 @@
 #include <Assert.hpp>
 #include <Debug.hpp>
 
+#include <map>
+
 namespace gl {
+
+namespace {
+
+#define DEFINE_ENUM_NAME(enumName) { enumName, #enumName }
+
+const std::map<const GLenum, const std::string> enumNames =
+{
+	DEFINE_ENUM_NAME(GL_STATIC_DRAW),
+	DEFINE_ENUM_NAME(GL_DYNAMIC_DRAW),
+	DEFINE_ENUM_NAME(GL_LINES),
+	DEFINE_ENUM_NAME(GL_TRIANGLES),
+	DEFINE_ENUM_NAME(GL_TRIANGLE_STRIP),
+	DEFINE_ENUM_NAME(GL_QUADS),
+	DEFINE_ENUM_NAME(GL_ARRAY_BUFFER),
+	DEFINE_ENUM_NAME(GL_ELEMENT_ARRAY_BUFFER),
+	DEFINE_ENUM_NAME(GL_VERTEX_ARRAY),
+	DEFINE_ENUM_NAME(GL_FLOAT),
+	DEFINE_ENUM_NAME(GL_TEXTURE_2D),
+	DEFINE_ENUM_NAME(GL_TEXTURE_COORD_ARRAY),
+	DEFINE_ENUM_NAME(GL_PROJECTION),
+	DEFINE_ENUM_NAME(GL_MODELVIEW)
+};
+
+#undef DEFINE_ENUM_NAME
+
+}
+
+const std::string& getEnumName(GLenum en)
+{
+	static const std::string badArgument("UNKOWN ENUM");
+
+	try
+	{
+		return enumNames.at(en);
+	}
+	catch (std::exception& e)
+	{
+		return badArgument;
+	}
+}
 
 void assertNoGLError()
 {
