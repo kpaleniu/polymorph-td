@@ -6,8 +6,10 @@
 
 #include "sys/Window.hpp"
 #include "sys/WindowException.hpp"
-#include "Assert.hpp"
-#include "BuildConfig.hpp"
+#include <Assert.hpp>
+#include <BuildConfig.hpp>
+
+#include <algorithm>
 
 // Windows XP is the minimum requirement for using raw input
 static_assert(_WIN32_WINNT >= 0x0501,
@@ -103,7 +105,8 @@ Window::Window(const ConstructionData &ctorData) :
 Window::Window(Window&& window) :
 		_windowHandle(std::move(window._windowHandle)),
 		_surface(std::move(window._surface)),
-		_inputSource(window._inputSource)
+		_inputSource(window._inputSource),
+		_dialogs()
 {
 }
 
@@ -113,6 +116,34 @@ bool Window::show(bool show)
 	if (show)
 		VERIFY(UpdateWindow(_windowHandle.get()));
 	return !!wasVisible;
+}
+
+void Window::showMessageDialog(const std::string& title,
+							   const std::string& message,
+							   os::MessageDialog::Buttons buttons,
+							   os::MessageDialog::Type type,
+							   os::MessageDialog::Action action)
+{
+	// Remove old inactive dialogs:
+	for (auto it = _dialogs.begin(); it != _dialogs.end();)
+	{
+		if (it->isFinished())
+			_dialogs.erase(it++);
+		else
+			++it;
+	}
+	//
+
+	os::MessageDialog dialog(title,
+							 message,
+							 buttons,
+							 type,
+							 action,
+							 _windowHandle.get());
+
+	dialog.show();
+
+	_dialogs.insert( std::move(dialog) );
 }
 
 input::WindowInputSource& Window::inputSource()

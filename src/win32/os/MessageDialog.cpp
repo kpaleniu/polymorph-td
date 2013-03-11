@@ -11,7 +11,7 @@ MessageDialog::MessageDialog(const std::string& title,
 							 Type type,
 							 Action action,
 							 HWND parent)
-:	Thread(),
+:	concurrency::Thread(),
 	_title(title),
 	_message(message),
 	_buttons(buttons),
@@ -19,11 +19,10 @@ MessageDialog::MessageDialog(const std::string& title,
 	_action(action),
 	_parent(parent)
 {
-	start();
 }
 
 MessageDialog::MessageDialog(MessageDialog&& other)
-:	Thread(std::move(other)),
+:	concurrency::Thread(std::move(other)),
 	_title(std::move(other._title)),
 	_message(std::move(other._message)),
 	_buttons(other._buttons),
@@ -41,6 +40,11 @@ MessageDialog::~MessageDialog()
 bool MessageDialog::isFinished() const
 {
 	return getThreadState() == ThreadState::EXITED;
+}
+
+void MessageDialog::show()
+{
+	start();
 }
 
 void MessageDialog::threadMain()
@@ -74,3 +78,5 @@ void MessageDialog::threadMain()
 }
 
 }
+
+

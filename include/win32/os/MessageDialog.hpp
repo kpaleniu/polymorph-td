@@ -54,6 +54,8 @@ public:
 
 	~MessageDialog();
 
+	void show();
+
 	bool isFinished() const;
 
 protected:

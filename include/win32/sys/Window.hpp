@@ -6,13 +6,15 @@
 #ifndef WINDOW_HPP_
 #define WINDOW_HPP_
 
-#include "gr/Surface.hpp"
-#include "input/InputSource.hpp"
-#include "input/WindowInputSource.hpp"
+#include <gr/Surface.hpp>
+#include <input/InputSource.hpp>
+#include <input/WindowInputSource.hpp>
+#include <os/MessageDialog.hpp>
 
-#include <memory>
 #include <windows.h>
 
+#include <memory>
+#include <set>
 
 namespace sys {
 namespace detail {
@@ -58,6 +60,12 @@ public:
 	 */
 	bool show(bool show = true);
 
+	void showMessageDialog(const std::string& title,
+						   const std::string& message,
+						   os::MessageDialog::Buttons buttons,
+						   os::MessageDialog::Type type,
+						   os::MessageDialog::Action action);
+
 	/**
 	 * Access to window input.
 	 * @return	Reference to the input source active on this window.
@@ -73,9 +81,19 @@ public:
 
 private:	// NOTE: surface has to be destroyed before the window
 
+	struct DialogComp
+	{
+		bool operator()(const os::MessageDialog& lhs, const os::MessageDialog& rhs) const
+		{
+			return &lhs < &rhs;
+		}
+	};
+
 	std::unique_ptr<HWND__, detail::window_deleter> _windowHandle;
-	gr::Surface _surface;
-	input::WindowInputSource _inputSource;
+
+	gr::Surface					_surface;
+	input::WindowInputSource	_inputSource;
+	std::set<os::MessageDialog, DialogComp>	_dialogs;
 };
 
 }
