@@ -7,7 +7,6 @@
 #define RENDERPASSMANAGER_HPP_
 
 #include "gr/RenderPass.hpp"
-#include "gr/BufferManager.hpp"
 
 #include <text/util.hpp>
 

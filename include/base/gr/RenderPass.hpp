@@ -9,7 +9,6 @@
 #include "gr/types.hpp"
 #include "gr/VertexBuffer.hpp"
 #include "gr/IndexBuffer.hpp"
-#include "gr/BufferManager.hpp"
 #include "gr/VertexSupplier.hpp"
 #include "gr/Texture.hpp"
 #include "gr/Shader.hpp"

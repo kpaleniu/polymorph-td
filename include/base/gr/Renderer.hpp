@@ -2,7 +2,6 @@
 #define RENDERER_HPP_
 
 #include "gr/DebugDraw.hpp"
-#include "gr/BufferManager.hpp"
 #include "gr/RenderPassManager.hpp"
 
 #include <PrivateHandle.hpp>

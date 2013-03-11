@@ -105,8 +105,7 @@ void VertexWriter::flush()
 
 	if (newVertSize != currentCount)
 	{
-		VertexBuffer newBuffer(_vertices.bufferManager(),
-		                       _vertices.getVertexFormat(),
+		VertexBuffer newBuffer(_vertices.getVertexFormat(),
 		                       _vertices.getBufferUsage(),
 		                       newVertSize);
 		_vertices = std::move(newBuffer);
