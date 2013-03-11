@@ -4,7 +4,6 @@
  */
 
 #include "gr/VertexBuffer.hpp"
-#include "gr/BufferManager.hpp"
 #include "gr/GraphicsException.hpp"
 
 #include <Assert.hpp>
