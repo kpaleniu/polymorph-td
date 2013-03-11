@@ -8,6 +8,7 @@
 #include <ostream>
 #include <iomanip>
 #include <array>
+#include <initializer_list>
 
 namespace math {
 
@@ -52,6 +53,9 @@ public:
 	 * @param data	Data buffer to copy.
 	 */
 	Matrix(const std::array<S, Rows * Cols>& data);
+
+	Matrix(std::initializer_list<S> il);
+
 	/**
 	 * Copy constructor.
 	 *
@@ -220,6 +224,19 @@ inline Matrix<S, Rows, Cols, RowMajor>::Matrix(const std::array<S, Rows * Cols>&
 	for (index_t i = 1; i < Rows * Cols; ++i)
 		init , data[i];
 	init.finished();
+}
+
+template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
+inline Matrix<S, Rows, Cols, RowMajor>::Matrix(std::initializer_list<S> il)
+:	EigenDerived()
+{
+	auto it = il.begin();
+
+	Eigen::CommaInitializer<EigenDerived> init(*this, *it);
+	while ( ++it != il.end() )
+	{
+		init , *it;
+	}
 }
 
 template<typename S, unsigned int Rows, unsigned int Cols, bool RowMajor>
