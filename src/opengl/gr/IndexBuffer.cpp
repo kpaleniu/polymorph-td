@@ -54,7 +54,8 @@ IndexBuffer::IndexBuffer(BufferUsage usage,
 
 IndexBuffer::IndexBuffer(IndexBuffer&& indexBuffer)
 :	_bufferID(indexBuffer._bufferID),
- 	_indexCount(indexBuffer._indexCount)
+ 	_indexCount(indexBuffer._indexCount),
+ 	_usage(indexBuffer._usage)
 {
 	indexBuffer._bufferID = 0;
 }
