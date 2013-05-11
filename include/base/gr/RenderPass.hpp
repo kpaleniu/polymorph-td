@@ -9,6 +9,7 @@
 #include "gr/types.hpp"
 #include "gr/VertexBuffer.hpp"
 #include "gr/IndexBuffer.hpp"
+#include "gr/BufferManager.hpp"
 #include "gr/VertexSupplier.hpp"
 #include "gr/Texture.hpp"
 #include "gr/Shader.hpp"
@@ -84,8 +85,8 @@ public:
 	void preRender(Hook hook);
 	void postRender(Hook hook);
 
-	ModelVector unProject(const ClipVector& ndcVec) const;
-	ClipVector project(const ModelVector& modelVec) const;
+	ModelVector unProject(const SurfaceVector& surfaceVec, real_t depth = real_t(0)) const;
+	SurfaceVector project(const ModelVector& modelVec) const;
 
 	void setProjection(const Projection& projection);
 	void setModelTransform(const Transform& modelTransform);
