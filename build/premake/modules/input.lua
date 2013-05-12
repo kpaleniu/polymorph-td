@@ -11,9 +11,20 @@ project "input"
 	kind "StaticLib"
 	language "C++"
 
-	files { sourcePath .. "base/input/**.cpp",
-			includePath .. "base/input/**.hpp" }
-
+	pm.cppFiles(
+		sourcePath .. "base/input/",
+		includePath .. "base/input/"
+	)
+	
 	configuration "windows"
-		files { sourcePath .. "win32/input/**.cpp",
-				includePath .. "win32/input/**.hpp" }
+		pm.cppFiles(
+			sourcePath .. "win32/input/",
+			includePath .. "win32/input/"
+		)
+	
+	configuration {}
+	
+	pm.moduleDependencies
+	{
+		"ext"
+	}

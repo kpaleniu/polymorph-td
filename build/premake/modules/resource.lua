@@ -11,14 +11,31 @@ project "resource"
 	kind "StaticLib"
 	language "C++"
 	
-	files { sourcePath .. "base/resource/**.cpp",
-			includePath .. "base/resource/**.hpp" }
+	pm.cppFiles(
+		sourcePath .. "base/resource/",
+		includePath .. "base/resource/"
+	)
 	
 	configuration "libpng"
-		files { sourcePath .. "libpng/resource/**.cpp",
-				includePath .. "libpng/resource/**.hpp" }
-	
-	useExternalAPI("il-api")
-	useExternalAPI("gfx-api")
-	useExternalAPI("math-api")
-	useExternalAPI("ext-api")
+		pm.cppFiles(
+			sourcePath .. "libpng/resource/",
+			includePath .. "libpng/resource/"
+		)
+		
+		pm.includedirs
+		{ 
+			externalPath .. "include/libpng",
+			 includePath .. "libpng" 
+		}
+		
+		pm.libdirs
+		{ 
+			externalPath .. "lib/libpng",
+			externalPath .. "lib/zlib" 
+		}
+		
+		pm.links 
+		{ 
+			"png", 
+			"z" 
+		}

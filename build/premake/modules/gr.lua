@@ -11,17 +11,62 @@ project "gr"
 	kind "StaticLib"
 	language "C++"
 	
-	files { sourcePath .. "base/gr/**.cpp",
-			includePath .. "base/gr/**.hpp" }
+	pm.cppFiles(
+		sourcePath .. "base/gr/",
+		includePath .. "base/gr/"
+	)
 	
 	configuration {"windows", "opengl"}
-		files { sourcePath .. "wgl/**.cpp",
-				includePath .. "wgl/**.hpp" }
+		pm.cppFiles(
+			sourcePath .. "wgl/gr/",
+			includePath .. "wgl/gr/"
+		)
+		
+		pm.includedirs 
+		{ 
+			externalPath .. "include/glew",
+			includePath .. "wgl" 
+		}
+		
+		pm.defines 
+		{ 
+			"GLEW_STATIC" 
+		}
+		
+		pm.libdirs 
+		{ 
+			externalPath .. "lib/glew" 
+		}
+		
+		pm.links 
+		{ 
+			"glew32" 
+		}
+		
+	configuration {"opengl"}
+		pm.cppFiles(
+			sourcePath .. "opengl/gr/",
+			includePath .. "opengl/gr/"
+		)
+		
+		pm.includedirs 
+		{ 
+			includePath .. "opengl" 
+		}
+		
+		pm.links 
+		{ 
+			"glu32", 
+			"opengl32" 
+		}
 	
-	configuration "opengl"
-		files { sourcePath .. "opengl/**.cpp",
-				includePath .. "opengl/**.hpp" }
+	configuration {}
 	
-	useExternalAPI("gfx-api")
-	useExternalAPI("math-api")
-	useExternalAPI("ext-api")
+	pm.moduleDependencies 
+	{ 
+		"ext", 
+		"concurrency",
+		"math",
+		"resource",
+	}
+	

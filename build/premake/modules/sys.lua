@@ -11,14 +11,22 @@ project "sys"
 	kind "StaticLib"
 	language "C++"
 	
-	files { sourcePath .. "base/sys/**.cpp",
-			includePath .. "base/sys/**.hpp" }
-		
-	configuration "windows"
-		files { sourcePath .. "win32/sys/**.cpp",
-				includePath .. "win32/sys/**.hpp" }
+	pm.cppFiles(
+		sourcePath .. "base/sys/",
+		includePath .. "base/sys/"
+	)
 	
-	useExternalAPI("il-api")
-	useExternalAPI("gfx-api")
-	useExternalAPI("math-api")
-	useExternalAPI("ext-api")
+	configuration "windows"
+		pm.cppFiles(
+			sourcePath .. "win32/sys/",
+			includePath .. "win32/sys/"
+		)
+	
+	pm.moduleDependencies
+	{
+		"resource",
+		"gr",
+		"math",
+		"ext"
+	}
+	

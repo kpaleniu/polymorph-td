@@ -12,7 +12,14 @@ project "math"
 	language "C++"
 	
 	-- FIXME Should be refactored to check 'Eigen' config and put the files in eigen/math.
-	files { sourcePath .. "base/math/**.cpp",  -- Will most likelly only hold headers in future.
-			includePath .. "base/math/**.hpp" }
+	pm.cppFiles(
+		sourcePath .. "base/math/",
+		includePath .. "base/math/"
+	)
 	
-	useExternalAPI("math-api")
+	configuration "eigen"
+		includedirs 
+		{ 
+			externalPath .. "include/eigen"
+		}
+	

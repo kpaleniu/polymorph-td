@@ -1,17 +1,57 @@
 
-print("Graphics API")
-print("  " .. _OPTIONS["gfx-api"])
+-- Graphics API.
+newoption 
+{
+	trigger 	= "gfx-api",
+	value		= "API",
+	description = "Graphics API.",
+	allowed 	= { {"opengl",	"OpenGL"} }
+}
+_OPTIONS["gfx-api"] = _OPTIONS["gfx-api"] or "opengl"
 
-print("Extensions API")
-print("  " .. _OPTIONS["ext-api"])
+-- Extensions API.
+newoption
+{
+	trigger		= "ext-api",
+	value		= "API",
+	description = "Extensions API.",
+	allowed		= { {"boost", 	"Boost"} } -- Future C++11 implementations might depricate this.
+}
+_OPTIONS["ext-api"] = _OPTIONS["ext-api"] or "boost"
 
-print("Math API")
-print("  " .. _OPTIONS["math-api"])
+-- Math API.
+newoption
+{
+	trigger		= "math-api",
+	value		= "API",
+	description	= "Math API.",
+	allowed		= { {"eigen", 	"Eigen"} }
+}
+_OPTIONS["math-api"] = _OPTIONS["math-api"] or "eigen"
 
-print("Image loading API")
-print("  " .. _OPTIONS["il-api"])
+-- Image loading API.
+newoption
+{
+	trigger		= "il-api",
+	value		= "API",
+	description	= "Image loading API.",
+	allowed		= { {"libpng",	"libPNG"} }
+}
+_OPTIONS["il-api"] = _OPTIONS["il-api"] or "libpng"
 
-
+log("Graphics API")
+log("  " .. _OPTIONS["gfx-api"])
+log()
+log("Extensions API")
+log("  " .. _OPTIONS["ext-api"])
+log()
+log("Math API")
+log("  " .. _OPTIONS["math-api"])
+log()
+log("Image loading API")
+log("  " .. _OPTIONS["il-api"])
+log()
+--[[
 local externalAPI =
 {
 	["gfx-api"] =
@@ -78,10 +118,23 @@ local externalAPI =
 	}
 }
 
-function useExternalAPI(api)
-	local apiUse = externalAPI[api]
+function externalAPIs(api)
+	local apiArr
 	
-	assert(apiUse ~= nil, "Cannot find api " .. api)
-	apiUse.use()
+	if type(api) == "string" then
+		apiArr = { api }
+	elseif type(api) == "table" then
+		apiArr = api
+	else
+		assert(false, "Incorrect type of argument, type is " .. type(api))
+	end
+	
+	for i, v in ipairs(apiArr) do
+		local apiUse = externalAPI[v]
+		
+		assert(apiUse ~= nil, "Cannot find api " .. v)
+		apiUse.use()
+	end
 end
+--]]
 

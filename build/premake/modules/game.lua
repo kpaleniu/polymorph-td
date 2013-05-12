@@ -11,10 +11,15 @@ project "game"
 	kind "StaticLib"
 	language "C++"
 	
-	files { sourcePath .. "base/game/**.cpp",
-			includePath .. "base/game/**.hpp" }
+	pm.cppFiles(
+		sourcePath .. "base/game/",
+		includePath .. "base/game/"
+	)
 	
-	useExternalAPI("il-api")
-	useExternalAPI("gfx-api")
-	useExternalAPI("math-api")
-	useExternalAPI("ext-api")
+	pm.moduleDependencies
+	{
+		"resource",
+		"gr",
+		"math"
+	}
+	

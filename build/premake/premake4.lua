@@ -1,126 +1,427 @@
-print()
 
--- Graphics API.
-newoption 
-{
-	trigger 	= "gfx-api",
-	value		= "API",
-	description = "Graphics API.",
-	allowed 	= { {"opengl",	"OpenGL"} }
-}
-_OPTIONS["gfx-api"] = _OPTIONS["gfx-api"] or "opengl"
+-- Paths.
 
--- Extensions API.
-newoption
-{
-	trigger		= "ext-api",
-	value		= "API",
-	description = "Extensions API.",
-	allowed		= { {"boost", 	"Boost"} } -- Future C++11 implementations might depricate this.
-}
-_OPTIONS["ext-api"] = _OPTIONS["ext-api"] or "boost"
-
--- Math API.
-newoption
-{
-	trigger		= "math-api",
-	value		= "API",
-	description	= "Math API.",
-	allowed		= { {"eigen", 	"Eigen"} }
-}
-_OPTIONS["math-api"] = _OPTIONS["math-api"] or "eigen"
-
--- Image loading API.
-newoption
-{
-	trigger		= "il-api",
-	value		= "API",
-	description	= "Image loading API.",
-	allowed		= { {"libpng",	"libPNG"} }
-}
-_OPTIONS["il-api"] = _OPTIONS["il-api"] or "libpng"
-
--- Build tests option.
-newoption
-{
-	trigger		= "tests-build",
-	description	= "Adds tests projects.",
-}
-
--- Tool builds
-newoption
-{
-	trigger		= "tools-build",
-	description	= "Adds tools to build.",
-}
-
-projPath		= os.getcwd() .. "/../../"
+premakePath		= os.getcwd() .. "/"
+projPath		= premakePath .. "../../"
 externalPath	= projPath .. "external/"
-includePath		= projPath .. "include/"
 sourcePath		= projPath .. "src/"
+includePath		= projPath .. "include/"
+testSourcePath	= projPath .. "test/src/"
+testIncludePath	= projPath .. "test/include/"
+
+addonPath		= projPath .. "addon/"
 modulePath		= os.getcwd() .. "/modules/"
 testPath		= os.getcwd() .. "/tests/"
 toolPath		= os.getcwd() .. "/tools/"
 
-dofile("external.lua")
+dofile(premakePath .. "base.lua")
+parseCommandLine()
 
-print()
+log()
 
-if _OPTIONS["tests-build"] then
-	print("Building tests.")
+
+-- External library build options.
+
+dofile(premakePath .. "external.lua")
+
+--[[
+
+[projectName] = 
+{
+	["projectDependencies"] = { ... },
+	["configurations"] =
+	{
+		[configTerm]* =
+		{
+			["libdirs"] = { ... },
+			["links"]	= { ... }, -- External libs only
+			["libdirs"]	= { ... },
+			["defines"] = { ... }
+		}
+	}
+}
+
+]]--
+
+local projectMetaData = {}
+
+log()
+
+local function addProject(file)
+	configuration "*"
+	dofile(file)
+	configuration "*"
 end
 
-if _OPTIONS["tools-build"] then
-	print("Building tools.")
+local function modules(module)
+	local moduleArr
+	if type(module) == "string" then
+		moduleArr = { module }
+	elseif type(module) == "table" then
+		moduleArr = module
+	else
+		assert(false, "Incorrect type of argument, type is " .. type(module))
+	end
+	
+	local curProjName = project().name
+	for i, m in ipairs(moduleArr) do
+		addProject(modulePath .. module .. ".lua")
+		
+		project(curProjName)
+	end
 end
 
-print()
+local function addons(addon)
+	local addonArr
+	if type(addon) == "string" then
+		addonArr = { addon }
+	elseif type(addon) == "table" then
+		addonArr = addon
+	else
+		assert(false, "Incorrect type of argument, type is " .. type(addon))
+	end
+	
+	for i, m in ipairs(addonArr) do
+		dofile(addonPath .. addon .. "/build/premake/addon.lua")
+		addProject(addonPath .. addon .. "/build/premake/modules/" .. addon .. ".lua")
+	end
+end
 
-modules =
+-- Adds value to the metadata key for this project and configuration.
+local function addMetaData(key, value)
+	local prj = project()
+	local cnf = configuration()
+	
+	projectMetaData[prj.name] = 
+		projectMetaData[prj.name] or {}
+	
+	projectMetaData[prj.name].config = 
+		projectMetaData[prj.name].config or {}
+		
+	projectMetaData[prj.name].config[cnf.terms] =
+		projectMetaData[prj.name].config[cnf.terms] or {}
+	
+	projectMetaData[prj.name].config[cnf.terms][key] =
+		projectMetaData[prj.name].config[cnf.terms][key] or {}
+	
+	for i, v in ipairs(value) do
+		table.insert(projectMetaData[prj.name].config[cnf.terms][key], v)
+	end
+end
+
+local function alreadyInSolution(projName)
+	local currentSolution = solution()
+	
+	for i, proj in ipairs(currentSolution.projects) do
+		if projName == proj.name then
+			return true
+		end
+	end
+	
+	return false
+end
+
+pm =
 {
-	"ext",
-	"text",
-	"concurrency",
-	"sys",
-	"gr",
-	"game",
-	"input",
-	"profiler",
-	"math",
-	"resource",
-	"gui",
-	"os"
+	moduleDependencies = function(projArr)
+		local curProjName = project().name
+		projectMetaData[curProjName] = 
+			projectMetaData[curProjName] or {}
+			
+		projectMetaData[curProjName].dependentProjects = 
+			projectMetaData[curProjName].dependentProjects or {}
+		
+		for _, v in ipairs(projArr) do
+			table.insert(projectMetaData[curProjName].dependentProjects, v)
+		end
+		
+		for _, projectName in ipairs(projArr) do
+			if not alreadyInSolution(projectName) then
+				modules(projectName)
+			end
+		end
+	end,
+	
+	addonDependencies = function(addonArr)
+		local curProjName = project().name
+		projectMetaData[curProjName] = 
+			projectMetaData[curProjName] or {}
+			
+		projectMetaData[curProjName].dependentProjects = 
+			projectMetaData[curProjName].dependentProjects or {}
+		
+		for _, v in ipairs(addonArr) do
+			table.insert(projectMetaData[curProjName].dependentProjects, v)
+		end
+		
+		for _, projectName in ipairs(addonArr) do
+			if not alreadyInSolution(projectName) then
+				addons(projectName)
+			end
+		end
+	end,
+	
+	projectDependency = function(path, proj)
+		local curProjName = project().name
+		projectMetaData[curProjName] = 
+			projectMetaData[curProjName] or {}
+			
+		projectMetaData[curProjName].dependentProjects = 
+			projectMetaData[curProjName].dependentProjects or {}
+		
+		table.insert(projectMetaData[curProjName].dependentProjects, proj)
+		
+		if not alreadyInSolution(proj) then
+			addProject(path .. proj .. ".lua")
+		end
+	end,
+	
+	cppFiles = function(sourcePath, includePath, inlinePath)
+		includePath = includePath or sourcePath
+		inlinePath = inlinePath or includePath
+		
+		local cnfName = ""
+		
+		local cnf = configuration()
+		if cnf and cnf.terms then
+			for i, str in ipairs(cnf.terms) do
+				cnfName = "/" .. str
+			end
+		end
+		
+		vpaths
+		{
+			["Headers" .. cnfName] = includePath .. "*.hpp",
+			["Inlines" .. cnfName] = inlinePath  .. "*.inl",
+			["Sources" .. cnfName] = sourcePath  .. "*.cpp",
+		}
+		
+		files
+		{
+			includePath .. "*.hpp",
+			inlinePath  .. "*.inl",
+			sourcePath  .. "*.cpp",
+		}
+	end,
+	
+	includedirs = function(includeData)
+		includedirs(includeData)
+		
+		addMetaData("includedirs", includeData)
+	end,
+	
+	links = function(linkData)
+		links(linkData)
+		
+		addMetaData("links", linkData)
+	end,
+	
+	libdirs = function(libData)
+		libdirs(libData)
+		
+		addMetaData("libdirs", libData)
+	end,
+	
+	defines = function(defineData)
+		defines(defineData)
+		
+		addMetaData("defines", defineData)
+	end,
 }
 
-tests = 
-{
-	"ext",
-	"game",
-	"gr",
-	"gui",
-	"input",
-	"math",
-	"resource",
-	"os"
-}
+local function recursiveLinkDependencies(projMetaData_)
+	local linked = {}
+	
+	function imp(projMetaData)
+		if not projMetaData.dependentProjects then
+			return
+		end
+		
+		for i, dependentProjectName in ipairs(projMetaData.dependentProjects) do
+			
+			if not linked[dependentProjectName] then
+				log("Linking " .. dependentProjectName)
+				
+				links(dependentProjectName)
+				linked[dependentProjectName] = dependentProjectName
+			end
+			
+			local dependentProjMetaData = 
+				projectMetaData[dependentProjectName]
+			
+			if dependentProjMetaData 
+			   and dependentProjMetaData.dependentProjects
+			   and #dependentProjMetaData.dependentProjects > 0 then
+				imp(dependentProjMetaData)
+				--log("it: " .. dependentProjectName)
+			end
+		end
+	end
+	
+	imp(projMetaData_)
+end
 
-tools =
-{
-	"StringHasher",
-	"SpriteDefiner"
-}
+local function recursiveAddConfigurations(projMetaData)
 
-solution "polymorph-td"
+	if projMetaData.config then
+		for cnfTerm, cnfData in pairs(projMetaData.config) do
+			log(string.format("configuration '%s'", listToString(cnfTerm)))
+			indent()
+			
+			configuration(cnfTerm)
+				if cnfData.includedirs then
+					log(string.format("includedirs '%s'", listToString(cnfData.includedirs)))
+					includedirs(cnfData.includedirs)
+				end
+				if cnfData.links then
+					log(string.format("links '%s'", listToString(cnfData.links)))
+					links(cnfData.links)
+				end
+				if cnfData.libdirs then
+					log(string.format("libdirs '%s'", listToString(cnfData.libdirs)))
+					libdirs(cnfData.libdirs)
+				end
+				if cnfData.defines then
+					log(string.format("defines '%s'", listToString(cnfData.defines)))
+					defines(cnfData.defines)
+				end
+			
+			unindent()
+			log()
+		end
+	end
+	
+	if projMetaData.dependentProjects then
+		for i, dependentProjectName in ipairs(projMetaData.dependentProjects) do
+			local dependentProjMetaData = 
+				projectMetaData[dependentProjectName]
+			
+			if dependentProjMetaData then
+				recursiveAddConfigurations(dependentProjMetaData)
+			end
+		end
+	end
+end
+
+local function printDependencies()
+	log("Dependencies:")
+	log()
+	
+	indent()
+	for projName, projMetaData in pairs(projectMetaData) do
+		log(string.format("'%s':", projName))
+		indent()
+		
+		if projMetaData.dependentProjects then
+			for _, dependProjName in ipairs(projMetaData.dependentProjects) do
+				log(string.format("'%s'", dependProjName))
+			end
+		else
+			log("No dependencies")
+		end
+		
+		unindent()
+	end
+	unindent()
+end
+
+local function hasCyclicDependencies()
+	
+	local function imp(traversed, projName)
+		if traversed[projName] then
+			return true, projName
+		end
+		
+		local metaData = projectMetaData[projName]
+		if not metaData then
+			return false
+		end
+		
+		if not metaData.dependentProjects then
+			return false
+		end
+		
+		local traversedCopy = {}
+		for k, v in pairs(traversed) do
+			traversedCopy[k] = v
+		end
+		traversedCopy[projName] = projName
+		
+		for _, childName in ipairs(metaData.dependentProjects) do
+			local rVal, proj = imp(traversedCopy, childName)
+			if rVal then
+				return true, proj
+			end
+		end
+		
+		return false
+	end
+	
+	for projName, projMetaData in pairs(projectMetaData) do
+		local rVal, proj = imp({}, projName)
+		if rVal then
+			return true, proj
+		end
+	end
+	
+	return false
+end
+
+local function handleDependencies()
+	printDependencies()
+	log()
+	
+	local rVal, proj = hasCyclicDependencies()
+	assert(not rVal, 
+		   "Cyclic dependencies detected for " .. tostring(proj))
+	
+	log()
+	
+	log("Binding dependencies.")
+	log()
+	indent()
+	
+	for projName, projMetaData in pairs(projectMetaData) do
+		log("Handling project " .. projName)
+		indent()
+		
+		project(projName)
+			configuration {}
+			
+			log("Linking...")
+			indent()
+			
+			recursiveLinkDependencies(projMetaData)
+			
+			unindent()
+			log()
+			
+			log("Configure...")
+			indent()
+			
+			recursiveAddConfigurations(projMetaData)
+			
+			unindent()
+			log()
+			
+		unindent()
+	end
+	
+	unindent()
+end
+
+function polymorphSolution()
+	configuration {}
+
 	configurations { "Debug", "Release" }
 	platforms { "Native", "x64" }
-	targetdir (projPath .. "bin")
-	
-	includedirs { includePath .. "base/ext",
-				  includePath .. "base"}
+	targetdir (projPath .. "bin/" .. solution().name)
 	
 	-- Generate own build directories for each target
-	location (projPath .. "build/" .. _ACTION)
-	objdir ( projPath .. "obj/" .. _ACTION )
+	location ( projPath .. "build/" .. solution().name .. "/" .. _ACTION )
+	objdir ( projPath .. "obj/" .. solution().name .. "/" .. _ACTION )
+	
+	includedirs { includePath .. "base" }
 	
 	-- C++0x/11 mode has to be explicitly enabled on some platforms
 	configuration "not vs*"
@@ -137,75 +438,13 @@ solution "polymorph-td"
 		defines { "NDEBUG" }
 		libdirs { projPath .. "lib/Release" }
 	
-	-- API setup
-	configuration "windows"
-		includedirs { includePath .. "win32" }
-		defines { --"WIN32_LEAN_AND_MEAN",
-				  "WINVER=0x0501",
-				  "_WIN32_WINNT=0x0501",
-				  "_CRT_SECURE_NO_WARNINGS" }
-	
-	configuration "tools-build"
-		defines { "TEST_BUILD" }
-	--
+	configuration {}
+end
 
-	for _, module in ipairs(modules) do
-		print("Module: " .. module)
-		dofile(modulePath .. module .. ".lua")
-	end
-	print()
-	if _OPTIONS["tests-build"] then
-		for _, test in ipairs(tests) do
-			print("Test: " .. test)
-			dofile(testPath .. test .. ".lua")
-		end
-	end
-	print()
-	
-	links (modules)
-	
-	if _OPTIONS["tools-build"] then
-		for _, tool in ipairs(tools) do
-			print("Tool: " .. tool)
-			dofile(toolPath .. tool .. ".lua")
-		end
-	end
-	print()
-	
-	-- Project for the actual game
-	project "PolyMorphTD"
-		kind "WindowedApp"
-		language "C++"
-		
-		configuration "windows"
-			includedirs { projPath .. "/include/win32" }
-			files { projPath .. "/src/win32/win_main.cpp" }
-			flags { "WinMain" }
-		
-		configuration "macosx"
-			-- MacPorts default includes
-			includedirs {
-				"/opt/local/include",
-				projPath .. "/include/cocoa/" }
-			files {
-				projPath .. "/src/osx/**.cpp",
-				projPath .. "/src/osx/**.mm"
-		   	}
+log()
 
-			libdirs { "/opt/local/lib" }
-			links { "Cocoa.framework" }
+dofile(premakePath .. commandLine.solution .. ".lua")
 
-		configuration {"macosx", "opengl"}
-			links { "OpenGL.framework" }
-		
-	-- Project for PolyMorphTD unit tests
-	--[[ Are we ever going to use this?
-	project "PolyMorphTD-testrunner"
-		kind "ConsoleApp"
-		language "C++"
-		files { projPath .. "/test/src/**.cpp" }
-		includedirs { projPath .. "/include/mockup",
-					  projPath .. "/test/include" }
-		--links { "cppunit" }
-	--]]
-	
+handleDependencies()
+
+log()

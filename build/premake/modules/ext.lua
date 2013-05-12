@@ -6,16 +6,25 @@ Description:
 Extensions API specific (currently only Boost).
 
 --]]
-	
+
 project "ext"
 	kind "StaticLib"
 	language "C++"
 	
-	files { sourcePath .. "base/ext/**.cpp",
-			includePath .. "base/ext/**.hpp" }
+	pm.cppFiles(
+		sourcePath .. "base/ext/",
+		includePath .. "base/ext/"
+	)
+	
+	pm.includedirs { includePath .. "base/ext" }
 	
 	configuration "boost"
-		files { sourcePath .. "boost/ext/**.cpp",
-				includePath .. "boost/ext/**.hpp" }
-	
-	useExternalAPI("ext-api")
+		pm.cppFiles( 
+			sourcePath .. "boost/ext/",
+			includePath .. "boost/ext/" 
+		)
+		
+		pm.includedirs { includePath .. "boost/ext",
+						 externalPath .. "include/boost" }
+		
+	configuration {}
