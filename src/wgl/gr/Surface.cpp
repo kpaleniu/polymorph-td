@@ -53,7 +53,7 @@ std::string getWin32Message(DWORD error)
 	LPVOID buffer = NULL;
 
 	// NOTE: force call FormatMessageA so we can use a char buffer
-	// instead of a TCHAR buffer and easily convert to text::String
+	// instead of a TCHAR buffer and easily convert to std::string.
 	DWORD ret = FormatMessageA(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		FORMAT_MESSAGE_FROM_SYSTEM |
@@ -171,15 +171,17 @@ ClipVector Surface::pick(const SurfaceVector& surfVec,
 {
 	RECT rect;
 	GetClientRect(_win, &rect);
-
-	Vector3_r clipV(std::array<real_t, 3>
-	                {{
-	                	2.0f * (static_cast<const Vector2_r&>(surfVec)(0,0) - real_t(rect.left))
-	                			/ real_t(rect.right - rect.left) - 1.0f,
-						2.0f * (static_cast<const Vector2_r&>(surfVec)(1,0) - real_t(rect.bottom))
-								/ real_t(rect.top - rect.bottom) - 1.0f,
-						2.0f * depth - 1.0f
-	                }});
+	
+	Vector3_r clipV
+	{
+		2.0f 
+		 * (static_cast<const Vector2_r&>(surfVec)(0,0) - real_t(rect.left))
+		 / real_t(rect.right - rect.left) - 1.0f,
+		2.0f
+		 * (static_cast<const Vector2_r&>(surfVec)(1,0) - real_t(rect.bottom))
+		 / real_t(rect.top - rect.bottom) - 1.0f,
+		2.0f * depth - 1.0f
+	};
 
 	return ClipVector(clipV);
 }
@@ -188,14 +190,18 @@ SurfaceVector Surface::unPick(const ClipVector& clipVec) const
 {
 	RECT rect;
 	GetClientRect(_win, &rect);
-
-	Vector2_r surfV(std::array<real_t, 2>
-	                {{
-	                	0.5f * real_t(rect.right - rect.left)
-	                	 	 * (static_cast<const Vector3_r&>(clipVec)(0,0) + 1) + real_t(rect.left),
-						0.5f * real_t(rect.top - rect.bottom)
-							 * (static_cast<const Vector3_r&>(clipVec)(1,0) + 1) + real_t(rect.bottom)
-	                }});
+	
+	Vector2_r surfV
+	{
+		0.5f 
+		 * real_t(rect.right - rect.left)
+		 * (static_cast<const Vector3_r&>(clipVec)(0,0) + 1) 
+		 + real_t(rect.left),
+		0.5f 
+		 * real_t(rect.top - rect.bottom)
+		 * (static_cast<const Vector3_r&>(clipVec)(1,0) + 1) 
+		 + real_t(rect.bottom)
+	};
 
 	return SurfaceVector(surfV);
 }
