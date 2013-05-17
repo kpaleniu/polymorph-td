@@ -185,7 +185,7 @@ pm =
 		local cnf = configuration()
 		if cnf and cnf.terms then
 			for i, str in ipairs(cnf.terms) do
-				cnfName = "/" .. str
+				cnfName = cnfName .. "/" .. str
 			end
 		end
 		
