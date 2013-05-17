@@ -31,12 +31,16 @@ template<typename S, bool RowMajor = false>
 class Projection : private Eigen::Transform<S, 3, Eigen::Projective, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
 {
 public:
-	friend std::ostream& operator<<<S, RowMajor>(std::ostream&, const Projection<S, RowMajor>&);
+#ifndef NO_TEMPLATE_FRIENDS
+	friend std::ostream& operator<< <S, RowMajor> (std::ostream&, const Projection<S, RowMajor>&);
+#endif
 
 	typedef S radian_t;
 
+	/*
 	Projection(const Projection&) 				= default;
 	Projection& operator=(const Projection&) 	= default;
+	*/
 
 	const S* data() const;
 
@@ -56,6 +60,16 @@ private:
 	typedef Eigen::Transform<S, 3, Eigen::Projective, RowMajor ? Eigen::RowMajor : Eigen::ColMajor> EigenDerived;
 
 	Projection(const EigenDerived& data);
+
+#ifdef NO_TEMPLATE_FRIENDS
+public:
+#endif
+
+	EigenDerived& asEigen()
+	{ return static_cast<EigenDerived&>(*this); }
+
+	const EigenDerived& asEigen() const
+	{ return static_cast<const EigenDerived&>(*this); }
 };
 
 
@@ -132,7 +146,7 @@ std::ostream& operator<<(std::ostream& out, const math::Projection<S, RowMajor>&
 				<< std::showpoint
 				<< std::setprecision(3)
 				<< std::setw(8)
-				<< proj(row, col)
+				<< proj.asEigen()(row, col)
 				<< " ";
 		out << "|" << std::endl;
 	}
