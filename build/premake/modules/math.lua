@@ -18,8 +18,12 @@ project "math"
 	)
 	
 	configuration "eigen"
-		includedirs 
+		pm.includedirs 
 		{ 
 			externalPath .. "include/eigen"
 		}
 	
+	pm.moduleDependencies
+	{
+		"ext"
+	}

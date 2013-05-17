@@ -67,6 +67,5 @@ project "gr"
 		"ext", 
 		"concurrency",
 		"math",
-		"resource",
 	}
 	

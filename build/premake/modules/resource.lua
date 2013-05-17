@@ -39,3 +39,11 @@ project "resource"
 			"png", 
 			"z" 
 		}
+	
+	configuration {}
+	
+	pm.moduleDependencies
+	{
+		"ext",
+		"gr",
+	}
