@@ -7,27 +7,18 @@
 #define EXCEPTION_HPP_
 
 #include <exception>
-#include <string>
 
-class Exception : public std::exception
-{
-public:
-	Exception(std::string msg) throw ()
-			: std::exception(), _msg(msg)
-	{
+/**
+ * Helper to create new exception classes.
+ * Exceptions should be described by their class, not their message.
+ */
+#define PM_MAKE_EXCEPTION_CLASS(clazz, super) \
+	class clazz : public super \
+	{ public: \
+		virtual ~clazz() throw () {} \
+		virtual const char* what() throw () { return #clazz ; } \
 	}
 
-	virtual ~Exception() throw ()
-	{
-	}
-
-	virtual const char* what() const throw ()
-	{
-		return _msg.c_str();
-	}
-
-private:
-	std::string _msg;
-};
+PM_MAKE_EXCEPTION_CLASS(Exception, std::exception);
 
 #endif /* EXCEPTION_HPP_ */
