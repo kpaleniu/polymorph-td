@@ -1,8 +1,8 @@
 
 #include "gr/TestWindow.hpp"
 
-#include "gr/SurfaceException.hpp"
-#include "gr/opengl.hpp"
+#include <gr/SurfaceException.hpp>
+#include <gr/opengl.hpp>
 
 namespace {
 
