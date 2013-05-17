@@ -1,18 +1,5 @@
 
--- Paths.
-
-premakePath		= os.getcwd() .. "/"
-projPath		= premakePath .. "../../"
-externalPath	= projPath .. "external/"
-sourcePath		= projPath .. "src/"
-includePath		= projPath .. "include/"
-testSourcePath	= projPath .. "test/src/"
-testIncludePath	= projPath .. "test/include/"
-
-addonPath		= projPath .. "addon/"
-modulePath		= os.getcwd() .. "/modules/"
-testPath		= os.getcwd() .. "/tests/"
-toolPath		= os.getcwd() .. "/tools/"
+dofile("paths.lua")
 
 dofile(premakePath .. "base.lua")
 parseCommandLine()
