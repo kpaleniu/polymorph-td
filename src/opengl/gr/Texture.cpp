@@ -11,7 +11,7 @@ Texture::Texture(const Image& source,
 {
 	glGenTextures(1, &_texID);
 	if (_texID == 0)
-		throw GraphicsException("Can't create texture.");
+		throw GraphicsException();
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, source.getRowAlignment());
 

@@ -45,7 +45,7 @@ IndexBuffer::IndexBuffer(BufferUsage usage,
 
 			gl::bindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-			throw GraphicsException("Error while creating buffer");
+			throw GraphicsException();
 		}
 
 		gl::bindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
