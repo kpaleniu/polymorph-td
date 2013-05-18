@@ -74,23 +74,39 @@ void testUniqueness()
 	);
 }
 
+#define ADD_IDENTITY_TEST(type) \
+	test::addTest("Identity Test " #type + std::to_string(8 * sizeof(type)), testSameEndianess<type>)
+
+#define ADD_CONVERT_TEST(type) \
+	test::addTest("Convert Test " #type + std::to_string(8 * sizeof(type)), testToggleEndianess<type>)
+
 int main(int, char*[])
 {
 	test::addTest("Endian Unique Test", testUniqueness);
 
-	test::addTest("Identity Test (short)", testSameEndianess<short>);
-	test::addTest("Identity Test (int)", testSameEndianess<int>);
-	test::addTest("Identity Test (long)", testSameEndianess<long>);
-	test::addTest("Identity Test (long long)", testSameEndianess<long long>);
+	ADD_IDENTITY_TEST(short);
+	ADD_IDENTITY_TEST(int);
+	ADD_IDENTITY_TEST(long);
+	ADD_IDENTITY_TEST(long long);
+	ADD_IDENTITY_TEST(unsigned short);
+	ADD_IDENTITY_TEST(unsigned int);
+	ADD_IDENTITY_TEST(unsigned long);
+	ADD_IDENTITY_TEST(unsigned long long);
+	ADD_IDENTITY_TEST(float);
+	ADD_IDENTITY_TEST(double);
+	ADD_IDENTITY_TEST(long double);
 
-	test::addTest("Convert Test (short)", testToggleEndianess<short>);			// Fails
-	test::addTest("Convert Test (int)", testToggleEndianess<int>);				// Fails
-	test::addTest("Convert Test (long)", testToggleEndianess<long>);
-	test::addTest("Convert Test (long long)", testToggleEndianess<long long>);	// Fails
-
-	test::addTest("Identity Test (float)", testSameEndianess<float>);
-	test::addTest("Convert Test (float)", testToggleEndianess<float>);
-
+	ADD_CONVERT_TEST(short);				// short16 fails
+	ADD_CONVERT_TEST(int);					// int32 fails
+	ADD_CONVERT_TEST(long);
+	ADD_CONVERT_TEST(long long);			// long long64 fails
+	ADD_CONVERT_TEST(unsigned short);
+	ADD_CONVERT_TEST(unsigned int);
+	ADD_CONVERT_TEST(unsigned long);
+	ADD_CONVERT_TEST(unsigned long long);
+	ADD_CONVERT_TEST(float);
+	ADD_CONVERT_TEST(double);
+	ADD_CONVERT_TEST(long double);
 	
 #ifdef PM_ASSERT_BUILD_FAILS
 	struct TestStruct
