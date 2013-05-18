@@ -78,15 +78,15 @@ int main(int, char*[])
 {
 	test::addTest("Endian Unique Test", testUniqueness);
 
-	test::addTest("Identity Test (short)", testSameEndianess<short>);			// Fails
-	test::addTest("Identity Test (int)", testSameEndianess<int>);				// Fails
+	test::addTest("Identity Test (short)", testSameEndianess<short>);
+	test::addTest("Identity Test (int)", testSameEndianess<int>);
 	test::addTest("Identity Test (long)", testSameEndianess<long>);
-	test::addTest("Identity Test (long long)", testSameEndianess<long long>);	// Fails
+	test::addTest("Identity Test (long long)", testSameEndianess<long long>);
 
-	test::addTest("Convert Test (short)", testToggleEndianess<short>);
-	test::addTest("Convert Test (int)", testToggleEndianess<int>);
+	test::addTest("Convert Test (short)", testToggleEndianess<short>);			// Fails
+	test::addTest("Convert Test (int)", testToggleEndianess<int>);				// Fails
 	test::addTest("Convert Test (long)", testToggleEndianess<long>);
-	test::addTest("Convert Test (long long)", testToggleEndianess<long long>);
+	test::addTest("Convert Test (long long)", testToggleEndianess<long long>);	// Fails
 
 	test::addTest("Identity Test (float)", testSameEndianess<float>);
 	test::addTest("Convert Test (float)", testToggleEndianess<float>);
