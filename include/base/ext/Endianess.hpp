@@ -8,12 +8,7 @@ inline bool isBigEndian();
 inline bool isLittleEndian();
 
 template <typename Scalar>
-std::array<unsigned char, sizeof(Scalar)> 
-	copyAsBigEndian(Scalar val);
-
-template <typename Scalar>
-std::array<unsigned char, sizeof(Scalar)> 
-	copyAsLittleEndian(Scalar val);
+Scalar flipEndianess(Scalar val);
 
 
 #include "Endianess.inl"

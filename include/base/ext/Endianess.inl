@@ -29,57 +29,20 @@ inline bool isLittleEndian()
 }
 
 template <typename Scalar>
-std::array<unsigned char, sizeof(Scalar)> copyAsBigEndian(Scalar val)
+Scalar flipEndianess(Scalar val)
 {
 	static_assert(std::is_scalar<Scalar>::value, "Template isn't scalar.");
 
-	std::array<unsigned char, sizeof(Scalar)> rArray;
-
-	if (isBigEndian())
+	union
 	{
-		std::memcpy(rArray.data(), &val, sizeof(Scalar));
-	}
-	else
-	{
-		union
-		{
-			Scalar scalar;
-			unsigned char ucArr[sizeof(Scalar)];
-		} dataBuffer;
+		Scalar scalar;
+		unsigned char ucArr[sizeof(Scalar)];
+	} sourceBuffer, targetBuffer;
 
-		dataBuffer.scalar = val;
+	sourceBuffer.scalar = val;
 
-		for (int i = 0; i < sizeof(Scalar); ++i)
-			rArray[i] = dataBuffer.ucArr[sizeof(Scalar) - 1 - i];
-	}
+	for (int i = 0; i < sizeof(Scalar); ++i)
+		targetBuffer.ucArr[i] = sourceBuffer.ucArr[sizeof(Scalar) - 1 - i];
 
-	return rArray;
-}
-
-template <typename Scalar>
-std::array<unsigned char, sizeof(Scalar)> copyAsLittleEndian(Scalar val)
-{
-	static_assert(std::is_scalar<Scalar>::value, "Template isn't scalar.");
-
-	std::array<unsigned char, sizeof(Scalar)> rArray;
-
-	if (isLittleEndian())
-	{
-		std::memcpy(rArray.data(), &val, sizeof(Scalar));
-	}
-	else
-	{
-		union
-		{
-			Scalar scalar;
-			unsigned char ucArr[sizeof(Scalar)];
-		} dataBuffer;
-
-		dataBuffer.scalar = val;
-
-		for (int i = 0; i < sizeof(Scalar); ++i)
-			rArray[i] = dataBuffer.ucArr[sizeof(Scalar) - 1 - i];
-	}
-
-	return rArray;
+	return targetBuffer.scalar;
 }
