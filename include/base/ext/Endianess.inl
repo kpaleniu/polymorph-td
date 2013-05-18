@@ -29,10 +29,10 @@ inline bool isLittleEndian()
 }
 
 template <typename Scalar>
-std::array<unsigned char, sizeof(Scalar)> 
-	copyAsBigEndian(Scalar val, 
-					typename std::enable_if<std::is_scalar<Scalar>::value>::type*)
+std::array<unsigned char, sizeof(Scalar)> copyAsBigEndian(Scalar val)
 {
+	static_assert(std::is_scalar<Scalar>::value, "Template isn't scalar.");
+
 	std::array<unsigned char, sizeof(Scalar)> rArray;
 
 	if (isBigEndian())
@@ -57,10 +57,10 @@ std::array<unsigned char, sizeof(Scalar)>
 }
 
 template <typename Scalar>
-std::array<unsigned char, sizeof(Scalar)> 
-	copyAsLittleEndian(Scalar val, 
-					   typename std::enable_if<std::is_scalar<Scalar>::value>::type*)
+std::array<unsigned char, sizeof(Scalar)> copyAsLittleEndian(Scalar val)
 {
+	static_assert(std::is_scalar<Scalar>::value, "Template isn't scalar.");
+
 	std::array<unsigned char, sizeof(Scalar)> rArray;
 
 	if (isLittleEndian())

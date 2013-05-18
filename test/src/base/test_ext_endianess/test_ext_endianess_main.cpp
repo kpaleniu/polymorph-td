@@ -2,6 +2,26 @@
 
 #include <Endianess.hpp>
 
+// #define PM_ASSERT_BUILD_FAILS
+
+#ifdef PM_ASSERT_BUILD_FAILS
+
+	struct TestStruct
+	{
+		int a, b;
+
+		TestStruct() 
+		{}
+
+		TestStruct(int) 
+		{}
+
+		TestStruct& operator=(int)
+		{ return *this; }
+	};
+
+#endif
+
 template <typename Scalar>
 void testToggleEndianess()
 {
@@ -96,10 +116,10 @@ int main(int, char*[])
 	ADD_IDENTITY_TEST(double);
 	ADD_IDENTITY_TEST(long double);
 
-	ADD_CONVERT_TEST(short);				// short16 fails
-	ADD_CONVERT_TEST(int);					// int32 fails
+	ADD_CONVERT_TEST(short);
+	ADD_CONVERT_TEST(int);
 	ADD_CONVERT_TEST(long);
-	ADD_CONVERT_TEST(long long);			// long long64 fails
+	ADD_CONVERT_TEST(long long);
 	ADD_CONVERT_TEST(unsigned short);
 	ADD_CONVERT_TEST(unsigned int);
 	ADD_CONVERT_TEST(unsigned long);
@@ -109,11 +129,6 @@ int main(int, char*[])
 	ADD_CONVERT_TEST(long double);
 	
 #ifdef PM_ASSERT_BUILD_FAILS
-	struct TestStruct
-	{
-		int a, b;
-	};
-
 	test::addTest("Identity Test (shouldn't build)", testSameEndianess<TestStruct>);
 	test::addTest("Convert Test (shouldn't build)", testToggleEndianess<TestStruct>);
 #endif

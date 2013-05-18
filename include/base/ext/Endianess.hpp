@@ -9,13 +9,11 @@ inline bool isLittleEndian();
 
 template <typename Scalar>
 std::array<unsigned char, sizeof(Scalar)> 
-	copyAsBigEndian(Scalar val, 
-					typename std::enable_if<std::is_scalar<Scalar>::value>::type* = 0);
+	copyAsBigEndian(Scalar val);
 
 template <typename Scalar>
 std::array<unsigned char, sizeof(Scalar)> 
-	copyAsLittleEndian(Scalar val,
-					   typename std::enable_if<std::is_scalar<Scalar>::value>::type* = 0);
+	copyAsLittleEndian(Scalar val);
 
 
 #include "Endianess.inl"
