@@ -26,15 +26,16 @@ int runTests()
 		{
 			std::cout << "Running test " << testPair.first.c_str();
 			testPair.second();
+			std::cout << " success";
 		}
 		catch (Failed&)
 		{
 			++i;
-			std::cout << " failed.";
+			std::cout << " fails";
 		}
 		catch (CannotRun&)
 		{
-			std::cout << " cannot be run.";
+			std::cout << " cannot run";
 		}
 		catch (std::exception& e)
 		{
@@ -43,7 +44,7 @@ int runTests()
 		}
 		catch (...)
 		{
-			std::cout << " unexpected exception.";
+			std::cout << " unexpected exception";
 			++i;
 		}
 		std::cout << std::endl;
