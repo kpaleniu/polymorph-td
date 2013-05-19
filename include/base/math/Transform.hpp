@@ -1,7 +1,7 @@
 /**
  * @file Transform.hpp
  *
- * Contains some generic 2D transformations.
+ * Contains some generic transformations.
  */
 
 #ifndef TRANSFORM_HPP_
@@ -9,6 +9,8 @@
 
 #include "math/types.hpp"
 #include "math/Matrix.hpp"
+
+#include <Cpp11.hpp>
 
 #include <Eigen/Geometry>
 
@@ -35,7 +37,9 @@ template<typename S, bool RowMajor = false>
 class Transform : private Eigen::Transform<S, 3, Eigen::Affine, RowMajor ? Eigen::RowMajor : Eigen::ColMajor>
 {
 public:
-	friend std::ostream& operator<<<S, RowMajor>(std::ostream&, const Transform<S, RowMajor>&);
+#ifndef NO_TEMPLATE_FRIENDS
+	friend std::ostream& operator<< <S, RowMajor> (std::ostream&, const Transform<S, RowMajor>&);
+#endif
 
 	typedef S radian_t;
 
@@ -62,16 +66,28 @@ public:
 private:
 	typedef Eigen::Transform<S, 3, Eigen::Affine, RowMajor ? Eigen::RowMajor : Eigen::ColMajor> EigenDerived;
 
-	Transform(const EigenDerived& data);
+	Transform(const EigenDerived& data)
+	:	EigenDerived(data)
+	{}
+
+#ifdef NO_TEMPLATE_FRIENDS
+public:
+#endif
+
+	EigenDerived& asEigen()
+	{ return static_cast<EigenDerived&>(*this); }
+
+	const EigenDerived& asEigen() const
+	{ return static_cast<const EigenDerived&>(*this); }
 };
 
 // Implementation:
-
+/*
 template<typename S, bool RowMajor>
 inline Transform<S, RowMajor>::Transform(const Transform::EigenDerived& data)
-:	EigenDerived(data)
+:	Transform::EigenDerived(data)
 {}
-
+*/
 template<typename S, bool RowMajor>
 inline Matrix<S, 3u, 1u, false> Transform<S, RowMajor>::operator*(const Matrix<S, 3u, 1u, false>& vec3) const
 {
@@ -148,7 +164,7 @@ template<typename S, bool RowMajor>
 std::ostream& operator<<(std::ostream& out, const math::Transform<S, RowMajor>& trans)
 {
 	out << "Affine transformation " << (RowMajor ? "Row major" : "Column major") << std::endl;
-	auto affinePart = trans.affine();
+	auto affinePart = trans.asEigen().affine();
 	for (unsigned int row = 0; row < 3; ++row)
 	{
 		out << "|" << " ";

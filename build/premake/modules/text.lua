@@ -11,7 +11,12 @@ project "text"
 	kind "StaticLib"
 	language "C++"
 	
-	files { sourcePath .. "base/text/**.cpp",
-			includePath .. "base/text/**.hpp" }
+	pm.cppFiles(
+		sourcePath .. "base/text/",
+		includePath .. "base/text/"
+	)
 	
-	useExternalAPI("ext-api")
+	pm.moduleDependencies
+	{
+		"ext"
+	}

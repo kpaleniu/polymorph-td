@@ -11,8 +11,13 @@ project "gui"
 	kind "StaticLib"
 	language "C++"
 	
-	files { sourcePath .. "base/gui/**.cpp",
-			includePath .. "base/gui/**.hpp" }
+	pm.cppFiles(
+		sourcePath .. "base/gui/",
+		includePath .. "base/gui/"
+	)
 	
-	useExternalAPI("gfx-api")
-	useExternalAPI("ext-api")
+	pm.moduleDependencie
+	{
+		"ext",
+		"gr"
+	}

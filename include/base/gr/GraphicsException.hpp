@@ -3,18 +3,11 @@
  *
  */
 
-#ifndef GRAPHICSEXCEPTION_HPP_
-#define GRAPHICSEXCEPTION_HPP_
+#ifndef GR_GRAPHICSEXCEPTION_HPP_
+#define GR_GRAPHICSEXCEPTION_HPP_
 
 #include <Exception.hpp>
 
-class GraphicsException : public Exception
-{
-public:
-	GraphicsException(std::string msg) throw()
-	: Exception(msg)
-	{
-	}
-};
+PM_MAKE_EXCEPTION_CLASS(GraphicsException, Exception);
 
-#endif /* GRAPHICSEXCEPTION_HPP_ */
+#endif

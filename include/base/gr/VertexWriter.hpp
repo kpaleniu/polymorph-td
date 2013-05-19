@@ -7,6 +7,8 @@
 #include "gr/VertexBuffer.hpp"
 #include "gr/IndexBuffer.hpp"
 
+#include <NonCopyable.hpp>
+
 #include <vector>
 
 namespace gr {
@@ -15,7 +17,7 @@ class VertexWriter
 {
 public:
 	template<typename T>
-	class DataWriter
+	class DataWriter : NonCopyable
 	{
 	public:
 		DataWriter(std::vector<T>& dataSource);

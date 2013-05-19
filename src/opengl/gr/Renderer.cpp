@@ -75,7 +75,7 @@ void Renderer::render()
 #ifdef _DEBUG
 	GLenum errCode = glGetError();
 	if (errCode != GL_NO_ERROR)
-		throw GraphicsException(std::string((char*) gluErrorString(errCode)));
+		throw GraphicsException(); //(std::string((char*) gluErrorString(errCode)));
 #endif
 }
 

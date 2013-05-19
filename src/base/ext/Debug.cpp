@@ -6,8 +6,6 @@
 
 #include "Assert.hpp"
 #include "Debug.hpp"
-#include "concurrency/Mutex.hpp"
-#include "concurrency/Thread.hpp"
 
 #include <chrono>
 #include <ctime>
@@ -15,7 +13,8 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef _WIN32
+// MSVS don't catch output from std::cout for windowed applications.
+#if defined(_WIN32) && defined(_MSC_VER)
 	#include <windows.h>
 	#define OS_OUTPUT_IMPL(str) OutputDebugString((str + '\n').c_str())
 #else
@@ -26,9 +25,6 @@
 namespace debug {
 namespace detail {
 namespace {
-
-// mutex used to synchronize output streams writes
-concurrency::Mutex printMutex;;
 
 // array of severity level identifier tags
 const char severity_tag[] = { 'F', 'E', 'I', 'D', 'V' };
@@ -42,7 +38,23 @@ std::ostream& operator<<(std::ostream& os, time_stamp_proxy)
 {
 	auto now  = std::chrono::system_clock::now();
 	auto time = std::chrono::system_clock::to_time_t(now);
-	auto tm   = std::localtime(&time);
+
+#if defined(_WIN32) && defined(_MSC_VER)
+
+	std::tm _tm;
+
+	{
+		auto errNo = localtime_s(&_tm, &time);
+		ASSERT(errNo == 0, "Error getting local time.");
+	}
+
+	auto tm = &_tm;
+
+#else
+
+	auto tm = std::localtime(&time);
+
+#endif
 
 	// construct a ISO-8601 date+timestamp
 	const size_t stamp_length = 4+1+2+1+2 +1+ 2+1+2+1+2;
@@ -84,11 +96,9 @@ void print_impl(
 	buf << current_time_stamp << ": ";
 	//buf << file << "@" << line << ": ";
 	buf << sev_tag << "/" << tag;
-	buf << "(" << concurrency::Thread::getCurrentID() << "): ";
 
 	append_message(buf, message, buf.tellp());
 
-	concurrency::MutexLockGuard lock(printMutex);
 	OS_OUTPUT_IMPL(buf.str());
 }
 

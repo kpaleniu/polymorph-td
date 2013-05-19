@@ -2,16 +2,28 @@
 #include "resource/ResourceException.hpp"
 
 #include <gr/PixelFormat.hpp>
-
-#include <cstdio>
+#include <Cpp11.hpp>
+#include <Debug.hpp>
 
 #include <png.h>
+
+#include <cstdio>
 
 namespace resource {
 
 namespace {
 
+#ifndef NO_CONSTEXPR
+
 constexpr unsigned int pngHeaderCheckSize = 8;
+
+#else
+
+#define pngHeaderCheckSize 8u
+
+#endif
+
+const char* TAG = "ImageReader";
 
 bool isPNGFile(FILE* fp)
 {
@@ -30,6 +42,8 @@ ImageReader::ImageHandle ImageReader::getImage(text::string_hash id)
 	// Image is not in cache, load it.
 
 	const std::string& url = text::get(id);
+
+	INFO_OUT(TAG, "Loading image %s", url.c_str());
 
 	FILE* fp = fopen(url.c_str(), "rb");
 

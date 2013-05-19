@@ -9,6 +9,7 @@
 
 #include <Debug.hpp>
 #include <Assert.hpp>
+#include <Cpp11.hpp>
 
 #include <array>
 
@@ -17,6 +18,8 @@ namespace input {
 namespace {
 
 const char* TAG = "WindowInputSource";
+
+#ifndef NO_CONSTEXPR
 
 constexpr std::array<USHORT, 3> downButtons =
 {{
@@ -32,6 +35,27 @@ constexpr std::array<USHORT, 3> upButtons =
 }};
 
 constexpr pointer_id mouseID = 1;
+constexpr size_t buttonCount = downButtons.size();
+
+#else
+
+const std::array<USHORT, 3> downButtons =
+{{
+	RI_MOUSE_LEFT_BUTTON_DOWN,
+	RI_MOUSE_RIGHT_BUTTON_DOWN,
+	RI_MOUSE_MIDDLE_BUTTON_DOWN
+}};
+const std::array<USHORT, 3> upButtons =
+{{
+	RI_MOUSE_LEFT_BUTTON_UP,
+	RI_MOUSE_RIGHT_BUTTON_UP,
+	RI_MOUSE_MIDDLE_BUTTON_UP
+}};
+
+#define buttonCount 3
+#define mouseID pointer_id(1);
+
+#endif
 
 // NOTE: return type and user data index macro of GetWindowLongPtr()
 // are dependent on target architecture (64-bit or 32-bit).
@@ -176,8 +200,8 @@ bool WindowInputSource::handleInput()
 
 void WindowInputSource::mouseInput(const RAWMOUSE& mouse)
 {
-	bool buttonDownEvents[downButtons.size()] = {false, false, false};
-	bool buttonUpEvents[upButtons.size()] = {false, false, false};
+	bool buttonDownEvents[buttonCount] = {false, false, false};
+	bool buttonUpEvents[buttonCount] = {false, false, false};
 
 	// Update _mouseState
 

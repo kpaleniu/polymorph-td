@@ -3,8 +3,14 @@
 #ifndef EVENT_HPP_
 #define EVENT_HPP_
 
+#include <text/util.hpp>
+
+#include <type_traits>
 #include <functional>
-#include <list>
+#include <map>
+
+
+typedef text::string_hash event_action_id;
 
 namespace detail {
 
@@ -12,13 +18,13 @@ template<typename Event, typename ActionType>
 class ManagerBase
 {
 public:
-	std::list<ActionType>& actionBindings()
+	std::map<event_action_id, ActionType>& actionBindings()
 	{ return _eventActions; }
 
-	const std::list<ActionType>& actionBindings() const
+	const std::map<event_action_id, ActionType>& actionBindings() const
 	{ return _eventActions; }
 protected:
-	std::list<ActionType> _eventActions;
+	std::map<event_action_id, ActionType> _eventActions;
 };
 
 }
@@ -32,7 +38,7 @@ public:
 	void triggerEvent(const Event& param)
 	{
 		for (auto& action : detail::ManagerBase<Event, ActionType>::_eventActions)
-			action(param);
+			action.second(param);
 	}
 };
 
@@ -45,7 +51,7 @@ public:
 	void triggerEvent()
 	{
 		for (auto& action : detail::ManagerBase<Event, ActionType>::_eventActions)
-			action();
+			action.second();
 	}
 };
 
