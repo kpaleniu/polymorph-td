@@ -50,7 +50,7 @@ bool Window::show(bool show)
 void Window::applicationWillFinishLaunching()
 {
     /* Attach view to the window */
-    [_impl->window setContentView: YES];
+    [_impl->window setContentView: _impl->view];
 }
 
 void Window::applicationDidFinishLaunching()

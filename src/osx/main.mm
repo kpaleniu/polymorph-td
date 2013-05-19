@@ -13,9 +13,12 @@
 
 #include "Debug.hpp"
 
-@interface AppDelegate : NSObject
+const char *TAG = "OsxMain";
+
+@interface AppDelegate : NSObject<NSApplicationDelegate>
 {
-    sys::Window    window;
+    sys::UISystem   uiSystem;
+    game::Game      game;
 }
 @end
 
@@ -25,20 +28,56 @@
 {
     if ( self = [super init] )
     {
-
+        sys::Window::ConstructionData construct_data = { this, { 64, 64, 800, 600 } };
+        
+        INFO_OUT(TAG, "Starting systems");
+        
+        try
+        {
+            uiSystem = sys::UISystem(winData);
+            uiSystem.start();
+        }
+        catch (...)
+        {}
     }
     return self;
 }
 
 -(void) applicationWillFinishLaunching : (NSNotification*) notification
 {
-    
-    window->applicationWillFinishLaunching();
+    uiSystem.window().applicationWillFinishLaunching();
 }
 
 -(void) applicationDidFinishLaunching : (NSNotification*) notification
 {
-    window->applicationDidFinishLaunching();
+    uiSystem.window().applicationDidFinishLaunching();
+    [self start];
+}
+
+-(void) start
+{
+    try
+    {
+        sys::GraphicsSystem& grSystem = uiSystem.waitForGraphicsSystem();
+    
+        game = game::Game(uiSystem, grSystem);
+        try
+        { theGame.enter(); }
+        catch (...)
+        {}
+        
+        uiSystem.interrupt();
+        uiSystem.join();
+        
+        INFO_OUT(TAG, "Systems shut down");
+    }
+    catch(...)
+    {
+    }
+    
+    profiler::ThreadProfiler::dumpAll(std::cout);
+    profiler::ThreadProfiler::shutdown();
+    text::clearInterned();
 }
 
 -(void) dealloc
