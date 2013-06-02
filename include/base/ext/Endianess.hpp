@@ -8,8 +8,9 @@ inline bool isBigEndian();
 inline bool isLittleEndian();
 
 template <typename Scalar>
-Scalar flipEndianess(Scalar val);
+inline void flipEndianess(Scalar& val);
 
+inline void flipEndianess(void* data, std::size_t size);
 
 #include "Endianess.inl"
 

@@ -1,6 +1,6 @@
 #include "Endianess.hpp"
 
-#include <cstring>
+#include <utility>
 
 inline bool isBigEndian()
 {
@@ -29,20 +29,18 @@ inline bool isLittleEndian()
 }
 
 template <typename Scalar>
-Scalar flipEndianess(Scalar val)
+inline void flipEndianess(Scalar& val)
 {
 	static_assert(std::is_scalar<Scalar>::value, "Template isn't scalar.");
 
-	union
-	{
-		Scalar scalar;
-		unsigned char ucArr[sizeof(Scalar)];
-	} sourceBuffer, targetBuffer;
+	flipEndianess(&val, sizeof(Scalar));
+}
 
-	sourceBuffer.scalar = val;
+inline void flipEndianess(void* data, std::size_t size)
+{
+	unsigned char* low = reinterpret_cast<unsigned char*>(data);
+	unsigned char* high = low + size;
 
-	for (int i = 0; i < sizeof(Scalar); ++i)
-		targetBuffer.ucArr[i] = sourceBuffer.ucArr[sizeof(Scalar) - 1 - i];
-
-	return targetBuffer.scalar;
+	for (; low < high; ++low, --high)
+		std::swap<unsigned char>(*low, *high);
 }
