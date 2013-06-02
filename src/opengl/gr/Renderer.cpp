@@ -22,7 +22,7 @@ void initGlew()
 	GLenum err = glewInit();
 
 	if (err != GLEW_OK)
-		throw SurfaceException((const char*) glewGetErrorString(err));
+		throw SurfaceException(); // ((const char*) glewGetErrorString(err));
 }
 
 const char* TAG = "Renderer";
