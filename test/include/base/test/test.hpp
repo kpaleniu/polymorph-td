@@ -29,7 +29,7 @@ inline void cannotRun();
 
 inline void assume(bool expr);
 
-inline void assert(bool expr);
+inline void assertTrue(bool expr);
 
 template <typename T>
 inline void assertEqual(const T& a, const T& b);

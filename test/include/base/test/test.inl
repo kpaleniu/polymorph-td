@@ -19,7 +19,7 @@ inline void assume(bool expr)
 		cannotRun();
 }
 
-inline void assert(bool expr)
+inline void assertTrue(bool expr)
 {
 	if (!expr)
 		fail();
