@@ -95,8 +95,8 @@ void RenderPass::render()
 	gl::loadMatrix(_transformDesc.projection.data());
 
 	gl::matrixMode(GL_MODELVIEW);
-	gl::loadMatrix(_transformDesc.view.data());
-	gl::multMatrix(_transformDesc.model.data());
+	gl::loadMatrix(_transformDesc.view.asAffineMatrix().data());
+	gl::multMatrix(_transformDesc.model.asAffineMatrix().data());
 
 	if (_materialDesc.texture != nullptr)
 	{
