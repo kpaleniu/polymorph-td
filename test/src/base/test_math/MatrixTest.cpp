@@ -14,21 +14,24 @@ void testConstructors()
 		Matrix<Arithmetic, Rows, Cols, RowMajor> mat;
 
 		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-		{
 			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
-			{
 				test::assertEqual(mat(row, col), Arithmetic(0));
-			}
-		}
 	}
+
+}
+
+template <typename Arithmetic, unsigned int Dim, bool RowMajor>
+void testSquareConstructors()
+{
+	using namespace math;
 
 	{
 		Arithmetic diagonal = 2;
-		Matrix<Arithmetic, Rows, Cols, RowMajor> mat((Arithmetic(diagonal)));
+		Matrix<Arithmetic, Dim, Dim, RowMajor> mat((Arithmetic(diagonal)));
 
-		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
+		for (Matrix<Arithmetic, Dim, Dim, RowMajor>::index_t row = 0; row < Dim; ++row)
 		{
-			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
+			for (Matrix<Arithmetic, Dim, Dim, RowMajor>::index_t col = 0; col < Dim; ++col)
 			{
 				if (col == row)
 					test::assertEqual(mat(row, col), diagonal);
@@ -36,6 +39,20 @@ void testConstructors()
 					test::assertEqual(mat(row, col), Arithmetic(0));
 			}
 		}
+	}
+}
+
+void testVectorConstructors()
+{
+	using namespace math;
+
+	{
+		Matrix<int, 4, 1, true> vec4 = {0, 1, 2, 3};
+
+		test::assertEqual(vec4[0], 0);
+		test::assertEqual(vec4[1], 1);
+		test::assertEqual(vec4[2], 2);
+		test::assertEqual(vec4[3], 3);
 	}
 }
 
@@ -48,42 +65,26 @@ void testArithmetics()
 		Matrix<Arithmetic, Rows, Cols, RowMajor> mat;
 
 		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-		{
 			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
-			{
 				mat(row, col) = row + Arithmetic(2) * col;
-			}
-		}
 
 		Matrix<Arithmetic, Rows, Cols, RowMajor> mat2 = mat * Arithmetic(2);
 		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-		{
 			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
-			{
 				test::assertEqual(mat2(row, col), Arithmetic((row + Arithmetic(2) * col) * Arithmetic(2)));
-			}
-		}
 	}
 
 	{
 		Matrix<Arithmetic, Rows, Cols, RowMajor> mat;
 
 		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-		{
 			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
-			{
 				mat(row, col) = row + Arithmetic(2) * col;
-			}
-		}
 
 		Matrix<Arithmetic, Rows, Cols, RowMajor> mat2 = mat / Arithmetic(2);
 		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-		{
 			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
-			{
 				test::assertEqual(mat2(row, col), Arithmetic((row + Arithmetic(2) * col) / Arithmetic(2) ));
-			}
-		}
 	}
 }
 
@@ -123,7 +124,7 @@ void testMatrixMult()
 		
 		Matrix<int, 4, 2, true> resMat = mat1 * mat2;
 
-		test::assert(mat3 == resMat);
+		test::assertEqual(mat3, resMat);
 	}
 }
 
@@ -149,29 +150,35 @@ void testInverse()
 	Matrix<int, 3, 3, true> mat2(m2);
 	Matrix<int, 3, 3, true> mat3 = inverse(mat1);
 
-	test::assert(mat2 == mat3);
-	test::assert(mat1 * mat2 == Matrix<int, 3, 3, true>::Constants::IDENTITY);
+	test::assertEqual(mat2, mat3);
+	test::assertEqual(mat1 * mat2, Matrix<int, 3, 3, true>::IDENTITY);
 }
 
 void testStaticData()
 {
-	auto matZero33 = math::Matrix<int, 3, 3>::Constants::ZERO;
-	auto matIdentity33 = math::Matrix<int, 3, 3>::Constants::IDENTITY;
+	auto matZero33 = math::Matrix<int, 3, 3>::ZERO;
+	auto matIdentity33 = math::Matrix<int, 3, 3>::IDENTITY;
 
-	auto matZero43 = math::Matrix<int, 4, 3>::Constants::ZERO;
+	auto matZero43 = math::Matrix<int, 4, 3>::ZERO;
+	auto matZero41 = math::Matrix<int, 4, 1>::ZERO;
 
-	// math::Matrix<int, 4, 3>::Constants::IDENTITY; // build error
+	// math::Matrix<int, 4, 3>::IDENTITY; // build error
+	// math::Matrix<int, 4, 1>::IDENTITY; // build error
 
-	test::assert(matZero33 == math::Matrix<int, 3, 3>());
-	test::assert(matIdentity33 == math::Matrix<int, 3, 3>(1));
-	test::assert(matZero43 == math::Matrix<int, 4, 3>());
+	test::assertEqual(matZero33, math::Matrix<int, 3, 3>());
+	test::assertEqual(matIdentity33, math::Matrix<int, 3, 3>(1));
+	test::assertEqual(matZero43, math::Matrix<int, 4, 3>());
+	test::assertEqual(matZero41, math::Matrix<int, 4, 1>());
 }
 
 }
 
 #define ADD_CONSTRUCTOR_TEST(type, rows, cols, rowMajor) \
 	test::addTest("Constructor test <" #type ", " #rows ", " #cols ", " #rowMajor ">", \
-				  testConstructors<type, rows, cols, rowMajor>)
+				  testConstructors<type, rows, cols, rowMajor>); \
+	if (rows == cols) \
+		test::addTest("Square constructor test <" #type ", " #rows ", " #rowMajor ">", \
+					  testSquareConstructors<type, rows, rowMajor>)
 
 #define ADD_ARITHMETICS_TEST(type, rows, cols, rowMajor) \
 	test::addTest("Arithmetic text <" #type ", " #rows ", " #cols ", " #rowMajor ">", \
@@ -213,4 +220,5 @@ void addMatrixTests()
 
 	test::addTest("Matrix Multiplication Test", testMatrixMult);
 	test::addTest("Matrix 3x3 Inverse Test", testInverse);
+	test::addTest("Vector constructor Test", testVectorConstructors);
 }

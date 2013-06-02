@@ -24,6 +24,10 @@ public:
 
 	Transform(const Transform<Arithmetic, RowMajor>& other);
 
+	Transform<Arithmetic, RowMajor> inverse() const;
+
+	static const Transform<Arithmetic, RowMajor> IDENTITY;
+
 	static Transform<Arithmetic, RowMajor> translate(
 		const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation);
 	
@@ -54,7 +58,7 @@ public:
 
 	TransformMap();
 
-	void inverse();
+	void invert();
 	
 	Matrix<Arithmetic, 3u, 1u, RowMajor> operator*(const Matrix<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
 

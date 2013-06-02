@@ -16,7 +16,7 @@ public:
 	Matrix<Arithmetic, 4u, 1u, RowMajor> operator*(
 		const MatrixMap<Arithmetic, 4u, 1u, RowMajor>& vec4) const;
 
-	void inverse();
+	Projection<Arithmetic, RowMajor> inverse() const;
 
 	static Projection<Arithmetic, RowMajor> ortho(
 		Arithmetic left, Arithmetic right, 

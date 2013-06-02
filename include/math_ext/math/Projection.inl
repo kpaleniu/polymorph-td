@@ -45,9 +45,10 @@ Matrix<Arithmetic, 4u, 1u, RowMajor>
 }
 
 template <typename Arithmetic, bool RowMajor>
-void Projection<Arithmetic, RowMajor>::inverse()
+Projection<Arithmetic, RowMajor>
+	Projection<Arithmetic, RowMajor>::inverse() const
 {
-	std::swap(_projMat, _invMat);
+	return Projection(_invMat, _projMat);
 }
 
 template <typename Arithmetic, bool RowMajor>

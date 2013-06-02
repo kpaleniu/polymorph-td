@@ -8,6 +8,9 @@ namespace math {
 // Transform
 
 template <typename Arithmetic, bool RowMajor>
+const Transform<Arithmetic, RowMajor> Transform<Arithmetic, RowMajor>::IDENTITY = Transform<Arithmetic, RowMajor>();
+
+template <typename Arithmetic, bool RowMajor>
 Transform<Arithmetic, RowMajor>::Transform()
 :	TransformMap(), _topLeft(Arithmetic(1)), _translation()
 {
@@ -21,6 +24,17 @@ Transform<Arithmetic, RowMajor>::Transform(const Transform<Arithmetic, RowMajor>
 {
 	_mappedTopLeft = _topLeft;
 	_mappedTranslation = _translation;
+}
+
+template <typename Arithmetic, bool RowMajor>
+Transform<Arithmetic, RowMajor>
+	Transform<Arithmetic, RowMajor>::inverse() const
+{
+	Transform<Arithmetic, RowMajor> rTrans(*this);
+
+	rTrans.inverse();
+
+	return rTrans;
 }
 
 template <typename Arithmetic, bool RowMajor>
@@ -101,7 +115,7 @@ TransformMap<Arithmetic, RowMajor>::TransformMap()
 {}
 
 template <typename Arithmetic, bool RowMajor>
-void TransformMap<Arithmetic, RowMajor>::inverse()
+void TransformMap<Arithmetic, RowMajor>::invert()
 {
 	_topLeft = inverse(_topLeft);
 	_translation = ( (_topLeft * Arithmetic(-1)) * _translation );
@@ -129,12 +143,13 @@ Matrix<Arithmetic, 3u, 1u, RowMajor>
 {
 	// Could be optimized.
 
-	Matrix<Arithmetic, 4u, 1u, RowMajor> vec4(Arithmetic(1));
-
-	for (Matrix<Arithmetic, 4u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
-		vec4(row, 0) = vec3(row, 0);
-
-	vec4(3, 0) = Arithmetic(1);
+	Matrix<Arithmetic, 4u, 1u, RowMajor> vec4 = 
+	{
+		vec3[0], 
+		vec3[1], 
+		vec3[2], 
+		Arithmetic(1)
+	};
 
 	Matrix<Arithmetic, 4u, 1u, RowMajor> temp = asAffineMatrix() * vec4;
 

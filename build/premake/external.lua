@@ -25,7 +25,11 @@ newoption
 	trigger		= "math-api",
 	value		= "API",
 	description	= "Math API.",
-	allowed		= { {"eigen", 	"Eigen"} }
+	allowed	= 
+	{
+		{"eigen", 	 "Eigen"},
+		{"math_ext", "Custom Math Extension"} 
+	}
 }
 _OPTIONS["math-api"] = _OPTIONS["math-api"] or "eigen"
 

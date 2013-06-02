@@ -30,7 +30,7 @@ void testProject()
 
 		test::assertEqual(vec, vecRes);
 
-		proj.inverse();
+		proj = proj.inverse();
 
 		vecRes = proj * vec;
 
