@@ -317,9 +317,18 @@ inline void matrixMode(GLenum type)
 
 	glMatrixMode(type);
 
-#if ASSERT_NO_GL_ERRORS)
+#if ASSERT_NO_GL_ERRORS
 	detail::assertNoGLError();
 #endif
+}
+
+inline void loadIdentity()
+{
+#if LOG_GL_CALLS
+	VERBOSE_OUT(LOG_TAG, "glLoadIdentity()");
+#endif
+
+	glLoadIdentity();
 }
 
 inline void loadMatrix(const gr::real_t* mat)

@@ -24,6 +24,8 @@ typedef math::Projection<real_t, false>	Projection;
 typedef math::Transform<real_t, false> 	Transform;
 typedef math::Matrix<real_t, 2, 1> 		Vector2_r;
 typedef math::Matrix<real_t, 3, 1> 		Vector3_r;
+typedef math::MatrixMap<real_t, 2, 1>	MapVector2_r;
+typedef math::MatrixMap<real_t, 3, 1>	MapVector3_r;
 
 namespace detail {
 
@@ -84,9 +86,9 @@ enum class BufferFlag : enum_t
 
 }
 
-#define LOG_GL_CALLS			true
-#define CHECK_GL_OUT_OF_MEMORY	true
-#define ASSERT_NO_GL_ERRORS		true
+#define LOG_GL_CALLS			1
+#define CHECK_GL_OUT_OF_MEMORY	1
+#define ASSERT_NO_GL_ERRORS		1
 
 // Wrapper to OpenGL.
 namespace gl {
@@ -125,6 +127,7 @@ void disable(GLenum type);
 
 // Matrix handling
 void matrixMode(GLenum type);
+void loadIdentity();
 void loadMatrix(const float* mat);
 void multMatrix(const float* mat);
 //
