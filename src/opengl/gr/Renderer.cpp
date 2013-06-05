@@ -69,8 +69,9 @@ void Renderer::flipBuffers()
 
 void Renderer::render()
 {
-	//_renderPassManager.updateRenderPasses();
-	_renderPassManager.executeRenderPasses();
+	_renderPassManager.render();
+	_renderPassManager.clear();
+	_surface.flipBuffers();
 
 #ifdef _DEBUG
 	GLenum errCode = glGetError();
