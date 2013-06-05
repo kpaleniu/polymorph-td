@@ -32,7 +32,7 @@ Transform<Arithmetic, RowMajor>
 {
 	Transform<Arithmetic, RowMajor> rTrans(*this);
 
-	rTrans.inverse();
+	rTrans.invert();
 
 	return rTrans;
 }
@@ -138,8 +138,31 @@ Matrix<Arithmetic, 4u, 4u, RowMajor>
 }
 
 template <typename Arithmetic, bool RowMajor>
+Matrix<Arithmetic, 2u, 1u, RowMajor>
+	TransformMap<Arithmetic, RowMajor>::operator*(const MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const
+{
+	// Could be optimized.
+
+	Matrix<Arithmetic, 4u, 1u, RowMajor> vec4 = 
+	{
+		vec2[0], 
+		vec2[1], 
+		Arithmetic(0), 
+		Arithmetic(1)
+	};
+
+	Matrix<Arithmetic, 4u, 1u, RowMajor> temp = asAffineMatrix() * vec4;
+
+	Matrix<Arithmetic, 2u, 1u, RowMajor> rVec;
+	for (Matrix<Arithmetic, 2u, 1u, RowMajor>::index_t row = 0; row < 2; ++row)
+		rVec(row, 0) = temp(row, 0);
+
+	return rVec;
+}
+
+template <typename Arithmetic, bool RowMajor>
 Matrix<Arithmetic, 3u, 1u, RowMajor>
-	TransformMap<Arithmetic, RowMajor>::operator*(const Matrix<Arithmetic, 3u, 1u, RowMajor>& vec3) const
+	TransformMap<Arithmetic, RowMajor>::operator*(const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const
 {
 	// Could be optimized.
 

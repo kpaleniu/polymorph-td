@@ -32,7 +32,7 @@ public:
 		const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation);
 	
 	static Transform<Arithmetic, RowMajor> translate(
-		Arithmetic tx, Arithmetic ty, Arithmetic tz);
+		Arithmetic tx, Arithmetic ty, Arithmetic tz = 0);
 
 	static Transform<Arithmetic, RowMajor> scale(Arithmetic scaling);
 	
@@ -59,8 +59,9 @@ public:
 	TransformMap();
 
 	void invert();
-	
-	Matrix<Arithmetic, 3u, 1u, RowMajor> operator*(const Matrix<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
+
+	Matrix<Arithmetic, 2u, 1u, RowMajor> operator*(const MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const;
+	Matrix<Arithmetic, 3u, 1u, RowMajor> operator*(const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
 
 	TransformMap<Arithmetic, RowMajor>& operator*=(const TransformMap<Arithmetic, RowMajor>& other);
 
