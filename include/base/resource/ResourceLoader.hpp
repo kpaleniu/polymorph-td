@@ -54,6 +54,8 @@ public:
 
 		operator Product*();
 		operator const Product*();
+
+		operator bool();
 		//
 
 		friend class ResourceLoader<Product>;
