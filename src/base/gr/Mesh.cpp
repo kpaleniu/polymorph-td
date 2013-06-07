@@ -7,7 +7,7 @@ namespace gr {
 // Mesh::SubMesh
 
 Mesh::SubMesh::SubMesh(Mesh& parent, 
-					   // TextureLoader::TextureHandle texHandle,
+					   TextureManager::TextureHandle texHandle,
 					   std::vector<index_t>&& indices)
 :	_parent(parent),
 	// _texHandle(texHandle),
@@ -27,7 +27,7 @@ void Mesh::SubMesh::render(Renderer& renderer) const
 	auto& vertexWriter = 
 		renderer.renderPassManager().vertexWriter(_parent._vertexList.format, 
 												  _parent._shape,
-												  /*_texHandle*/ nullptr,
+												  _texHandle,
 												  nullptr);
 
 	index_t startIndex = vertexWriter.getVertexCount();
@@ -62,7 +62,7 @@ void Mesh::SubMesh::render(Renderer& renderer, const Transform& transform) const
 	auto& vertexWriter = 
 		renderer.renderPassManager().vertexWriter(_parent._vertexList.format, 
 												  _parent._shape,
-												  /*_texHandle*/ nullptr,
+												  _texHandle,
 												  nullptr);
 
 	index_t startIndex = vertexWriter.getVertexCount();
@@ -130,16 +130,16 @@ Mesh::Mesh(Mesh&& other)
 {
 	for (SubMesh& subMesh : other._subMeshes)
 	{
-		_subMeshes.push_back(SubMesh(*this, /*texture, */std::move(subMesh._indices)));
+		_subMeshes.push_back(SubMesh(*this, subMesh._texHandle, std::move(subMesh._indices)));
 	}
 
 	other._subMeshes.clear();
 }
 
-void Mesh::addSubMesh(// TextureLoader::TextureHandle texture,
+void Mesh::addSubMesh(TextureManager::TextureHandle texture,
 					  std::vector<index_t>&& indices)
 {
-	_subMeshes.push_back(SubMesh(*this, /*texture, */std::move(indices)));
+	_subMeshes.push_back(SubMesh(*this, texture, std::move(indices)));
 }
 
 void Mesh::render(Renderer& renderer) const

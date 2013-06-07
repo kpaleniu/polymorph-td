@@ -55,7 +55,7 @@ void RenderPassManager::popTransform()
 
 VertexWriter& RenderPassManager::vertexWriter(VertexFormat format,
 											  Primitive shape,
-											  const Texture* tex,
+											  TextureManager::TextureHandle tex,
 											  const Shader* shader)
 {
 	WorldState currentState = {_currentProjectionIndex, _currentTransformIndex};

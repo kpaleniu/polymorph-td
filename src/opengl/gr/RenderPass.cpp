@@ -13,7 +13,7 @@ namespace gr {
 
 RenderPass::RenderPass(VertexFormat format,
                        Primitive shape,
-                       const Texture* texture,
+                       TextureManager::TextureHandle texture,
 					   const Shader* shader)
 :	_shape(shape),
  	_vertices(format, BufferUsage::DYNAMIC),
@@ -46,7 +46,7 @@ void RenderPass::flushVertices()
 	if ( _vertices.isEmpty() )
 		return;
 
-	if (_texture != nullptr)
+	if (_texture)
 	{
 		gl::enable(GL_TEXTURE_2D);
 		_texture->bind();
@@ -59,7 +59,7 @@ void RenderPass::flushVertices()
 
 	_vertices.draw(_shape, _indices);
 
-	if (_texture != nullptr)
+	if (_texture)
 	{
 		_texture->unbind();
 		gl::disable(GL_TEXTURE_2D);

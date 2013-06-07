@@ -7,6 +7,7 @@
 #define RENDERPASSMANAGER_HPP_
 
 #include "gr/RenderPass.hpp"
+#include "gr/TextureManager.hpp"
 
 #include <NonCopyable.hpp>
 
@@ -31,7 +32,7 @@ public:
 
 	VertexWriter& vertexWriter(VertexFormat format, 
 							   Primitive shape,
-							   const Texture* tex, 
+							   TextureManager::TextureHandle tex, 
 							   const Shader* shader);
 
 	void render();

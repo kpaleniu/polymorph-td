@@ -9,12 +9,12 @@
 
 namespace gr {
 
-class TextureLoader : public resource::ResourceLoader<Texture>
+class TextureManager : public resource::ResourceLoader<Texture>
 {
 public:
 	typedef resource::ResourceLoader<Texture>::ResourceHandle TextureHandle;
 
-	TextureLoader();
+	TextureManager();
 
 	TextureHandle addTexture(text::string_hash id, Texture&& texture);
 	TextureHandle getTexture(text::string_hash id);

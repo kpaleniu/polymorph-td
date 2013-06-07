@@ -2,7 +2,7 @@
 #define GR_MESH_HPP_
 
 #include "gr/VertexList.hpp"
-// #include "gr/TextureLoader.hpp"
+#include "gr/TextureManager.hpp"
 #include "gr/types.hpp"
 
 #include "gr/Renderer.hpp"
@@ -26,7 +26,7 @@ public:
 		void render(Renderer& renderer, const Transform& transform) const;
 
 		SubMesh(Mesh& parent, 
-				// TextureLoader::TextureHandle texHandle,
+				TextureManager::TextureHandle texHandle,
 				std::vector<index_t>&& indices);
 
 		// Note, should only be used when parent doesn't change.
@@ -35,7 +35,7 @@ public:
 	private:
 		Mesh& _parent;
 
-		// TextureLoader::TextureHandle _texHandle;
+		TextureManager::TextureHandle _texHandle;
 
 		std::vector<index_t> _indices;
 	};
@@ -54,7 +54,7 @@ public:
 	const sub_mesh_it end() const;
 	*/
 
-	void addSubMesh(// TextureLoader::TextureHandle texture,
+	void addSubMesh(TextureManager::TextureHandle texture,
 					std::vector<index_t>&& indices);
 
 	void render(Renderer& renderer) const;
