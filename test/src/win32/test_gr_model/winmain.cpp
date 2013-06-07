@@ -2,6 +2,7 @@
 
 #include "gr/TestWindow.hpp"
 
+#include <gr/TextureManager.hpp>
 #include <gr/Renderer.hpp>
 #include <gr/Mesh.hpp>
 
@@ -30,7 +31,7 @@ gr::Mesh createTestQuad()
 	gr::VertexList vl(gr::VertexFormat::V2_C3, std::move(vertices), std::move(colors));
 
 	gr::Mesh quadMesh(std::move(vl), gr::Primitive::QUADS);
-	quadMesh.addSubMesh(std::move(indices));
+	quadMesh.addSubMesh(gr::TextureManager::TextureHandle(), std::move(indices));
 
 	return quadMesh;
 }
