@@ -46,7 +46,7 @@ inline void assertNotEqual(const T& a, const T& b);
 	{ block }									\
 	catch (exceptionType&)						\
 	{ detail__caughtException = true; }			\
-	test::assert(detail__caughtException);		\
+	test::assertTrue(detail__caughtException);		\
 }
 
 #define ASSUME_NO_EXCEPTION(exceptionType, block) \
