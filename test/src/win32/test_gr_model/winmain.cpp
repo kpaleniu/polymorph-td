@@ -6,6 +6,8 @@
 #include <gr/Renderer.hpp>
 #include <gr/Mesh.hpp>
 #include <gr/MeshIO.hpp>
+#include <gr/MeshManager.hpp>
+#include <gr/Model.hpp>
 
 #include <filesystem/FileOutputStream.hpp>
 #include <filesystem/FileInputStream.hpp>
@@ -77,13 +79,34 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		auto surface = createSurface();
 		gr::Renderer renderer(surface);
 
-		auto quadMesh = getMesh();
+		gr::MeshManager meshManager;
+
+		text::string_hash meshId = text::hash("TEST_MESH");
+		auto meshHandle = meshManager.addMesh(meshId, std::move(getMesh()));
+
+		std::vector<gr::Model::ModelMesh> meshes;
+		gr::Model::ModelMesh modelMesh = {gr::Transform(), meshHandle};
+
+		meshes.push_back(modelMesh);
+
+		gr::Model testModel(std::move(meshes));
+
+		gr::real_t moveSpeed = 0.01f;
 
 		while (updateTestWindow())
 		{
-			quadMesh.render(renderer, gr::Transform::translate(1.0f, 0.0f, 0.0f));
+			testModel.render(renderer);
 
 			renderer.render();
+
+
+			if (testModel.transform().translation()[0] > 1.0f
+				|| testModel.transform().translation()[0] < -1.0f)
+			{
+				moveSpeed *= -1.0f;
+			}
+
+			testModel.transform() *= gr::Transform::translate(moveSpeed, 0);
 		}
 	}
 
