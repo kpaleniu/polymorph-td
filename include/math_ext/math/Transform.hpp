@@ -63,9 +63,13 @@ public:
 	Matrix<Arithmetic, 2u, 1u, RowMajor> operator*(const MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const;
 	Matrix<Arithmetic, 3u, 1u, RowMajor> operator*(const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
 
+	Transform<Arithmetic, RowMajor> operator*(const TransformMap<Arithmetic, RowMajor>& other) const;
 	TransformMap<Arithmetic, RowMajor>& operator*=(const TransformMap<Arithmetic, RowMajor>& other);
 
 	Matrix<Arithmetic, 4u, 4u, RowMajor> asAffineMatrix() const;
+
+	MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation();
+	const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation() const;
 
 protected:
 	MatrixMap<Arithmetic, 3u, 3u, RowMajor> _mappedTopLeft;

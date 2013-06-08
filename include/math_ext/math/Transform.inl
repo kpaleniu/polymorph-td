@@ -184,6 +184,32 @@ Matrix<Arithmetic, 3u, 1u, RowMajor>
 }
 
 template <typename Arithmetic, bool RowMajor>
+Transform<Arithmetic, RowMajor>
+	TransformMap<Arithmetic, RowMajor>::operator*(const TransformMap<Arithmetic, RowMajor>& other) const
+{
+	const auto matThis = asAffineMatrix();
+	const auto matOther = other.asAffineMatrix();
+	const auto matProduct = matThis * matOther;
+
+	ASSERT( (matProduct(3, 0) == Arithmetic(0))
+			&& (matProduct(3, 1) == Arithmetic(0))
+			&& (matProduct(3, 2) == Arithmetic(0))
+			&& (matProduct(3, 3) == Arithmetic(1)),
+			"Transformation is no longer affine." );
+
+	Transform<Arithmetic, RowMajor> rTransform;
+
+	for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
+		for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col < 3; ++col)
+			rTransform._mappedTopLeft(row, col) = matProduct(row, col);
+
+	for (MatrixMap<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
+		rTransform._mappedTranslation(row, 0) = matProduct(row, 3);
+
+	return rTransform;
+}
+
+template <typename Arithmetic, bool RowMajor>
 TransformMap<Arithmetic, RowMajor>&
 	TransformMap<Arithmetic, RowMajor>::operator*=(const TransformMap<Arithmetic, RowMajor>& other)
 {
@@ -199,12 +225,26 @@ TransformMap<Arithmetic, RowMajor>&
 
 	for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
 		for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col < 3; ++col)
-			_topLeft(row, col) = matProduct(row, col);
+			_mappedTopLeft(row, col) = matProduct(row, col);
 
 	for (MatrixMap<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
-		_translation(row, 0) = matProduct(row, 3);
+		_mappedTranslation(row, 0) = matProduct(row, 3);
 
 	return *this;
+}
+
+template <typename Arithmetic, bool RowMajor>
+MatrixMap<Arithmetic, 3u, 1u, RowMajor>&
+	TransformMap<Arithmetic, RowMajor>::translation()
+{
+	return _mappedTranslation;
+}
+
+template <typename Arithmetic, bool RowMajor>
+const MatrixMap<Arithmetic, 3u, 1u, RowMajor>&
+	TransformMap<Arithmetic, RowMajor>::translation() const
+{
+	return _mappedTranslation;
 }
 
 }
