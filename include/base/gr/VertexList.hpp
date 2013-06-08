@@ -24,16 +24,17 @@ struct VertexList : NonCopyable
 
 	// Returns nullptr if don't store that data type:
 
-	real_t* vertexData(index_t vertIndex); // Never return nullptr.
+	real_t* vertexData(index_t vertIndex); // Never returns nullptr.
 	real_t* colorData(index_t vertIndex);
 	real_t* texCoordData(index_t vertIndex);
 	
-	const real_t* vertexData(index_t vertIndex) const; // Never return nullptr.
+	const real_t* vertexData(index_t vertIndex) const; // Never returns nullptr.
 	const real_t* colorData(index_t vertIndex) const;
 	const real_t* texCoordData(index_t vertIndex) const;
 
 	//
 
+	std::size_t vertexCount() const;
 
 	VertexFormat format;
 
@@ -44,8 +45,6 @@ struct VertexList : NonCopyable
 };
 
 }
-
-#include "gr/VertexList.inl"
 
 
 #endif

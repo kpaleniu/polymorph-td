@@ -101,4 +101,13 @@ const real_t* VertexList::texCoordData(index_t vertIndex) const
 	return texCoords.data() + (fmtData.textDim * vertIndex);
 }
 
+std::size_t VertexList::vertexCount() const
+{
+	const auto& fmtData = getVertexFormatData(format);
+
+	ASSERT(vertices.size() % fmtData.vertDim == 0, "VertexList is ill-formed.");
+
+	return vertices.size() / fmtData.vertDim;
+}
+
 }
