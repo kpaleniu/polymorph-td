@@ -8,7 +8,7 @@ TextureManager::TextureHandle TextureManager::addTexture(text::string_hash id,
 	return addProduct(id, std::move(texture));
 }
 
-TextureManager::TextureHandle TextureManager::getTexture(text::string_hash id)
+TextureManager::TextureHandle TextureManager::getTexture(text::string_hash id) const
 {
 	return getProduct(id);
 }

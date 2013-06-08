@@ -24,79 +24,94 @@ ResourceLoader<Product>::Res::Res(Res&& other)
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::ResourceHandle()
-:	PrivateHandle<res_pointer>(nullptr)
+:	PrivateHandle<id_res_pointer>(nullptr)
 {
 }
 
 template <typename Product>
-ResourceLoader<Product>::ResourceHandle::ResourceHandle(res_pointer dataPointer)
-:	PrivateHandle<res_pointer>(dataPointer)
+ResourceLoader<Product>::ResourceHandle::ResourceHandle(id_res_pointer dataPointer)
+:	PrivateHandle<id_res_pointer>(dataPointer)
 {
 	ASSERT(_val != nullptr, "Product is null");
-	++_val->refs;
+	++_val->second.refs;
 }
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::ResourceHandle(const ResourceHandle& other)
-:	PrivateHandle<res_pointer>(other)
+:	PrivateHandle<id_res_pointer>(other)
 {
 	if (_val != nullptr)
-		++_val->refs;
+		++_val->second.refs;
 }
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::~ResourceHandle()
 {
 	if (_val != nullptr)
-		--_val->refs;
+		--_val->second.refs;
 }
 
 template <typename Product>
 Product& ResourceLoader<Product>::ResourceHandle::operator*()
 {
 	ASSERT(_val != nullptr, "Product is null");
-	return _val->data;
+	return _val->second.data;
 }
 
 template <typename Product>
 const Product& ResourceLoader<Product>::ResourceHandle::operator*() const
 {
 	ASSERT(_val != nullptr, "Product is null");
-	return _val->data;
+	return _val->second.data;
 }
 
 template <typename Product>
 Product* ResourceLoader<Product>::ResourceHandle::operator->()
 {
 	ASSERT(_val != nullptr, "Product is null");
-	return &_val->data;
+	return &_val->second.data;
 }
 
 template <typename Product>
 const Product* ResourceLoader<Product>::ResourceHandle::operator->() const
 {
 	ASSERT(_val != nullptr, "Product is null");
-	return &_val->data;
+	return &_val->second.data;
 }
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::operator Product*()
 {
 	ASSERT(_val != nullptr, "Product is null");
-	return &_val->data;
+	return &_val->second.data;
 }
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::operator const Product*()
 {
 	ASSERT(_val != nullptr, "Product is null");
-	return &_val->data;
+	return &_val->second.data;
 }
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::operator bool()
 {
 	return _val != nullptr;
+}
+
+template <typename Product>
+text::string_hash ResourceLoader<Product>::ResourceHandle::id() const
+{
+	if (_val != nullptr)
+		return _val->first;
+	else
+		return 0;
+}
+
+template <typename Product>
+bool ResourceLoader<Product>::ResourceHandle::operator==(const ResourceHandle& other) const
+{
+	return _val->first == other._val->first;
 }
 
 // ResourceLoader
@@ -133,14 +148,17 @@ inline typename ResourceLoader<Product>::ResourceHandle
 		);
 	
 	ASSERT(itNewPair.second, "Trying to re-add product.");
-	return ResourceHandle(&itNewPair.first->second);
+	return ResourceHandle( &(*itNewPair.first) );
 }
 
 template <typename Product>
 inline typename ResourceLoader<Product>::ResourceHandle ResourceLoader<Product>
-	::getProduct(text::string_hash id)
+	::getProduct(text::string_hash id) const
 {
-	return &_loaded.find(id)->second;
+	if (id == 0)
+		return ResourceHandle();
+
+	return ResourceHandle( &(*_loaded.find(id)) );
 }
 
 

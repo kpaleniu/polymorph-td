@@ -33,19 +33,18 @@ private:
 
 	};
 
-	typedef Res* res_pointer;
+	typedef typename std::map<text::string_hash, Res>::pointer id_res_pointer;
 
 public:
 
-	class ResourceHandle : PrivateHandle<res_pointer>
+	class ResourceHandle : PrivateHandle<id_res_pointer>
 	{
 	public:
 		ResourceHandle();
-		ResourceHandle(res_pointer resPtr);
+		ResourceHandle(id_res_pointer resPtr);
 		ResourceHandle(const ResourceHandle& other);
 		~ResourceHandle();
 
-		// Returns temporary reference, valid during handle life-time:
 		Product& operator*();
 		const Product& operator*() const;
 
@@ -56,7 +55,10 @@ public:
 		operator const Product*();
 
 		operator bool();
-		//
+
+		text::string_hash id() const;
+
+		bool operator==(const ResourceHandle& other) const;
 
 		friend class ResourceLoader<Product>;
 	};
@@ -66,11 +68,13 @@ public:
 
 protected:
 	ResourceHandle addProduct(text::string_hash id, Product&& data);
-	ResourceHandle getProduct(text::string_hash id);
+	ResourceHandle getProduct(text::string_hash id) const;
 	bool hasProduct(text::string_hash id) const;
 
 private:
-	std::map<text::string_hash, Res> _loaded;
+
+	// Getting products will mutate Res member.
+	mutable std::map<text::string_hash, Res> _loaded;
 };
 
 }
