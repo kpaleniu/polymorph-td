@@ -29,6 +29,15 @@ inline bool isLittleEndian()
 }
 
 template <typename Scalar>
+inline Scalar flippedEndianess(const Scalar& val)
+{
+	Scalar rVal = val;
+	flipEndianess(rVal);
+
+	return rVal;
+}
+
+template <typename Scalar>
 inline void flipEndianess(Scalar& val)
 {
 	static_assert(std::is_scalar<Scalar>::value, "Template isn't scalar.");
@@ -42,5 +51,9 @@ inline void flipEndianess(void* data, std::size_t size)
 	unsigned char* high = low + size;
 
 	for (; low < high; ++low, --high)
-		std::swap<unsigned char>(*low, *high);
+	{
+		auto temp = *low;
+		*low = *high;
+		*high = temp;
+	}
 }
