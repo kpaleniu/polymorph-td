@@ -16,7 +16,6 @@ public:
 
 	std::size_t available() const;
 
-protected:
 	virtual void read(void* data, 
 					  std::size_t typeAlignment, 
 					  std::size_t size, 
