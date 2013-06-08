@@ -67,5 +67,6 @@ project "gr"
 		"ext", 
 		"concurrency",
 		"math",
+		"io",
 	}
 	

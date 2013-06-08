@@ -4,7 +4,7 @@
 #include "gr/VertexList.hpp"
 #include "gr/TextureManager.hpp"
 #include "gr/types.hpp"
-
+#include "gr/MeshIO.hpp"
 #include "gr/Renderer.hpp"
 
 #include <NonCopyable.hpp>
@@ -17,9 +17,12 @@ namespace gr {
 class Mesh : NonCopyable
 {
 public:
+	friend class MeshIO;
+
 	class SubMesh : NonCopyable
 	{
 	public:
+		friend class MeshIO;
 		friend class Mesh;
 
 		void render(Renderer& renderer) const;

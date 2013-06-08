@@ -36,5 +36,6 @@ solution "gr_model_tester"
 			"test", 
 			"math", 
 			"io",
+			"filesystem",
 			"gr",
 		}
