@@ -74,6 +74,7 @@ enum class Primitive : enum_t
 	TRIANGLES 		= GL_TRIANGLES,
 	TRIANGLE_STRIP 	= GL_TRIANGLE_STRIP,
 	QUADS 			= GL_QUADS,
+	PRIMITIVE_ENUM_SIZE,
 };
 
 enum class BufferFlag : enum_t

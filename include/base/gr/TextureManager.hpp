@@ -14,11 +14,10 @@ class TextureManager : public resource::ResourceLoader<Texture>
 public:
 	typedef resource::ResourceLoader<Texture>::ResourceHandle TextureHandle;
 
-	TextureManager();
-
 	TextureHandle addTexture(text::string_hash id, Texture&& texture);
-	TextureHandle getTexture(text::string_hash id);
-	TextureHandle getNullTexture();
+	TextureHandle getTexture(text::string_hash id) const;
+
+	static TextureHandle getNullTexture();
 };
 
 }
