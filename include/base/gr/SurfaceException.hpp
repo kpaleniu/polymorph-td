@@ -6,16 +6,11 @@
 #ifndef SURFACEEXCEPTION_HPP_
 #define SURFACEEXCEPTION_HPP_
 
-#include "Exception.hpp"
+#include <Exception.hpp>
 
-class SurfaceException : public Exception
+namespace gr 
 {
-public:
-	SurfaceException(std::string msg) throw()
-	: Exception(msg)
-	{
-	}
-};
-
+	PM_MAKE_EXCEPTION_CLASS(SurfaceException, Exception);
+}
 
 #endif /* SURFACEEXCEPTION_HPP_ */
