@@ -20,7 +20,6 @@ public:
 	void setReadPosition(long offset);
 	long getReadPosition() const;
 
-protected:
 	void read(void* data, std::size_t typeAlignment, std::size_t size, std::size_t count);
 
 private:
