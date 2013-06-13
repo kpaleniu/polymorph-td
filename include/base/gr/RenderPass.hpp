@@ -20,6 +20,9 @@
 #include <functional>
 #include <list>
 
+
+// TODO Needs refactoring
+
 namespace gr {
 
 class RenderPass : NonCopyable

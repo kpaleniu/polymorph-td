@@ -12,7 +12,7 @@
 
 #include "BuildConfig.hpp"
 
-namespace sys {
+namespace polymorph { namespace sys {
 
 // print tag
 namespace { const char* TAG_RUNNER = "GraphicsSystemRunner";
@@ -57,7 +57,7 @@ gr::Surface& GraphicsSystemRunner::surface()
 //
 
 GraphicsSystem::GraphicsSystem(Window& window)
-: System(TimeDuration::millis(settings::sys::grSystemSyncMillis), 256, window)
+: System(TimeDuration::millis( 33 /*settings::sys::grSystemSyncMillis*/), 256, window)
 {
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }
@@ -68,5 +68,5 @@ GraphicsSystem::GraphicsSystem(GraphicsSystem&& grSys)
 	VERBOSE_OUT(TAG_SYSTEM, "Moved");
 }
 
-}
+} }
 

@@ -54,10 +54,6 @@ private:
 	Mutex &_mutex;
 };
 
-// Mockup implementation
-
-// TODO
-
 }
 
 

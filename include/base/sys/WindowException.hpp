@@ -8,16 +8,10 @@
 
 #include "Exception.hpp"
 
-namespace sys {
+namespace polymorph { namespace sys {
 
-class WindowException : public Exception
-{
-public:
-	WindowException(std::string msg) throw ()
-			: Exception(msg)
-	{
-	}
-};
+PM_MAKE_EXCEPTION_CLASS(WindowException, Exception);
 
-}
+} }
+
 #endif /* WINDOWEXCEPTION_HPP_ */

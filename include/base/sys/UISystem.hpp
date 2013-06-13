@@ -17,7 +17,7 @@
 
 #include <stack>
 
-namespace sys {
+namespace polymorph { namespace sys {
 
 class UISystemRunner : NonCopyable
 {
@@ -45,12 +45,6 @@ private:
 class UISystem : public System<UISystemRunner>
 {
 public:
-
-	struct StateDesc
-	{
-		event::UIEventManager eventManager;
-	};
-
 	UISystem(Window::ConstructionData& winCtorData);
 
 	/**
@@ -61,25 +55,8 @@ public:
 	Window& waitForWindow();
 
 	GraphicsSystem& waitForGraphicsSystem();
-
-
-	void pushState(const StateDesc& newState);
-	void popState();
-
-#ifdef TEST_BUILD
-	SystemActionQueue<UISystemRunner>& actionQueue()
-	{
-		return _actions;
-	}
-#endif
-
-
-private:
-	void setState(const StateDesc& state);
-
-	std::stack<StateDesc> _states;
 };
 
-}
+} }
 
 #endif /* UISYSTEM_HPP_ */

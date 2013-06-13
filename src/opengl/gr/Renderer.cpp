@@ -73,6 +73,8 @@ void Renderer::render()
 	_renderPassManager.clear();
 	_surface.flipBuffers();
 
+	gl::clear(GL_COLOR_BUFFER_BIT);
+
 #ifdef _DEBUG
 	GLenum errCode = glGetError();
 	if (errCode != GL_NO_ERROR)

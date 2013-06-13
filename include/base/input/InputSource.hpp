@@ -14,7 +14,7 @@
 
 #include <set>
 
-namespace input {
+namespace polymorph { namespace input {
 
 /**
  *
@@ -53,7 +53,7 @@ protected:
 
 };
 
-}
+} }
 
 
 #endif /* INPUTSOURCE_HPP_ */

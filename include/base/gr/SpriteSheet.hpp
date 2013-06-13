@@ -3,8 +3,10 @@
 #ifndef SPRITESHEET_HPP_
 #define SPRITESHEET_HPP_
 
+#include "gr/types.hpp"
 #include "gr/Image.hpp"
 #include "gr/Texture.hpp"
+#include "gr/Sprite.hpp"
 
 #include <text/util.hpp>
 
@@ -26,6 +28,8 @@ public:
 	const Texture& texture() const;
 
 	const std::array<gr::real_t, 8>& coordsFor(sprite_id_t spriteID) const;
+
+	//Sprite& getSprite(sprite_id_t id);
 
 private:
 	Texture _tex;

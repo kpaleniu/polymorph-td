@@ -8,16 +8,17 @@
 
 #include "sys/System.hpp"
 
+// #include "sys/Window.hpp"
+#include "../win32/sys/Window.hpp"
+
 #include <gr/Renderer.hpp>
 #include <gr/Surface.hpp>
 
-#include <concurrency/Task.hpp>
+// #include <concurrency/Task.hpp>
 
 #include <NonCopyable.hpp>
 
-#include <memory>
-
-namespace sys {
+namespace polymorph { namespace sys {
 
 class GraphicsSystemRunner : NonCopyable
 {
@@ -45,13 +46,8 @@ class GraphicsSystem : public System<GraphicsSystemRunner>
 public:
 	GraphicsSystem(Window& window);
 	GraphicsSystem(GraphicsSystem&& grSys);
-
-	SystemActionQueue<GraphicsSystemRunner>& actionQueue()
-	{
-		return _actions;
-	}
 };
 
-}
+} }
 
 #endif /* WORLDSYSTEM_HPP_ */

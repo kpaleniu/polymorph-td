@@ -8,12 +8,13 @@
 #define SYSTEM_HPP
 
 #include "sys/SystemActionQueue.hpp"
+#include "sys/SystemException.hpp"
 
 #include <concurrency/Thread.hpp>
 #include <concurrency/Mutex.hpp>
 #include <concurrency/Condition.hpp>
 
-#include <profiler/ThreadProfiler.hpp>
+// #include <profiler/ThreadProfiler.hpp>
 
 #include <Time.hpp>
 #include <Scoped.hpp>
@@ -22,7 +23,10 @@
 #include <functional>
 #include <atomic>
 
-namespace sys {
+namespace polymorph { namespace sys {
+
+PM_MAKE_EXCEPTION_CLASS(SystemDeadException, SystemException);
+
 
 /**
  * Template for systems.
@@ -64,6 +68,8 @@ public:
 	virtual ~System();
 
 	void waitForStartup();
+
+	SystemActionQueue<Runner>& actionQueue();
 
 protected:
 	std::function<Runner ()> _factory;
@@ -131,6 +137,15 @@ void System<Runner>::waitForStartup()
 }
 
 template<typename Runner>
+SystemActionQueue<Runner>& System<Runner>::actionQueue()
+{
+	if (getThreadState() == ThreadState::EXITED)
+		throw SystemDeadException();
+
+	return _actions;
+}
+
+template<typename Runner>
 void System<Runner>::threadMain()
 {
 	// Strings for profiler.
@@ -165,7 +180,7 @@ void System<Runner>::threadMain()
 		//---------------- Runner updating ----------------//
 
 		{
-			auto profileBlock = profiler::ThreadProfiler::profileBlock(updateName);
+			// auto profileBlock = profiler::ThreadProfiler::profileBlock(updateName);
 
 			if (!runner.update())
 				return;
@@ -180,19 +195,19 @@ void System<Runner>::threadMain()
 		                                           waitDuration) )
 		{
 			{
-				auto profileBlock = profiler::ThreadProfiler::profileBlock(actionName);
+				// auto profileBlock = profiler::ThreadProfiler::profileBlock(actionName);
 				_actions.doAction(runner);
 			}
 
 			realDT = TimeDuration::between(t0, TimeStamp::now());
 			waitDuration = _sync - realDT;
 
-			if ( !waitDuration.isPositive() )
+			if ( waitDuration < TimeDuration::millis(0) )
 				break;
 		}
 	}
 }
 
-}
+} }
 
 #endif

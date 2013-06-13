@@ -6,7 +6,7 @@
 #ifndef STREAMEXCEPTION_HPP_
 #define STREAMEXCEPTION_HPP_
 
-#include "Exception.hpp"
+#include <Exception.hpp>
 
 namespace stream {
 

@@ -3,7 +3,7 @@
 #include <text/util.hpp>
 #include <Assert.hpp>
 
-namespace os {
+namespace polymorph { namespace os {
 
 MessageDialog::MessageDialog(const std::string& title, 
 							 const std::string& message, 
@@ -77,6 +77,6 @@ void MessageDialog::threadMain()
 		_action(userResp);
 }
 
-}
+} }
 
 

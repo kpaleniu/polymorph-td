@@ -24,15 +24,19 @@ convertAreas(unsigned int imageW,
 		ASSERT(imageRect.getRight() <= imageW
 		       && imageRect.getTop() <= imageH, "Bad image coordinate");
 
-		rMap[pair.first] = std::array<gr::real_t, 8>
-		{
-			{
-				real_t(imageRect.getLeft()) / imageW_r,  real_t(imageRect.getBottom()) / imageH_r,
-				real_t(imageRect.getRight()) / imageW_r, real_t(imageRect.getBottom()) / imageH_r,
-				real_t(imageRect.getRight()) / imageW_r, real_t(imageRect.getTop()) / imageH_r,
-				real_t(imageRect.getLeft()) / imageW_r,  real_t(imageRect.getTop()) / imageH_r,
-			}
-		};
+		std::array<gr::real_t, 8> data =
+		{{
+			real_t(imageRect.getLeft()) / imageW_r,  
+			real_t(imageRect.getBottom()) / imageH_r,
+			real_t(imageRect.getRight()) / imageW_r, 
+			real_t(imageRect.getBottom()) / imageH_r,
+			real_t(imageRect.getRight()) / imageW_r, 
+			real_t(imageRect.getTop()) / imageH_r,
+			real_t(imageRect.getLeft()) / imageW_r,  
+			real_t(imageRect.getTop()) / imageH_r
+		}};
+
+		rMap[pair.first] = data;
 	}
 
 	return rMap;
@@ -43,10 +47,10 @@ convertAreas(unsigned int imageW,
 SpriteSheet::SpriteSheet(const Image& sourceImage,
                          const std::map<sprite_id_t, Rect<unsigned int>>& spriteAreas)
 :	_tex(sourceImage,
- 	     Texture::Params { Texture::Params::CLAMP/*_TO_EDGE*/,
-								  Texture::Params::CLAMP/*_TO_EDGE*/,
-								  Texture::Params::LINEAR,
-								  Texture::Params::LINEAR }),
+ 	     Texture::Params( Texture::Params::CLAMP/*_TO_EDGE*/,
+						  Texture::Params::CLAMP/*_TO_EDGE*/,
+						  Texture::Params::LINEAR,
+						  Texture::Params::LINEAR )),
 	_texCoords( std::move(convertAreas(sourceImage.getWidth(),
 	                                   sourceImage.getHeight(),
 	                                   spriteAreas)) )

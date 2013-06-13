@@ -80,6 +80,9 @@ private:
 		}
 	};
 
+
+	// TODO Needs refactoring
+
 	std::multimap<WorldState, RenderPass> _renderPasses;
 
 };

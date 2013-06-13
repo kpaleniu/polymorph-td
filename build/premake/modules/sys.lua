@@ -21,12 +21,21 @@ project "sys"
 			sourcePath .. "win32/sys/",
 			includePath .. "win32/sys/"
 		)
+		
+		pm.includedirs
+		{
+			includePath .. "win32/sys"
+		}
+	
+	configuration {}
 	
 	pm.moduleDependencies
 	{
-		"resource",
+		"input",
+		"os",
+		"concurrency",
 		"gr",
-		"math",
-		"ext"
+		"ext",
+		"text"
 	}
 	

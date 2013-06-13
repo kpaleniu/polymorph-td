@@ -49,7 +49,7 @@ std::string getWin32Message(DWORD error)
 
 }	// anonymous namespace
 
-
+/*
 SystemException::SystemException(error_type code, const char* message) throw() :
 	Exception(message),
 	_code(code),
@@ -68,5 +68,6 @@ const char* SystemException::what() const throw()
 
 	return _error.c_str();
 }
+*/
 
 }	// namespace sys

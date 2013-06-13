@@ -18,10 +18,10 @@ public:
 	void move(S x, S y);
 
 private:
-	struct
-	{
-		S l, b, w, h;
-	} _data;
+	S _left;
+	S _bottom;
+	S _width;
+	S _height;
 };
 
 
@@ -29,35 +29,35 @@ private:
 
 template <typename S>
 inline Rect<S>::Rect(S left, S bottom, S width, S height)
-:	_data{left, bottom, width, height}
+:	_left(left), _bottom(bottom), _width(width), _height(height)
 {}
 
 template <typename S>
 inline S Rect<S>::getLeft() const
-{ return _data.l; }
+{ return _left; }
 
 template <typename S>
 inline S Rect<S>::getRight() const
-{ return _data.l + _data.w; }
+{ return _left + _width; }
 
 template <typename S>
 inline S Rect<S>::getBottom() const
-{ return _data.b; }
+{ return _bottom; }
 
 template <typename S>
 inline S Rect<S>::getTop() const
-{ return _data.b + _data.h; }
+{ return _bottom + _height; }
 
 template <typename S>
 inline S Rect<S>::getHeight() const
-{ return _data.h; }
+{ return _height; }
 
 template <typename S>
 inline S Rect<S>::getWidth() const
-{ return _data.w; }
+{ return _width; }
 
 template <typename S>
 inline void Rect<S>::move(S x, S y)
-{ _data.l += x; _data.b += y; }
+{ _left += x; _bottom += y; }
 
 #endif /* RECT_HPP_ */
