@@ -39,7 +39,7 @@ void Condition::waitUntil(std::function<bool()> callable)
 			[&]() -> bool
 			{
 				Thread::interruptionPoint();
-				return callable;
+				return callable();
 			}
 		);
 	}
