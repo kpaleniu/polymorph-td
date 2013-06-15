@@ -29,10 +29,18 @@ inline std::string format(const std::string& fmtstr, Arg&& arg, Args&& ... args)
 #endif
 	
 #ifdef NO_STD_SNPRINTF
-	std::sprintf(buffer, 
-				 fmtstr.c_str(), 
-				 std::forward<Arg>(arg),
-				 std::forward<Args...>(args)...);
+#	ifdef _MSC_VER
+		sprintf_s(buffer,
+				  FORMAT_BUFFER_SIZE,
+				  fmtstr.c_str(),
+				  std::forward<Arg>(arg),
+				  std::forward<Args...>(args)...);
+#	else
+		std::sprintf(buffer, 
+					 fmtstr.c_str(), 
+					 std::forward<Arg>(arg),
+					 std::forward<Args...>(args)...);
+#	endif
 #else
 	std::snprintf(buffer, 
 				  FORMAT_BUFFER_SIZE,
