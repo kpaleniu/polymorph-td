@@ -12,6 +12,7 @@
 #include "sys/GraphicsSystem.hpp"
 #include "sys/UIEvents.hpp"
 
+#include <Event.hpp>
 #include <NonCopyable.hpp>
 #include <Assert.hpp>
 
@@ -55,8 +56,21 @@ public:
 	Window& waitForWindow();
 
 	GraphicsSystem& waitForGraphicsSystem();
+
+
+	// Event helpers
+
+	template <typename Event>
+	void addEventAction(event_action_id id, const typename EventManager<Event>::ActionType& action);
+
+	template <typename Event>
+	void removeEventAction(event_action_id id);
+
+	//
 };
 
 } }
+
+#include "sys/UISystem.inl"
 
 #endif /* UISYSTEM_HPP_ */
