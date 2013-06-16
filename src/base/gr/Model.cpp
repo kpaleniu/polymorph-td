@@ -10,6 +10,11 @@ Model::Model(std::vector<ModelMesh>&& modelMeshes, const Transform& transform)
 {
 }
 
+Model::Model(Model&& other)
+:	_modelMeshes(std::move(other._modelMeshes)),
+	_transform(other._transform)
+{
+}
 
 void Model::render(Renderer& renderer) const
 {
@@ -17,5 +22,17 @@ void Model::render(Renderer& renderer) const
 		modelMesh.mesh->render(renderer, _transform * modelMesh.transform);
 }
 
+void Model::render(Renderer& renderer, const Transform& parentTransform) const
+{
+	const auto& modelTransform = parentTransform * _transform;
+
+	for (const auto& modelMesh : _modelMeshes)
+		modelMesh.mesh->render(renderer, modelTransform * modelMesh.transform);
+}
+
+Model Model::cloneModelType() const
+{
+	return Model(std::vector<ModelMesh>(_modelMeshes), _transform);
+}
 
 }
