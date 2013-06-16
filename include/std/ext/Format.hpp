@@ -34,19 +34,19 @@ inline std::string format(const std::string& fmtstr, Arg&& arg, Args&& ... args)
 				  FORMAT_BUFFER_SIZE,
 				  fmtstr.c_str(),
 				  std::forward<Arg>(arg),
-				  std::forward<Args...>(args)...);
+				  std::forward<Args>(args)...);
 #	else
 		std::sprintf(buffer, 
 					 fmtstr.c_str(), 
 					 std::forward<Arg>(arg),
-					 std::forward<Args...>(args)...);
+					 std::forward<Args>(args)...);
 #	endif
 #else
 	std::snprintf(buffer, 
 				  FORMAT_BUFFER_SIZE,
 				  fmtstr.c_str(), 
 				  std::forward<Arg>(arg),
-				  std::forward<Args...>(args)...);
+				  std::forward<Args>(args)...);
 #endif
 
 	return buffer;
