@@ -87,7 +87,7 @@ void Mesh::SubMesh::render(Renderer& renderer, const Transform& transform) const
 
 				case 3:
 				{
-					MapVector2_r mv3(vertices);
+					MapVector3_r mv3(vertices);
 					auto transformedMV3 = transform * mv3;
 
 					vertexWriter.vertices() << transformedMV3[0] 
