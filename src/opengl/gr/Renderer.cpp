@@ -34,7 +34,8 @@ Renderer::Renderer(Surface &surface)
 	_debugDraw(),
 	_renderPassManager()
 {
-	_surface.activate(true);
+	_surface.setActive();
+	_surface.setVSync();
 
 	initGlew(); // Must be called after Surface::activate(true).
 
