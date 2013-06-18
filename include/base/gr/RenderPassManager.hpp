@@ -49,10 +49,14 @@ private:
 	template <typename T>
 	struct RandomAccessTreeEntry
 	{
-		static const unsigned int NULL_PARENT_INDEX = -1;
+		RandomAccessTreeEntry(unsigned int parentIndex_, const T& data_)
+		:	parentIndex(parentIndex_), data(data_)
+		{}
 
 		unsigned int parentIndex;
 		T data;
+
+		static const unsigned int NULL_PARENT_INDEX = static_cast<unsigned int>(-1);
 	};
 
 	std::vector<RandomAccessTreeEntry<Projection>> _projectionPool;
