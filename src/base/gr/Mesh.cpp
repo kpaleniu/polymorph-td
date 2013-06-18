@@ -59,6 +59,8 @@ void Mesh::SubMesh::render(Renderer& renderer) const
 
 void Mesh::SubMesh::render(Renderer& renderer, const Transform& transform) const
 {
+	static real_t vertBuffer[4];
+
 	auto& vertexWriter = 
 		renderer.renderPassManager().vertexWriter(_parent._vertexList.format, 
 												  _parent._shape,
@@ -68,34 +70,21 @@ void Mesh::SubMesh::render(Renderer& renderer, const Transform& transform) const
 	index_t startIndex = vertexWriter.getVertexCount();
 	const VertexFormatData& fmtData = getVertexFormatData(_parent._vertexList.format);
 
+	ASSERT(fmtData.vertDim < 5, "Vertex dimension not supported.");
+
 	for (index_t index : _indices)
 	{
 		{
 			real_t* vertices = _parent._vertexList.vertexData(index);
+			MapVector_r mapVec(vertices, fmtData.vertDim);
 
-			switch (fmtData.vertDim)
-			{
-				case 2:
-				{
-					MapVector2_r mv2(vertices);
-					auto transformedMV2 = transform * mv2;
+			MapVector_r bufVec(vertBuffer, fmtData.vertDim);
+			bufVec = mapVec;
 
-					vertexWriter.vertices() << transformedMV2[0] 
-											<< transformedMV2[1];
-					break;
-				} 
+			transform.transform(bufVec);
 
-				case 3:
-				{
-					MapVector3_r mv3(vertices);
-					auto transformedMV3 = transform * mv3;
-
-					vertexWriter.vertices() << transformedMV3[0] 
-											<< transformedMV3[1]
-											<< transformedMV3[2];
-					break;
-				}
-			}
+			for (unsigned int i = 0; i < bufVec.rows(); ++i)
+				vertexWriter.vertices() << bufVec[i];
 		}
 
 		{
