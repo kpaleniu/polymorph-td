@@ -12,6 +12,8 @@
 #include <filesystem/FileOutputStream.hpp>
 #include <filesystem/FileInputStream.hpp>
 
+#include <concurrency/Thread.hpp>
+
 gr::Mesh createTestQuad()
 {
 	std::vector<gr::real_t> vertices;
@@ -107,6 +109,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			}
 
 			testModel.transform() *= gr::Transform::translate(moveSpeed, 0);
+
+			polymorph::concurrency::Thread::sleep(TimeDuration::millis(33));
 		}
 	}
 
