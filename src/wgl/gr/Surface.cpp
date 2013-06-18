@@ -76,11 +76,16 @@ std::string getWin32Message(DWORD error)
 
 }	// namespace detail
 
+Surface::WGLExtensions::WGLExtensions()
+:	loaded(false), wglSwapInterval(nullptr)
+{
+}
 
 Surface::Surface(HWND win)
 	: _win(win),
 	  _deviceHandle(GetDC(win), detail::dc_deleter(win)),
-	  _glHandle()
+	  _glHandle(),
+	  _wglExtensions()
 {
 	if (!_deviceHandle)
 	{
@@ -121,9 +126,10 @@ Surface::Surface(HWND win)
 }
 
 Surface::Surface(Surface&& surface)
-: _win(surface._win),
-  _deviceHandle(std::move(surface._deviceHandle)),
-  _glHandle(std::move(surface._glHandle))
+:	_win(surface._win),
+	_deviceHandle(std::move(surface._deviceHandle)),
+	_glHandle(std::move(surface._glHandle)),
+	_wglExtensions(surface._wglExtensions)
 {
 }
 
@@ -136,7 +142,7 @@ bool Surface::isActive() const
 	return (wglGetCurrentContext() == _glHandle.get());
 }
 
-void Surface::activate(bool activate)
+void Surface::setActive(bool activate)
 {
 	BOOL success = activate ?
 		wglMakeCurrent(_deviceHandle.get(), _glHandle.get()) :
@@ -154,6 +160,21 @@ void Surface::activate(bool activate)
 		*/
 		throw SurfaceException(); // (msg);
 	}
+
+	if (activate && !_wglExtensions.loaded)
+	{
+		_wglExtensions.wglSwapInterval = 
+			(WGLExtensions::PFNGLSWAPINTERVALPROC) wglGetProcAddress("wglSwapIntervalEXT");
+
+		ASSERT(_wglExtensions.wglSwapInterval != nullptr, "wglSwapInterval cannot be loaded.");
+
+		_wglExtensions.loaded = true;
+	}
+}
+
+void Surface::setVSync(bool enable)
+{
+	_wglExtensions.wglSwapInterval(enable ? 1 : 0);
 }
 
 void Surface::flipBuffers()
