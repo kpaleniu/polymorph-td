@@ -19,7 +19,7 @@ namespace polymorph { namespace sys {
 namespace { const char* TAG_RUNNER = "UISystemRunner";
 			const char* TAG_SYSTEM = "UISystem"; }
 
-UISystemRunner::UISystemRunner(Window::ConstructionData& winCtorData)
+UISystemRunner::UISystemRunner(Window::ConstructionData&& winCtorData)
 :	_window(winCtorData),
 	_grSys(_window),
  	_eventAdapter()
@@ -86,10 +86,10 @@ GraphicsSystem& UISystemRunner::graphics()
 }
 
 
-UISystem::UISystem(Window::ConstructionData& winCtorData)
+UISystem::UISystem(Window::ConstructionData&& winCtorData)
 :	System(TimeDuration::millis( 15 /*settings::sys::uiSystemSyncMillis*/ ),
  	       256,
- 	       winCtorData)
+ 	       std::forward<Window::ConstructionData>(winCtorData))
 {
 
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
@@ -115,7 +115,5 @@ GraphicsSystem& UISystem::waitForGraphicsSystem()
 	return runner->graphics();
 }
 
+
 } }
-
-
-

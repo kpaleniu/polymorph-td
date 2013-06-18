@@ -23,7 +23,9 @@ namespace polymorph { namespace sys {
 class UISystemRunner : NonCopyable
 {
 public:
-	UISystemRunner(Window::ConstructionData& winCtorData);
+	typedef Window::ConstructionData ConstructionArgs;
+
+	UISystemRunner(Window::ConstructionData&& winCtorData);
 	UISystemRunner(UISystemRunner&& runner);
 	~UISystemRunner();
 
@@ -46,7 +48,7 @@ private:
 class UISystem : public System<UISystemRunner>
 {
 public:
-	UISystem(Window::ConstructionData& winCtorData);
+	UISystem(Window::ConstructionData&& winCtorData);
 
 	/**
 	 * Waits for system start up and returns the window.

@@ -45,26 +45,10 @@ class System : public concurrency::Thread
 {
 public:
 
-	/**
-	 *
-	 */
-	template <typename T1>
-	System(const TimeDuration &sync, size_t bufferSize, T1&& arg1);
-
+	System(const TimeDuration& sync, 
+		   size_t bufferSize, 
+		   typename Runner::ConstructionArgs&& args);
 	System(System&& system);
-
-	/** 
-	 * NOTE: due to a defect in the C++ standard(!!) implementing this function is not
-	 * possible by simply using lambda '[&] { return Runner(std::forward<Args>(args)...); }'
-	 * to construct the _factory member.
-	 * http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#904
-	 */
-	//template <typename ... Args>
-	//System(const TimeDuration &sync, size_t bufferSize, Args&& args);
-
-	/**
-	 *
-	 */
 	virtual ~System();
 
 	void waitForStartup();
@@ -72,7 +56,8 @@ public:
 	SystemActionQueue<Runner>& actionQueue();
 
 protected:
-	std::function<Runner ()> _factory;
+	// May be invalidated after runner is constructed.
+	typename Runner::ConstructionArgs _runnerConstructionArgs;
 
 	SystemActionQueue<Runner> _actions;
 

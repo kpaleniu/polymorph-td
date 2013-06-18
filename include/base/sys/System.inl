@@ -3,50 +3,44 @@
 
 namespace polymorph { namespace sys {
 
-template<typename Runner>
-template<typename T1>
-System<Runner>::System(const TimeDuration &sync,
-                             size_t bufferSize,
-							 T1&& arg1)
+template <typename Runner>
+System<Runner>::System(const TimeDuration& sync,
+                       size_t bufferSize,
+					   typename Runner::ConstructionArgs&& runnerConstructionArgs)
 :	Thread(),
-	_factory(),
+	_runnerConstructionArgs(std::move(runnerConstructionArgs)),
 	_actions(bufferSize),
 	_runnerAccess(nullptr),
 	_sync(sync),
 	_started(false),
 	_startupCond()
 {
-	// NOTE: due to a limitation in the VC++11's implementation of
-	// lambdas the template parameter is not visible inside the lambda
-	// if used inside the initializer list ...
-	_factory = [&] { return Runner(std::forward<T1>(arg1)); };
 }
 
-template<typename Runner>
+template <typename Runner>
 System<Runner>::System(System&& system)
 :	Thread(std::move(system)),
-	_factory(system._factory),
+	_runnerConstructionArgs(std::move(system._runnerConstructionArgs)),
 	_actions(std::move(system._actions)),
 	_runnerAccess(system._runnerAccess.load()),
 	_sync(system._sync),
 	_started(system._started),
 	_startupCond() // Conditions can't be moved.
 {
-	system._runnerAccess = nullptr;
 }
 
-template<typename Runner>
+template <typename Runner>
 System<Runner>::~System()
 {
 }
 
-template<typename Runner>
+template <typename Runner>
 void System<Runner>::waitForStartup()
 {
 	_startupCond.waitUntil( [this]() -> bool {return this->_started;} );
 }
 
-template<typename Runner>
+template <typename Runner>
 SystemActionQueue<Runner>& System<Runner>::actionQueue()
 {
 	if (getThreadState() == ThreadState::EXITED)
@@ -55,7 +49,7 @@ SystemActionQueue<Runner>& System<Runner>::actionQueue()
 	return _actions;
 }
 
-template<typename Runner>
+template <typename Runner>
 void System<Runner>::threadMain()
 {
 	// Strings for profiler.
@@ -68,10 +62,10 @@ void System<Runner>::threadMain()
 
 	static const char* TAG = "System";
 
-	Runner runner(_factory());
+	Runner runner( std::move(_runnerConstructionArgs) );
 
-	Scoped accessScope([&]{ DEBUG_OUT(TAG, "Runner set %p", &runner); _runnerAccess = &runner; },
-	                   [&]{ DEBUG_OUT(TAG, "Runner unset %p", &runner); _runnerAccess = nullptr; });
+	Scoped accessScope([&]{ _runnerAccess = &runner; },
+	                   [&]{ _runnerAccess = nullptr; });
 
 
 	{
