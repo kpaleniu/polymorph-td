@@ -12,18 +12,14 @@ const Transform<Arithmetic, RowMajor> Transform<Arithmetic, RowMajor>::IDENTITY 
 
 template <typename Arithmetic, bool RowMajor>
 Transform<Arithmetic, RowMajor>::Transform()
-:	TransformMap(), _topLeft(Arithmetic(1)), _translation()
+:	_topLeft(Arithmetic(1)), _translation()
 {
-	_mappedTopLeft = _topLeft;
-	_mappedTranslation = _translation;
 }
 
 template <typename Arithmetic, bool RowMajor>
 Transform<Arithmetic, RowMajor>::Transform(const Transform<Arithmetic, RowMajor>& other)
-:	TransformMap(), _topLeft(other._topLeft), _translation(other._translation)
+:	_topLeft(other._topLeft), _translation(other._translation)
 {
-	_mappedTopLeft = _topLeft;
-	_mappedTranslation = _translation;
 }
 
 template <typename Arithmetic, bool RowMajor>
@@ -100,22 +96,8 @@ Transform<Arithmetic, RowMajor>
 }
 
 
-// TransformMap
-
 template <typename Arithmetic, bool RowMajor>
-TransformMap<Arithmetic, RowMajor>::TransformMap(
-	const MatrixMap<Arithmetic, 3u, 3u, RowMajor>& topLeft,
-	const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation)
-:	_mappedTopLeft(topLeft), _mappedTranslation(translation)
-{}
-
-template <typename Arithmetic, bool RowMajor>
-TransformMap<Arithmetic, RowMajor>::TransformMap()
-:	_mappedTopLeft(), _mappedTranslation()
-{}
-
-template <typename Arithmetic, bool RowMajor>
-void TransformMap<Arithmetic, RowMajor>::invert()
+void Transform<Arithmetic, RowMajor>::invert()
 {
 	_topLeft = inverse(_topLeft);
 	_translation = ( (_topLeft * Arithmetic(-1)) * _translation );
@@ -123,23 +105,22 @@ void TransformMap<Arithmetic, RowMajor>::invert()
 
 template <typename Arithmetic, bool RowMajor>
 Matrix<Arithmetic, 4u, 4u, RowMajor>
-	TransformMap<Arithmetic, RowMajor>::asAffineMatrix() const
+	Transform<Arithmetic, RowMajor>::asAffineMatrix() const
 {
 	Matrix<Arithmetic, 4u, 4u, RowMajor> rMat(Arithmetic(1));
 
 	for (Matrix<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
 		for (Matrix<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col< 3; ++col)
-			rMat(row, col) = _mappedTopLeft(row, col);
+			rMat(row, col) = _topLeft(row, col);
 
 	for (Matrix<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
-		rMat(row, 3u) = _mappedTranslation(row, 0);
+		rMat(row, 3u) = _translation[row];
 
 	return rMat; // Last row is {0 0 0 1} due to constructor.
 }
 
 template <typename Arithmetic, bool RowMajor>
-Matrix<Arithmetic, 2u, 1u, RowMajor>
-	TransformMap<Arithmetic, RowMajor>::operator*(const MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const
+void Transform<Arithmetic, RowMajor>::transform(MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const
 {
 	// Could be optimized.
 
@@ -151,18 +132,14 @@ Matrix<Arithmetic, 2u, 1u, RowMajor>
 		Arithmetic(1)
 	};
 
-	Matrix<Arithmetic, 4u, 1u, RowMajor> temp = asAffineMatrix() * vec4;
+	vec4 = asAffineMatrix() * vec4;
 
-	Matrix<Arithmetic, 2u, 1u, RowMajor> rVec;
-	for (Matrix<Arithmetic, 2u, 1u, RowMajor>::index_t row = 0; row < 2; ++row)
-		rVec(row, 0) = temp(row, 0);
-
-	return rVec;
+	vec2[0] = vec4[0];
+	vec2[1] = vec4[1];
 }
 
 template <typename Arithmetic, bool RowMajor>
-Matrix<Arithmetic, 3u, 1u, RowMajor>
-	TransformMap<Arithmetic, RowMajor>::operator*(const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const
+void Transform<Arithmetic, RowMajor>::transform(MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const
 {
 	// Could be optimized.
 
@@ -174,18 +151,91 @@ Matrix<Arithmetic, 3u, 1u, RowMajor>
 		Arithmetic(1)
 	};
 
-	Matrix<Arithmetic, 4u, 1u, RowMajor> temp = asAffineMatrix() * vec4;
+	vec4 = asAffineMatrix() * vec4;
+
+	vec3[0] = vec4[0];
+	vec3[1] = vec4[1];
+	vec3[2] = vec4[2];
+}
+
+template <typename Arithmetic, bool RowMajor>
+void Transform<Arithmetic, RowMajor>::transform(MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& vec) const
+{
+	// Could be optimized.
+
+	ASSERT(vec.rows() >= 2 && vec.rows() <= 4, "Cannot transform vectors of this size.");
+
+	Matrix<Arithmetic, 4u, 1u, RowMajor> vec4 = 
+	{
+		vec[0], 
+		vec[1], 
+		vec.rows() >= 3 ? vec[2] : Arithmetic(0), 
+		vec.rows() >= 4 ? vec[3] : Arithmetic(1),
+	};
+
+	vec4 = asAffineMatrix() * vec4;
+
+	vec[0] = vec4[0];
+	vec[1] = vec4[1];
+	
+	if (vec.rows() >= 3)
+	{
+		vec[2] = vec4[2];
+		if (vec.rows() >= 4)
+			vec[3] = vec4[3];
+	}
+}
+
+template <typename Arithmetic, bool RowMajor>
+Matrix<Arithmetic, 2u, 1u, RowMajor>
+	Transform<Arithmetic, RowMajor>::operator*(const MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const
+{
+	// Could be optimized.
+
+	Matrix<Arithmetic, 4u, 1u, RowMajor> vec4 = 
+	{
+		vec2[0], 
+		vec2[1], 
+		Arithmetic(0), 
+		Arithmetic(1)
+	};
+
+	vec4 = asAffineMatrix() * vec4;
+
+	Matrix<Arithmetic, 2u, 1u, RowMajor> rVec;
+	rVec[0] = vec4[0];
+	rVec[1] = vec4[1];
+
+	return rVec;
+}
+
+template <typename Arithmetic, bool RowMajor>
+Matrix<Arithmetic, 3u, 1u, RowMajor>
+	Transform<Arithmetic, RowMajor>::operator*(const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const
+{
+	// Could be optimized.
+
+	Matrix<Arithmetic, 4u, 1u, RowMajor> vec4 = 
+	{
+		vec3[0], 
+		vec3[1], 
+		vec3[2], 
+		Arithmetic(1)
+	};
+
+	vec4 = asAffineMatrix() * vec4;
 
 	Matrix<Arithmetic, 3u, 1u, RowMajor> rVec;
-	for (Matrix<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
-		rVec(row, 0) = temp(row, 0);
+	rVec[0] = vec4[0];
+	rVec[1] = vec4[1];
+	rVec[2] = vec4[2];
 
 	return rVec;
 }
 
 template <typename Arithmetic, bool RowMajor>
 Transform<Arithmetic, RowMajor>
-	TransformMap<Arithmetic, RowMajor>::operator*(const TransformMap<Arithmetic, RowMajor>& other) const
+	Transform<Arithmetic, RowMajor>::operator*(const Transform<Arithmetic, RowMajor>& other) const
 {
 	const auto matThis = asAffineMatrix();
 	const auto matOther = other.asAffineMatrix();
@@ -201,17 +251,17 @@ Transform<Arithmetic, RowMajor>
 
 	for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
 		for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col < 3; ++col)
-			rTransform._mappedTopLeft(row, col) = matProduct(row, col);
+			rTransform._topLeft(row, col) = matProduct(row, col);
 
 	for (MatrixMap<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
-		rTransform._mappedTranslation(row, 0) = matProduct(row, 3);
+		rTransform._translation(row, 0) = matProduct(row, 3);
 
 	return rTransform;
 }
 
 template <typename Arithmetic, bool RowMajor>
-TransformMap<Arithmetic, RowMajor>&
-	TransformMap<Arithmetic, RowMajor>::operator*=(const TransformMap<Arithmetic, RowMajor>& other)
+Transform<Arithmetic, RowMajor>&
+	Transform<Arithmetic, RowMajor>::operator*=(const Transform<Arithmetic, RowMajor>& other)
 {
 	const auto matThis = asAffineMatrix();
 	const auto matOther = other.asAffineMatrix();
@@ -225,26 +275,26 @@ TransformMap<Arithmetic, RowMajor>&
 
 	for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
 		for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col < 3; ++col)
-			_mappedTopLeft(row, col) = matProduct(row, col);
+			_topLeft(row, col) = matProduct(row, col);
 
 	for (MatrixMap<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
-		_mappedTranslation(row, 0) = matProduct(row, 3);
+		_translation[row] = matProduct(row, 3);
 
 	return *this;
 }
 
 template <typename Arithmetic, bool RowMajor>
 MatrixMap<Arithmetic, 3u, 1u, RowMajor>&
-	TransformMap<Arithmetic, RowMajor>::translation()
+	Transform<Arithmetic, RowMajor>::translation()
 {
-	return _mappedTranslation;
+	return _translation;
 }
 
 template <typename Arithmetic, bool RowMajor>
 const MatrixMap<Arithmetic, 3u, 1u, RowMajor>&
-	TransformMap<Arithmetic, RowMajor>::translation() const
+	Transform<Arithmetic, RowMajor>::translation() const
 {
-	return _mappedTranslation;
+	return _translation;
 }
 
 }

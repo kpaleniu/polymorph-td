@@ -13,11 +13,8 @@
 
 namespace math {
 
-template <typename Arithmetic, bool RowMajor>
-class TransformMap;
-
 template <typename Arithmetic, bool RowMajor = false>
-class Transform : public TransformMap<Arithmetic, RowMajor>
+class Transform
 {
 public:
 	Transform();
@@ -25,6 +22,23 @@ public:
 	Transform(const Transform<Arithmetic, RowMajor>& other);
 
 	Transform<Arithmetic, RowMajor> inverse() const;
+
+	void invert();
+
+	void transform(MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const;
+	void transform(MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
+	void transform(MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& vec) const;
+
+	Matrix<Arithmetic, 2u, 1u, RowMajor> operator*(const MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const;
+	Matrix<Arithmetic, 3u, 1u, RowMajor> operator*(const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
+
+	Transform<Arithmetic, RowMajor> operator*(const Transform<Arithmetic, RowMajor>& other) const;
+	Transform<Arithmetic, RowMajor>& operator*=(const Transform<Arithmetic, RowMajor>& other);
+
+	Matrix<Arithmetic, 4u, 4u, RowMajor> asAffineMatrix() const;
+
+	MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation();
+	const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation() const;
 
 	static const Transform<Arithmetic, RowMajor> IDENTITY;
 
@@ -47,33 +61,6 @@ public:
 private:
 	Matrix<Arithmetic, 3u, 3u, RowMajor> _topLeft;
 	Matrix<Arithmetic, 3u, 1u, RowMajor> _translation;
-};
-
-template <typename Arithmetic, bool RowMajor = false>
-class TransformMap
-{
-public:
-	TransformMap(const MatrixMap<Arithmetic, 3u, 3u, RowMajor>& topLeft,
-				 const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation);
-
-	TransformMap();
-
-	void invert();
-
-	Matrix<Arithmetic, 2u, 1u, RowMajor> operator*(const MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const;
-	Matrix<Arithmetic, 3u, 1u, RowMajor> operator*(const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
-
-	Transform<Arithmetic, RowMajor> operator*(const TransformMap<Arithmetic, RowMajor>& other) const;
-	TransformMap<Arithmetic, RowMajor>& operator*=(const TransformMap<Arithmetic, RowMajor>& other);
-
-	Matrix<Arithmetic, 4u, 4u, RowMajor> asAffineMatrix() const;
-
-	MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation();
-	const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation() const;
-
-protected:
-	MatrixMap<Arithmetic, 3u, 3u, RowMajor> _mappedTopLeft;
-	MatrixMap<Arithmetic, 3u, 1u, RowMajor> _mappedTranslation;
 };
 
 }
