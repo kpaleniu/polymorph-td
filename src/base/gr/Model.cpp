@@ -30,9 +30,4 @@ void Model::render(Renderer& renderer, const Transform& parentTransform) const
 		modelMesh.mesh->render(renderer, modelTransform * modelMesh.transform);
 }
 
-Model Model::cloneModelType() const
-{
-	return Model(std::vector<ModelMesh>(_modelMeshes), _transform);
-}
-
 }
