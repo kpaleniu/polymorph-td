@@ -18,10 +18,21 @@ namespace polymorph { namespace sys {
 namespace { const char* TAG_RUNNER = "GraphicsSystemRunner";
 			const char* TAG_SYSTEM = "GraphicsSystem"; }
 
+GraphicsSystemRunner::ConstructionArgs::ConstructionArgs(Window& win_, GraphicsSystem& grSys_)
+:	win(win_), grSys(grSys_)
+{
+}
+
+GraphicsSystemRunner::ConstructionArgs::ConstructionArgs(ConstructionArgs&& other)
+:	win(other.win), grSys(other.grSys)
+{
+}
+
+
 GraphicsSystemRunner::GraphicsSystemRunner(ConstructionArgs args)
 :	_surface(args.win.surface()), 
 	_renderer(_surface), 
-	_scene(),
+	_scene(args.grSys._sourceScene),
 	_system(args.grSys)
 {
 	DEBUG_OUT(TAG_RUNNER, "Constructed");
@@ -44,11 +55,10 @@ GraphicsSystemRunner::~GraphicsSystemRunner()
 bool GraphicsSystemRunner::update()
 {
 	{
-		polymorph::concurrency::MutexLockGuard sceneLock(_system->_sceneTransactionMutex);
-		_scene = _system->_sourceScene;
+		polymorph::concurrency::MutexLockGuard sceneLock(_system._sceneTransactionMutex);
+		_scene.render(_renderer);
 	}
 
-	_scene.render(_renderer);
 	_renderer.render();
 
 	return true;
@@ -64,12 +74,30 @@ gr::Surface& GraphicsSystemRunner::surface()
 	return _surface;
 }
 
+const gr::Scene& GraphicsSystemRunner::scene() const
+{
+	return _scene;
+}
+
 //
+
+GraphicsSystem::SceneMutateScope::SceneMutateScope(polymorph::concurrency::Mutex& mutex, 
+												   gr::Scene& scene_)
+:	_lockGuard(mutex), scene(scene_)
+{
+}
+
+GraphicsSystem::SceneMutateScope::SceneMutateScope(
+	GraphicsSystem::SceneMutateScope&& other)
+:	_lockGuard(std::move(other._lockGuard)), scene(other.scene)
+{
+}
+
 
 GraphicsSystem::GraphicsSystem(Window& window)
 :	System(TimeDuration::millis( 33 /*settings::sys::grSystemSyncMillis*/), 
 		   256, 
-		   GraphicsSystemRunner::ConstructionArgs(window, this))
+		   GraphicsSystemRunner::ConstructionArgs(window, *this))
 {
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }
@@ -79,6 +107,17 @@ GraphicsSystem::GraphicsSystem(GraphicsSystem&& grSys)
 {
 	VERBOSE_OUT(TAG_SYSTEM, "Moved");
 }
+
+GraphicsSystem::SceneMutateScope GraphicsSystem::sceneMutator()
+{
+	return SceneMutateScope(_sceneTransactionMutex, _sourceScene);
+}
+
+const gr::Scene& GraphicsSystem::scene() const
+{
+	return _sourceScene;
+}
+
 
 } }
 
