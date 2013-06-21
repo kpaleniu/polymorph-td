@@ -45,6 +45,9 @@ public:
 
 	static const Matrix<Arithmetic, Rows, Cols, RowMajor> ZERO;
 
+	Matrix<Arithmetic, Rows, Cols, RowMajor>& 
+		operator=(const Matrix<Arithmetic, Rows, Cols, RowMajor>& other);
+
 private:
 	Arithmetic _data[Rows * Cols];
 };
@@ -67,6 +70,9 @@ public:
 	static const Matrix<Arithmetic, Rows, Rows, RowMajor> ZERO;
 	static const Matrix<Arithmetic, Rows, Rows, RowMajor> IDENTITY;
 
+	Matrix<Arithmetic, Rows, Rows, RowMajor>& 
+		operator=(const Matrix<Arithmetic, Rows, Rows, RowMajor>& other);
+
 private:
 	Arithmetic _data[Rows * Rows];
 };
@@ -88,25 +94,22 @@ public:
 
 	static const Matrix<Arithmetic, Rows, 1u, RowMajor> ZERO;
 
+	Matrix<Arithmetic, Rows, 1u, RowMajor>& 
+		operator=(const Matrix<Arithmetic, Rows, 1u, RowMajor>& other);
+
 private:
 	Arithmetic _data[Rows];
 };
 
+namespace detail {
 
-
-// Generic matrix map.
-
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor=false>
-class MatrixMap
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+class CommonMatrixMap
 {
 public:
 	typedef unsigned int index_t;
 
-	// typedef detail::Constants<Arithmetic, Rows, Cols, RowMajor> Constants;
-
-	MatrixMap();
-	MatrixMap(Arithmetic* data);
-	MatrixMap(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other);
+	CommonMatrixMap(Arithmetic* data);
 
 	Arithmetic* data();
 	const Arithmetic* data() const;
@@ -118,6 +121,19 @@ public:
 	Matrix<Arithmetic, Rows, Cols, RowMajor> operator/(Arithmetic scalar) const;
 	MatrixMap<Arithmetic, Rows, Cols, RowMajor>& operator*=(Arithmetic scalar);
 	MatrixMap<Arithmetic, Rows, Cols, RowMajor>& operator/=(Arithmetic scalar);
+	
+
+	Matrix<Arithmetic, Rows, Cols, RowMajor> 
+		operator+(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other) const;
+	MatrixMap<Arithmetic, Rows, Cols, RowMajor>&
+		operator+=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other);
+	Matrix<Arithmetic, Rows, Cols, RowMajor> 
+		operator-(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other) const;
+	MatrixMap<Arithmetic, Rows, Cols, RowMajor>&
+		operator-=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other);
+
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>& 
+		operator=(const CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>& other);
 
 	Matrix<Arithmetic, Cols, Rows, RowMajor> transpose() const;
 
@@ -127,82 +143,119 @@ public:
 	bool operator==(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other) const;
 	bool operator!=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other) const;
 
-	MatrixMap<Arithmetic, Rows, Cols, RowMajor>& operator=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other);
 
-#ifdef NO_TEMPLATE_FRIENDS
-	public:
+#ifndef NO_TEMPLATE_FRIENDS
+	protected:
 #else
-	private:
+	public:
 #endif
 
 	Arithmetic* _mappedData;
 
 #ifndef NO_TEMPLATE_FRIENDS
-	template <unsigned int Rows2, unsigned int Cols2>
-	friend class MatrixMap<Arithmetic, Rows2, Cols2, RowMajor>;
+	template <typename Arithmetic2, unsigned int Rows2, unsigned int Cols2>
+	friend class CommonMatrixMap<Arithmetic2, Rows2, Cols2, RowMajor>;
 #endif
+
+private:
+	CommonMatrixMap(const CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>&) {}
+};
+
+template <typename Arithmetic, bool RowMajor>
+class CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>
+{
+public:
+	typedef unsigned int index_t;
+	typedef unsigned int size_t;
+
+	CommonMatrixMap(Arithmetic* data, size_t rows);
+
+	Arithmetic* data();
+	const Arithmetic* data() const;
+
+	Arithmetic& operator()(index_t row, index_t col);
+	const Arithmetic& operator()(index_t row, index_t col) const;
+	
+	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& operator*=(Arithmetic scalar);
+	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& operator/=(Arithmetic scalar);
+	
+	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&
+		operator+=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other);
+	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&
+		operator-=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other);
+
+	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& 
+		operator=(const CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other);
+
+	bool operator==(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other) const;
+	bool operator!=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other) const;
+
+#ifndef NO_TEMPLATE_FRIENDS
+	protected:
+#else
+	public:
+#endif
+
+	Arithmetic* _mappedData;
+	size_t _rows;
+
+#ifndef NO_TEMPLATE_FRIENDS
+	template <typename Arithmetic2, unsigned int Rows2, unsigned int Cols2>
+	friend class CommonMatrixMap<Arithmetic2, Rows2, Cols2, RowMajor>;
+#endif
+
+private:
+	CommonMatrixMap(const CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&) {}
+};
+
+}
+
+// Generic matrix map.
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor=false>
+class MatrixMap : 
+	public detail::CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>
+{
+public:
+	MatrixMap();
+	MatrixMap(Arithmetic* data);
+
+	MatrixMap<Arithmetic, Rows, Cols, RowMajor>& 
+		operator=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other);
+
+private:
+	MatrixMap(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>&) {}
 };
 
 // Square matrix map.
 
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-class MatrixMap<Arithmetic, Rows, Rows, RowMajor>
+class MatrixMap<Arithmetic, Rows, Rows, RowMajor> : 
+	public detail::CommonMatrixMap<Arithmetic, Rows, Rows, RowMajor>
 {
 public:
-	typedef unsigned int index_t;
-
-	// typedef detail::Constants<Arithmetic, Rows, Cols, RowMajor> Constants;
-
 	MatrixMap();
 	MatrixMap(Arithmetic* data);
-	MatrixMap(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other);
 
-	Arithmetic* data();
-	const Arithmetic* data() const;
-
-	Arithmetic length() const;
-	Arithmetic lengthSquared() const;
-
-	Arithmetic& operator()(index_t row, index_t col = 0);
-	const Arithmetic& operator()(index_t row, index_t col = 0) const;
-
-	Matrix<Arithmetic, Rows, Rows, RowMajor> operator*(Arithmetic scalar) const;
-	Matrix<Arithmetic, Rows, Rows, RowMajor> operator/(Arithmetic scalar) const;
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>& operator*=(Arithmetic scalar);
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>& operator/=(Arithmetic scalar);
-
-	Matrix<Arithmetic, Rows, Rows, RowMajor> transpose() const;
 	MatrixMap<Arithmetic, Rows, Rows, RowMajor>& transposeSelf();
 
-	template<unsigned int N>
-	Matrix<Arithmetic, Rows, N, RowMajor> operator*(const MatrixMap<Arithmetic, Rows, N, RowMajor>& other) const;
+	using detail::CommonMatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator*=;
+	MatrixMap<Arithmetic, Rows, Rows, RowMajor>& 
+		operator*=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other);
 
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>& operator*=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other) const;
+	MatrixMap<Arithmetic, Rows, Rows, RowMajor>& 
+		operator=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other);
 
-	bool operator==(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other) const;
-	bool operator!=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other) const;
-
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>& operator=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other);
-
-#ifdef NO_TEMPLATE_FRIENDS
-	public:
-#else
-	private:
-#endif
-
-	Arithmetic* _mappedData;
-
-#ifndef NO_TEMPLATE_FRIENDS
-	template <unsigned int Rows2, unsigned int Cols2>
-	friend class MatrixMap<Arithmetic, Rows2, Cols2, RowMajor>;
-#endif
+private:
+	MatrixMap(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>&) {}
 };
 
 
 // Column matrix map.
 
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-class MatrixMap<Arithmetic, Rows, 1u, RowMajor>
+class MatrixMap<Arithmetic, Rows, 1u, RowMajor> :
+	public detail::CommonMatrixMap<Arithmetic, Rows, 1u, RowMajor>
 {
 public:
 	typedef unsigned int index_t;
@@ -211,101 +264,45 @@ public:
 
 	MatrixMap();
 	MatrixMap(Arithmetic* data);
-	MatrixMap(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>& other);
-
-	Arithmetic* data();
-	const Arithmetic* data() const;
-
-	Arithmetic& operator()(index_t row, index_t col = 0);
-	const Arithmetic& operator()(index_t row, index_t col = 0) const;
 
 	Arithmetic& operator[](index_t row);
 	const Arithmetic& operator[](index_t row) const;
 
-	Matrix<Arithmetic, Rows, 1u, RowMajor> operator*(Arithmetic scalar) const;
-	Matrix<Arithmetic, Rows, 1u, RowMajor> operator/(Arithmetic scalar) const;
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>& operator*=(Arithmetic scalar);
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>& operator/=(Arithmetic scalar);
-
-	template<unsigned int N>
-	Matrix<Arithmetic, Rows, N, RowMajor> operator*(const MatrixMap<Arithmetic, 1u, N, RowMajor>& other) const;
-
-	Matrix<Arithmetic, 1u, Rows, RowMajor> transpose() const;
-
 	Arithmetic length() const;
 	Arithmetic lengthSquared() const;
 
-	bool operator==(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>& other) const;
-	bool operator!=(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>& other) const;
+	MatrixMap<Arithmetic, Rows, 1u, RowMajor>& 
+		operator=(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>& other);
 
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>& operator=(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>& other);
-
-#ifdef NO_TEMPLATE_FRIENDS
-	public:
-#else
-	private:
-#endif
-
-	Arithmetic* _mappedData;
-
-#ifndef NO_TEMPLATE_FRIENDS
-	template <unsigned int Rows2, unsigned int Cols2>
-	friend class MatrixMap<Arithmetic, Rows2, Cols2, RowMajor>;
-#endif
+private:
+	MatrixMap(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>&) {}
 };
 
 // Dynamic column matrix map.
 
 template <typename Arithmetic, bool RowMajor>
-class MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>
+class MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor> :
+	public detail::CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>
 {
 public:
 	typedef unsigned int index_t;
-	typedef unsigned int size_t;
-
-	// typedef detail::Constants<Arithmetic, Rows, Cols, RowMajor> Constants;
 
 	MatrixMap();
 	MatrixMap(Arithmetic* data, size_t size);
-	MatrixMap(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other);
-
-	Arithmetic* data();
-	const Arithmetic* data() const;
-
-	Arithmetic& operator()(index_t row, index_t col = 0);
-	const Arithmetic& operator()(index_t row, index_t col = 0) const;
 
 	Arithmetic& operator[](index_t row);
 	const Arithmetic& operator[](index_t row) const;
 
-	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& operator*=(Arithmetic scalar);
-	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& operator/=(Arithmetic scalar);
-
 	Arithmetic length() const;
 	Arithmetic lengthSquared() const;
 
-	bool operator==(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other) const;
-	bool operator!=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other) const;
-
-	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& operator=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other);
-
 	size_t rows() const;
 
-#ifdef NO_TEMPLATE_FRIENDS
-	public:
-#else
-	private:
-#endif
+	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& 
+		operator=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other);
 
-	Arithmetic* _mappedData;
-
-#ifndef NO_TEMPLATE_FRIENDS
-	template <unsigned int Rows2, unsigned int Cols2>
-	friend class MatrixMap<Arithmetic, Rows2, Cols2, RowMajor>;
-#endif
-
-protected:
-	size_t _size;
+private:
+	MatrixMap(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&) {}
 };
 
 }
