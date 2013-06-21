@@ -59,7 +59,7 @@ void Mesh::SubMesh::render(Renderer& renderer) const
 
 void Mesh::SubMesh::render(Renderer& renderer, const Transform& transform) const
 {
-	static real_t vertBuffer[4];
+	real_t vertBuffer[4];
 
 	auto& vertexWriter = 
 		renderer.renderPassManager().vertexWriter(_parent._vertexList.format, 
