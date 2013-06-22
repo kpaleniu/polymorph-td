@@ -12,6 +12,11 @@
 
 namespace gr {
 
+/**
+ * Mesh composition.
+ *
+ * 2D vertices are treated as on z=0 plane.
+ */
 class Model
 {
 public:
@@ -33,9 +38,14 @@ public:
 	Transform& transform()				{ return _transform; }
 	const Transform& transform() const	{ return _transform; }
 
+	bool insideBoundBox(const MapVector2_r& p) const;
+	bool insideBoundBox(const MapVector3_r& p) const;
+	bool insideBoundBox(const MapVector_r& p) const;
+
 private:
-	std::vector<ModelMesh> _modelMeshes;
-	Transform _transform;
+	std::vector<ModelMesh>	_modelMeshes;
+	Transform				_transform;
+	const AABox				_localBounds; // Must be initialized after _modelMeshes.
 };
 
 
