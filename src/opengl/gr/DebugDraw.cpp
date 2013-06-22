@@ -5,7 +5,7 @@
 
 #include "gr/DebugDraw.hpp"
 
-#include <gl/gl.h>
+#include "gr/opengl.hpp"
 
 namespace gr {
 

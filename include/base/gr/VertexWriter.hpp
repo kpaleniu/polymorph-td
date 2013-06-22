@@ -16,19 +16,15 @@ namespace gr {
 class VertexWriter
 {
 public:
-	template<typename T>
+	template <typename T>
 	class DataWriter : NonCopyable
 	{
 	public:
 		DataWriter(std::vector<T>& dataSource);
 
-		template <typename C>
-		DataWriter<T>& operator<<(const C& data);
+		DataWriter<T>& operator<<(const T& data);
 
 		DataWriter<T>& write(const T* data, size_t size);
-
-		// To avoid re-writing constant data (not able to do this with current implementation).
-		//VertexWriter& keep(size_t vertexCount, size_t vertexCount);
 
 	private:
 		std::vector<T>& _dataSource;
@@ -105,11 +101,9 @@ VertexWriter::DataWriter<T>::DataWriter(std::vector<T>& dataSource)
 }
 
 template<typename T>
-template<typename C>
-VertexWriter::DataWriter<T>& VertexWriter::DataWriter<T>::operator<<(const C& vertices)
+VertexWriter::DataWriter<T>& VertexWriter::DataWriter<T>::operator<<(const T& data)
 {
-	for (const auto& real : vertices)
-		_dataSource.push_back(real);
+	_dataSource.push_back(data);
 
 	return *this;
 }

@@ -7,10 +7,8 @@
 #define RENDERPASSMANAGER_HPP_
 
 #include "gr/RenderPass.hpp"
+#include "gr/TextureManager.hpp"
 
-#include <text/util.hpp>
-
-#include <PrivateHandle.hpp>
 #include <NonCopyable.hpp>
 
 #include <map>
@@ -19,31 +17,78 @@ namespace gr {
 
 /**
  * Render pass composition.
- *
- * TODO Missing functionality for ordering render passes.
  */
 class RenderPassManager : NonCopyable
 {
 public:
-	typedef text::string_hash render_pass_id;
-
 	RenderPassManager();
 	RenderPassManager(RenderPassManager&& other);
 
-	// May not be called while iterating.
-	void addRenderPass(render_pass_id id, RenderPass&& renderPass);
-	void removeRenderPass(render_pass_id id);
-	//
+	void pushProjection(const Projection& projection);
+	void popProjection();
 
-	RenderPass& pass(render_pass_id id);
+	void pushTransform(const Transform& transform);
+	void popTransform();
 
-	void updateRenderPasses();
-	void executeRenderPasses();
+	VertexWriter& vertexWriter(VertexFormat format, 
+							   Primitive shape,
+							   TextureManager::TextureHandle tex, 
+							   const Shader* shader);
+
+	void render();
+	void clear();
 
 private:
-	std::map<render_pass_id, RenderPass> _renderPasses;
 
-	bool _usingPasses; // Safety check.
+	typedef unsigned int projection_index;
+	typedef unsigned int transform_index;
+	
+
+	// To keep track of stack history a tree is needed.
+
+	template <typename T>
+	struct RandomAccessTreeEntry
+	{
+		RandomAccessTreeEntry(unsigned int parentIndex_, const T& data_)
+		:	parentIndex(parentIndex_), data(data_)
+		{}
+
+		unsigned int parentIndex;
+		T data;
+
+		static const unsigned int NULL_PARENT_INDEX = static_cast<unsigned int>(-1);
+	};
+
+	std::vector<RandomAccessTreeEntry<Projection>> _projectionPool;
+	std::vector<RandomAccessTreeEntry<Transform>> _transformPool;
+
+	projection_index _currentProjectionIndex;
+	transform_index _currentTransformIndex;
+
+	struct WorldState
+	{
+		projection_index projection;
+		transform_index transformation;
+
+		bool operator<(const WorldState& other) const
+		{
+			// Same operator< as for std::pair<unsigned int, unsigned int>.
+
+			if (projection < other.projection)
+				return true;
+			
+			if (projection > other.projection)
+				return false;
+
+			return transformation < other.transformation;
+		}
+	};
+
+
+	// TODO Needs refactoring
+
+	std::multimap<WorldState, RenderPass> _renderPasses;
+
 };
 
 }

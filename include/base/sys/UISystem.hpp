@@ -12,17 +12,20 @@
 #include "sys/GraphicsSystem.hpp"
 #include "sys/UIEvents.hpp"
 
+#include <Event.hpp>
 #include <NonCopyable.hpp>
 #include <Assert.hpp>
 
 #include <stack>
 
-namespace sys {
+namespace polymorph { namespace sys {
 
 class UISystemRunner : NonCopyable
 {
 public:
-	UISystemRunner(Window::ConstructionData& winCtorData);
+	typedef Window::ConstructionData ConstructionArgs;
+
+	UISystemRunner(Window::ConstructionData&& winCtorData);
 	UISystemRunner(UISystemRunner&& runner);
 	~UISystemRunner();
 
@@ -45,13 +48,7 @@ private:
 class UISystem : public System<UISystemRunner>
 {
 public:
-
-	struct StateDesc
-	{
-		event::UIEventManager eventManager;
-	};
-
-	UISystem(Window::ConstructionData& winCtorData);
+	UISystem(Window::ConstructionData&& winCtorData);
 
 	/**
 	 * Waits for system start up and returns the window.
@@ -63,23 +60,19 @@ public:
 	GraphicsSystem& waitForGraphicsSystem();
 
 
-	void pushState(const StateDesc& newState);
-	void popState();
+	// Event helpers
 
-#ifdef TEST_BUILD
-	SystemActionQueue<UISystemRunner>& actionQueue()
-	{
-		return _actions;
-	}
-#endif
+	template <typename Event>
+	void addEventAction(event_action_id id, const typename EventManager<Event>::ActionType& action);
 
+	template <typename Event>
+	void removeEventAction(event_action_id id);
 
-private:
-	void setState(const StateDesc& state);
-
-	std::stack<StateDesc> _states;
+	//
 };
 
-}
+} }
+
+#include "sys/UISystem.inl"
 
 #endif /* UISYSTEM_HPP_ */

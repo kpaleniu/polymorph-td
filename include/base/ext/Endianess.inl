@@ -1,6 +1,6 @@
 #include "Endianess.hpp"
 
-#include <cstring>
+#include <utility>
 
 inline bool isBigEndian()
 {
@@ -29,57 +29,31 @@ inline bool isLittleEndian()
 }
 
 template <typename Scalar>
-std::array<unsigned char, sizeof(Scalar)> copyAsBigEndian(Scalar val)
+inline Scalar flippedEndianess(const Scalar& val)
 {
-	static_assert(std::is_scalar<Scalar>::value, "Template isn't scalar.");
+	Scalar rVal = val;
+	flipEndianess(rVal);
 
-	std::array<unsigned char, sizeof(Scalar)> rArray;
-
-	if (isBigEndian())
-	{
-		std::memcpy(rArray.data(), &val, sizeof(Scalar));
-	}
-	else
-	{
-		union
-		{
-			Scalar scalar;
-			unsigned char ucArr[sizeof(Scalar)];
-		} dataBuffer;
-
-		dataBuffer.scalar = val;
-
-		for (int i = 0; i < sizeof(Scalar); ++i)
-			rArray[i] = dataBuffer.ucArr[sizeof(Scalar) - 1 - i];
-	}
-
-	return rArray;
+	return rVal;
 }
 
 template <typename Scalar>
-std::array<unsigned char, sizeof(Scalar)> copyAsLittleEndian(Scalar val)
+inline void flipEndianess(Scalar& val)
 {
 	static_assert(std::is_scalar<Scalar>::value, "Template isn't scalar.");
 
-	std::array<unsigned char, sizeof(Scalar)> rArray;
+	flipEndianess(&val, sizeof(Scalar));
+}
 
-	if (isLittleEndian())
+inline void flipEndianess(void* data, std::size_t size)
+{
+	unsigned char* low = reinterpret_cast<unsigned char*>(data);
+	unsigned char* high = low + size;
+
+	for (; low < high; ++low, --high)
 	{
-		std::memcpy(rArray.data(), &val, sizeof(Scalar));
+		auto temp = *low;
+		*low = *high;
+		*high = temp;
 	}
-	else
-	{
-		union
-		{
-			Scalar scalar;
-			unsigned char ucArr[sizeof(Scalar)];
-		} dataBuffer;
-
-		dataBuffer.scalar = val;
-
-		for (int i = 0; i < sizeof(Scalar); ++i)
-			rArray[i] = dataBuffer.ucArr[sizeof(Scalar) - 1 - i];
-	}
-
-	return rArray;
 }

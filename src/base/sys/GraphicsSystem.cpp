@@ -12,20 +12,26 @@
 
 #include "BuildConfig.hpp"
 
-namespace sys {
+namespace polymorph { namespace sys {
 
 // print tag
 namespace { const char* TAG_RUNNER = "GraphicsSystemRunner";
 			const char* TAG_SYSTEM = "GraphicsSystem"; }
 
-GraphicsSystemRunner::GraphicsSystemRunner(Window& win)
-: _surface(win.surface()), _renderer(_surface)
+GraphicsSystemRunner::GraphicsSystemRunner(ConstructionArgs args)
+:	_surface(args.win.surface()), 
+	_renderer(_surface), 
+	_scene(),
+	_system(args.grSys)
 {
 	DEBUG_OUT(TAG_RUNNER, "Constructed");
 }
 
 GraphicsSystemRunner::GraphicsSystemRunner(GraphicsSystemRunner&& system)
-: _surface(system._surface), _renderer(std::move(system._renderer))
+:	_surface(system._surface), 
+	_renderer(std::move(system._renderer)), 
+	_scene(std::move(system._scene)),
+	_system(system._system)
 {
 	VERBOSE_OUT(TAG_RUNNER, "Moved");
 }
@@ -37,9 +43,13 @@ GraphicsSystemRunner::~GraphicsSystemRunner()
 
 bool GraphicsSystemRunner::update()
 {
-	_renderer.render();
+	{
+		polymorph::concurrency::MutexLockGuard sceneLock(_system->_sceneTransactionMutex);
+		_scene = _system->_sourceScene;
+	}
 
-	_renderer.flipBuffers();
+	_scene.render(_renderer);
+	_renderer.render();
 
 	return true;
 }
@@ -57,7 +67,9 @@ gr::Surface& GraphicsSystemRunner::surface()
 //
 
 GraphicsSystem::GraphicsSystem(Window& window)
-: System(TimeDuration::millis(settings::sys::grSystemSyncMillis), 256, window)
+:	System(TimeDuration::millis( 33 /*settings::sys::grSystemSyncMillis*/), 
+		   256, 
+		   GraphicsSystemRunner::ConstructionArgs(window, this))
 {
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }
@@ -68,5 +80,5 @@ GraphicsSystem::GraphicsSystem(GraphicsSystem&& grSys)
 	VERBOSE_OUT(TAG_SYSTEM, "Moved");
 }
 
-}
+} }
 

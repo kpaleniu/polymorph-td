@@ -16,7 +16,7 @@
 #include <memory>
 #include <set>
 
-namespace sys {
+namespace polymorph { namespace sys {
 namespace detail {
 
 /**
@@ -96,6 +96,6 @@ private:	// NOTE: surface has to be destroyed before the window
 	std::set<os::MessageDialog, DialogComp>	_dialogs;
 };
 
-}
+} }
 
 #endif /* WINDOW_HPP_ */

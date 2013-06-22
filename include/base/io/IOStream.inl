@@ -15,12 +15,12 @@ InputStream& InputStream::operator>>(TriviallyCopyable& data)
 }
 
 template <typename TriviallyCopyable>
-InputStream& InputStream::readBlock(TriviallyCopyable& data, std::size_t size)
+InputStream& InputStream::readBlock(TriviallyCopyable* data, std::size_t count)
 {
-	read(&data, 
+	read(data, 
 		 std::alignment_of<TriviallyCopyable>::value, 
 		 sizeof(TriviallyCopyable), 
-		 size);
+		 count);
 
 	return *this;
 }
@@ -37,12 +37,12 @@ OutputStream& OutputStream::operator<<(const TriviallyCopyable& data)
 }
 
 template <typename TriviallyCopyable>
-OutputStream& OutputStream::operator<<(const std::pair<const TriviallyCopyable&, std::size_t>& dataCollection)
+OutputStream& OutputStream::writeBlock(const TriviallyCopyable* data, std::size_t count)
 {
-	write(&dataCollection.first, 
+	write(data, 
 		  std::alignment_of<TriviallyCopyable>::value, 
 		  sizeof(TriviallyCopyable), 
-		  dataCollection.second);
+		  count);
 
 	return *this;
 }

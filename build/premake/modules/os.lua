@@ -11,22 +11,26 @@ project "os"
 	kind "StaticLib"
 	language "C++"
 	
-	vpaths
-	{
-		["Headers"] = includePath .. "base/os/*.hpp",
-		["Inlines"] = includePath .. "base/os/*.inl",
-		["Sources"] = sourcePath .. "base/os/*.cpp",
-		
-		["Headers/Win32"] = includePath .. "win32/os/*.hpp",
-		["Inlines/Win32"] = includePath .. "win32/os/*.inl",
-		["Sources/Win32"] = sourcePath .. "win32/os/*.cpp",
-	}
+	pm.cppFiles(
+		sourcePath .. "base/os/",
+		includePath .. "base/os/"
+	)
 	
 	configuration "windows"
-		files { sourcePath .. "win32/os/**.cpp",
-				includePath .. "win32/os/**.hpp" }
+		pm.cppFiles(
+			sourcePath .. "win32/os/",
+			includePath .. "win32/os/"
+		)
+		
+		pm.includedirs 
+		{
+			includePath .. "win32"
+		}
+		
+	configuration {}
 	
-	useExternalAPI("il-api")
-	useExternalAPI("gfx-api")
-	useExternalAPI("math-api")
-	useExternalAPI("ext-api")
+	pm.moduleDependencies
+	{
+		"ext",
+		"concurrency"
+	}

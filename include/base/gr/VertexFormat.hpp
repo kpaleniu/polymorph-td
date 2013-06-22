@@ -42,7 +42,7 @@ format_flags operator|(VertexFormatFlag flag1, VertexFormatFlag flag2);
 
 struct VertexFormatData
 {
-	size_t size;
+	std::size_t size;
 	unsigned char vertDim;
 	unsigned char colorDim;
 	unsigned char textDim;

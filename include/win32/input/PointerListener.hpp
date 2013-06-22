@@ -6,7 +6,7 @@
 #ifndef POINTERLISTENER_HPP_
 #define POINTERLISTENER_HPP_
 
-namespace input {
+namespace polymorph { namespace input {
 
 typedef unsigned short pointer_button;
 typedef int pointer_id;
@@ -23,7 +23,7 @@ public:
 	virtual void onPointerZoom(int dz) = 0;
 };
 
-}
+} }
 
 
 #endif /* POINTERLISTENER_HPP_ */

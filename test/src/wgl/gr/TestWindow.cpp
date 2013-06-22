@@ -106,7 +106,7 @@ gr::Surface createSurface()
 
 	GLenum err = glewInit();
 	if (err != GLEW_OK)
-		throw SurfaceException((const char*) glewGetErrorString(err));
+		throw gr::SurfaceException(); // ((const char*) glewGetErrorString(err));
 
 	return surface;
 }

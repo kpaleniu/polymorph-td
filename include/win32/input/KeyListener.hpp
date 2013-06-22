@@ -6,7 +6,7 @@
 #ifndef KEYLISTENER_HPP_
 #define KEYLISTENER_HPP_
 
-namespace input {
+namespace polymorph { namespace input {
 
 typedef int key_type; // Should probably not be "that" platform specific.
 
@@ -19,7 +19,7 @@ public:
 	virtual void onKeyUp(key_type key) = 0;
 };
 
-}
+} }
 
 
 #endif /* KEYLISTENER_HPP_ */

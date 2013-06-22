@@ -9,7 +9,7 @@
 #include "input/InputSource.hpp"
 #include <windows.h>
 
-namespace input {
+namespace polymorph { namespace input {
 
 /** 
  * @see "WindowProc callback function" in MSDN
@@ -44,6 +44,8 @@ public:
 private:
 	struct MouseState
 	{
+		MouseState() : buttonDownFlags(0) {}
+
 		USHORT buttonDownFlags;
 	};
 
@@ -58,6 +60,6 @@ private:
 	MouseState _mouseState; // State of mouse buttons.
 };
 
-}	// namespace sys
+} }	// namespace input
 
 #endif /* WINDOW_PROC_HPP_ */

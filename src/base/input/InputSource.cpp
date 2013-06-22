@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-namespace input {
+namespace polymorph { namespace input {
 
 InputSource::InputSource()
 :	_surfaceListener(nullptr),
@@ -113,5 +113,5 @@ void InputSource::notifyPointerZoom(int dz)
 		_pointerListener->onPointerZoom(dz);
 }
 
-}
+} }
 

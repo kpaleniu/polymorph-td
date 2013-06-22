@@ -102,10 +102,9 @@ VertexBuffer::VertexBuffer(VertexFormat format,
 
 		DEBUG_OUT(TAG, "Allocated VertexBuffer %i: %i bytes.", _bufferID, bufferSize);
 
-		if (bufferSize
-		    != GLint(_vertexCount
-		             * getVertexFormatData(_vertexFormat).size
-		             * sizeof(real_t)))
+		if (bufferSize != GLint(_vertexCount
+								* getVertexFormatData(_vertexFormat).size
+								* sizeof(real_t)))
 		{
 			gl::deleteBuffers(1, &_bufferID);
 			_bufferID = 0;

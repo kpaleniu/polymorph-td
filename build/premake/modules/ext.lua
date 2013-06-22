@@ -16,7 +16,10 @@ project "ext"
 		includePath .. "base/ext/"
 	)
 	
-	pm.includedirs { includePath .. "base/ext" }
+	pm.includedirs 
+	{
+		includePath .. "base/ext" 
+	}
 	
 	configuration "boost"
 		pm.cppFiles( 
@@ -24,7 +27,21 @@ project "ext"
 			includePath .. "boost/ext/" 
 		)
 		
-		pm.includedirs { includePath .. "boost/ext",
-						 externalPath .. "include/boost" }
+		pm.includedirs 
+		{ 
+			includePath .. "boost/ext",
+			externalPath .. "include/boost" 
+		}
+	
+	configuration "std"
+		pm.cppFiles(
+			sourcePath .. "std/ext/",
+			includePath .. "std/ext/"
+		)
 		
+		pm.includedirs
+		{
+			includePath .. "std/ext"
+		}
+	
 	configuration {}

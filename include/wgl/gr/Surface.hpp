@@ -67,7 +67,9 @@ public:
 	/**
 	 * Activate/deactivate the underlying rendering context for the calling thread.
 	 */
-	void activate(bool activate = true);
+	void setActive(bool activate = true);
+
+	void setVSync(bool enable = true);
 
 	void flipBuffers();
 
@@ -83,6 +85,17 @@ private:
 	HWND _win;
 	std::unique_ptr<HDC__,   detail::dc_deleter> _deviceHandle;
 	std::unique_ptr<HGLRC__, detail::rc_deleter> _glHandle;
+
+	struct WGLExtensions
+	{
+		typedef BOOL (GLAPIENTRY * PFNGLSWAPINTERVALPROC) (int interval);
+
+		WGLExtensions();
+
+		bool loaded;
+
+		PFNGLSWAPINTERVALPROC wglSwapInterval;
+	} _wglExtensions;
 };
 
 }

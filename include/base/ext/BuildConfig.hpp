@@ -9,7 +9,7 @@
 #include "Time.hpp"
 
 namespace settings {
-
+/*
 namespace window
 {
 	constexpr const char* windowTitle = "PolyMorph TD";
@@ -25,7 +25,7 @@ namespace path
 {
 	constexpr const char* imagePath = R"(.\data\images\)";
 }
-
+*/
 }
 
 #endif /* BUILDCONFIG_HPP_ */

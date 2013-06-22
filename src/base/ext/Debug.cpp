@@ -76,8 +76,12 @@ template <typename Buf>
 void append_message(Buf& buf, const std::string& message, std::streamoff indent_count)
 {
 	std::string indentation(static_cast<size_t>(indent_count), ' ');
-	std::for_each(message.begin(), message.end(),
-		[&] (char c) { buf << c; if (c == '\n') buf << indentation; });
+	for (char c : message)
+	{
+		buf << c; 
+		if (c == '\n')
+			buf << indentation; 
+	}
 }
 
 }	// anonymous namespace
@@ -95,7 +99,7 @@ void print_impl(
 	std::ostringstream buf;
 	buf << current_time_stamp << ": ";
 	//buf << file << "@" << line << ": ";
-	buf << sev_tag << "/" << tag;
+	buf << sev_tag << "/" << tag << ' ';
 
 	append_message(buf, message, buf.tellp());
 

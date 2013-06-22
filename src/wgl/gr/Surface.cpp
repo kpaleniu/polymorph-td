@@ -7,12 +7,12 @@
 #include "gr/Surface.hpp"
 
 #include "gr/SurfaceException.hpp"
+#include "gr/opengl.hpp"
 
 #include <Assert.hpp>
 #include <Debug.hpp>
 
 #include <windows.h>
-#include <gl/gl.h>
 
 namespace gr {
 namespace { const char* TAG = "Surface"; }
@@ -76,16 +76,21 @@ std::string getWin32Message(DWORD error)
 
 }	// namespace detail
 
+Surface::WGLExtensions::WGLExtensions()
+:	loaded(false), wglSwapInterval(nullptr)
+{
+}
 
 Surface::Surface(HWND win)
 	: _win(win),
 	  _deviceHandle(GetDC(win), detail::dc_deleter(win)),
-	  _glHandle()
+	  _glHandle(),
+	  _wglExtensions()
 {
 	if (!_deviceHandle)
 	{
 		ERROR_OUT(TAG, "Device handle cannot be created. HWND=%1%", long(win));
-		throw SurfaceException("Unable to get device context");
+		throw SurfaceException(); //("Unable to get device context");
 	}
 
 	PIXELFORMATDESCRIPTOR pfd;
@@ -104,23 +109,27 @@ Surface::Surface(HWND win)
 	int pixelFormat = ChoosePixelFormat(_deviceHandle.get(), &pfd);
 	if (pixelFormat == 0 || !SetPixelFormat(_deviceHandle.get(), pixelFormat, &pfd))
 	{
-		throw SurfaceException("Unable to set pixel format for context");
+		throw SurfaceException(); // ("Unable to set pixel format for context");
 	}
 
 	// create the OpenGL rendering context
 	_glHandle.reset(wglCreateContext(_deviceHandle.get()));
 	if (!_glHandle)
 	{
+		/*
 		std::string msg = "Unable to create OpenGL rendering context.\n";
 		msg += detail::getWin32Message(GetLastError());
-		throw SurfaceException(msg);
+		*/
+
+		throw SurfaceException(); //(msg);
 	}
 }
 
 Surface::Surface(Surface&& surface)
-: _win(surface._win),
-  _deviceHandle(std::move(surface._deviceHandle)),
-  _glHandle(std::move(surface._glHandle))
+:	_win(surface._win),
+	_deviceHandle(std::move(surface._deviceHandle)),
+	_glHandle(std::move(surface._glHandle)),
+	_wglExtensions(surface._wglExtensions)
 {
 }
 
@@ -133,7 +142,7 @@ bool Surface::isActive() const
 	return (wglGetCurrentContext() == _glHandle.get());
 }
 
-void Surface::activate(bool activate)
+void Surface::setActive(bool activate)
 {
 	BOOL success = activate ?
 		wglMakeCurrent(_deviceHandle.get(), _glHandle.get()) :
@@ -141,14 +150,31 @@ void Surface::activate(bool activate)
 
 	if (!success)
 	{
+		/*
 		auto err = GetLastError();
 		std::string msg = "Unable to activate OpenGL rendering context.\n";
 
 		ERROR_OUT(TAG, "Surface::activate error %1%", err);
 
 		msg += detail::getWin32Message(err);
-		throw SurfaceException(msg);
+		*/
+		throw SurfaceException(); // (msg);
 	}
+
+	if (activate && !_wglExtensions.loaded)
+	{
+		_wglExtensions.wglSwapInterval = 
+			(WGLExtensions::PFNGLSWAPINTERVALPROC) wglGetProcAddress("wglSwapIntervalEXT");
+
+		ASSERT(_wglExtensions.wglSwapInterval != nullptr, "wglSwapInterval cannot be loaded.");
+
+		_wglExtensions.loaded = true;
+	}
+}
+
+void Surface::setVSync(bool enable)
+{
+	_wglExtensions.wglSwapInterval(enable ? 1 : 0);
 }
 
 void Surface::flipBuffers()

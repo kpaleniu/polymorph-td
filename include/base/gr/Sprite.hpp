@@ -7,8 +7,6 @@
 #include "gr/Texture.hpp"
 #include "gr/VertexSupplier.hpp"
 
-#include <text/util.hpp>
-
 #include <array>
 
 namespace gr {
@@ -17,7 +15,7 @@ class Sprite : public VertexSupplier
 {
 public:
 	Sprite(const std::array<gr::real_t, 8>& texCoords,
-	       const Transform& transform = Transform::identity());
+	       const Transform& transform = Transform::IDENTITY);
 
 	Transform& transform();
 	const Transform& transform() const;

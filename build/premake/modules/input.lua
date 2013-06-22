@@ -21,6 +21,11 @@ project "input"
 			sourcePath .. "win32/input/",
 			includePath .. "win32/input/"
 		)
+		
+		pm.includedirs
+		{
+			includePath .. "win32"
+		}
 	
 	configuration {}
 	

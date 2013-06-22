@@ -6,8 +6,6 @@
 #ifndef SYSTEM_ACTION_QUEUE_HPP
 #define SYSTEM_ACTION_QUEUE_HPP
 
-#include <stream/StreamException.hpp>
-
 #include <concurrency/Condition.hpp>
 
 #include <Debug.hpp>
@@ -15,7 +13,7 @@
 #include <functional>
 #include <vector>
 
-namespace sys {
+namespace polymorph { namespace sys {
 
 
 
@@ -84,7 +82,8 @@ void SystemActionQueue<Runner>::pushAction(RunnerAction action)
 		if (_unreadActions >= _runnerInput.size())
 		{
 			// Should resize ?
-			throw stream::StreamException("SystemActionQueue out of space");
+			// throw stream::StreamException("SystemActionQueue out of space");
+			throw Exception(); // TODO Change
 		}
 
 		_runnerInput[_writeIndex++] = action;
@@ -106,7 +105,8 @@ void SystemActionQueue<Runner>::doAction(Runner& runner)
 
 		if (_unreadActions == 0)
 		{
-			throw stream::StreamException("SystemActionQueue is empty");
+			// TROLOLOL
+			throw 666; //stream::StreamException("SystemActionQueue is empty");
 		}
 
 		action = _runnerInput[_readIndex++];
@@ -131,6 +131,6 @@ concurrency::Condition& SystemActionQueue<Runner>::pushCondition() const
 }
 
 
-}
+} }
 
 #endif

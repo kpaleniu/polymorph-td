@@ -13,7 +13,7 @@
 
 #include <array>
 
-namespace input {
+namespace polymorph { namespace input {
 
 namespace {
 
@@ -53,7 +53,7 @@ const std::array<USHORT, 3> upButtons =
 }};
 
 #define buttonCount 3
-#define mouseID pointer_id(1);
+#define mouseID 1
 
 #endif
 
@@ -80,7 +80,7 @@ void setUserData(HWND window, T ud)
 	SetLastError(0);
 	user_data old = SetWindowLongPtr(window, USERDATA, reinterpret_cast<user_data>(ud));
 	if (old == 0 && GetLastError())
-		throw sys::WindowException("Unable to set window user data");
+		throw sys::WindowException(); //("Unable to set window user data");
 }
 
 }	// anonymous namespace
@@ -167,7 +167,7 @@ LRESULT CALLBACK handler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 WindowInputSource::WindowInputSource(HWND window)
 :	_window(window),
- 	_mouseState({0})
+ 	_mouseState()
 {
 	// get raw input data from the mouse/pointer device
 	RAWINPUTDEVICE rid;
@@ -228,10 +228,10 @@ void WindowInputSource::mouseInput(const RAWMOUSE& mouse)
 
 	POINT cursorPoint;
 	if ( !GetCursorPos(&cursorPoint) )
-		throw sys::WindowException("Unable to get cursor position.");
+		throw sys::WindowException(); //("Unable to get cursor position.");
 
 	if ( !ScreenToClient(_window, &cursorPoint))
-		throw sys::WindowException("Unable to map cursor to window.");
+		throw sys::WindowException(); //("Unable to map cursor to window.");
 
 	for (size_t i = 0; i < downButtons.size(); ++i)
 	{
@@ -288,7 +288,7 @@ void WindowInputSource::handleRawInput(WPARAM wParam, LPARAM lParam)
 	HRAWINPUT handle = reinterpret_cast<HRAWINPUT>(lParam);
 
 	if (GetRawInputData(handle, RID_INPUT, &input, &szData, szHeader) != szData)
-		throw sys::WindowException("Unable to get raw input data.");
+		throw sys::WindowException(); //("Unable to get raw input data.");
 
 	switch (input.header.dwType)
 	{
@@ -298,4 +298,4 @@ void WindowInputSource::handleRawInput(WPARAM wParam, LPARAM lParam)
 	}
 }
 
-}	// namespace input
+} }	// namespace input

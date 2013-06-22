@@ -22,7 +22,7 @@ void initGlew()
 	GLenum err = glewInit();
 
 	if (err != GLEW_OK)
-		throw SurfaceException((const char*) glewGetErrorString(err));
+		throw SurfaceException(); // ((const char*) glewGetErrorString(err));
 }
 
 const char* TAG = "Renderer";
@@ -34,7 +34,8 @@ Renderer::Renderer(Surface &surface)
 	_debugDraw(),
 	_renderPassManager()
 {
-	_surface.activate(true);
+	_surface.setActive();
+	_surface.setVSync();
 
 	initGlew(); // Must be called after Surface::activate(true).
 
@@ -69,8 +70,11 @@ void Renderer::flipBuffers()
 
 void Renderer::render()
 {
-	//_renderPassManager.updateRenderPasses();
-	_renderPassManager.executeRenderPasses();
+	_renderPassManager.render();
+	_renderPassManager.clear();
+	_surface.flipBuffers();
+
+	gl::clear(GL_COLOR_BUFFER_BIT);
 
 #ifdef _DEBUG
 	GLenum errCode = glGetError();

@@ -32,14 +32,13 @@ public:
 	void render();
 
 	DebugDraw& debugDraw();
-
 	RenderPassManager& renderPassManager();
 
 private:
 	Surface& _surface;
 
-	DebugDraw _debugDraw;
-	RenderPassManager _renderPassManager;
+	DebugDraw			_debugDraw;
+	RenderPassManager	_renderPassManager;
 };
 
 }

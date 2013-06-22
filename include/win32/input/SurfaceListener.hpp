@@ -6,7 +6,7 @@
 #ifndef SURFACELISTENER_HPP_
 #define SURFACELISTENER_HPP_
 
-namespace input {
+namespace polymorph { namespace input {
 
 class SurfaceListener
 {
@@ -19,7 +19,7 @@ public:
 	virtual void onQuit() = 0;
 };
 
-}
+} }
 
 
 #endif /* SURFACELISTENER_HPP_ */

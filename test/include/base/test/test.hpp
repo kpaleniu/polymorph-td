@@ -8,8 +8,27 @@
 
 namespace test {
 
-PM_MAKE_EXCEPTION_CLASS(Failed, std::exception);
-PM_MAKE_EXCEPTION_CLASS(CannotRun, std::exception);
+
+PM_MAKE_EXCEPTION_CLASS(TestException, std::exception);
+
+class Failed : public TestException
+{
+public:
+	Failed(const std::string& userMessage) throw()	: _userMessage(userMessage) {}
+	const char* what() throw() { return _userMessage.c_str(); }
+private:
+	std::string _userMessage;
+};
+
+class CannotRun : public TestException
+{
+public:
+	CannotRun(const std::string& userMessage) throw()	: _userMessage(userMessage) {}
+	const char* what() throw() { return _userMessage.c_str(); }
+private:
+	std::string _userMessage;
+};
+
 
 
 typedef std::function<void ()> Test;
@@ -20,22 +39,22 @@ int runTests();
 /**
  * Called to indicate test failure.
  */
-inline void fail();
+inline void fail(const std::string& msg = std::string());
 
 /**
  * Called to indicate test setup couldn't complete.
  */
-inline void cannotRun();
+inline void cannotRun(const std::string& msg = std::string());
 
-inline void assume(bool expr);
+inline void assume(bool expr, const std::string& msg = std::string());
 
-inline void assert(bool expr);
-
-template <typename T>
-inline void assertEqual(const T& a, const T& b);
+inline void assertTrue(bool expr, const std::string& msg = std::string());
 
 template <typename T>
-inline void assertNotEqual(const T& a, const T& b);
+inline void assertEqual(const T& a, const T& b, const std::string& msg = std::string());
+
+template <typename T>
+inline void assertNotEqual(const T& a, const T& b, const std::string& msg = std::string());
 
 }
 
@@ -46,7 +65,7 @@ inline void assertNotEqual(const T& a, const T& b);
 	{ block }									\
 	catch (exceptionType&)						\
 	{ detail__caughtException = true; }			\
-	test::assert(detail__caughtException);		\
+	test::assertTrue(detail__caughtException);		\
 }
 
 #define ASSUME_NO_EXCEPTION(exceptionType, block) \

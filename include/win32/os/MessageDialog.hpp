@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <functional>
 
-namespace os {
+namespace polymorph { namespace os {
 
 /**
  * Non-blocking message dialog.
@@ -71,7 +71,7 @@ private:
 	const HWND			_parent;
 };
 
-}
+} }
 
 
 

@@ -16,6 +16,11 @@ solution "gr_scene_tester"
 				testSourcePath .. "wgl/gr/",
 				testIncludePath .. "wgl/gr/"
 			)
+			
+			pm.includedirs 
+			{ 
+				testIncludePath .. "wgl" 
+			}
 		
 		configuration "windows"
 			pm.cppFiles(

@@ -13,13 +13,13 @@
 #include <BuildConfig.hpp>
 
 
-namespace sys {
+namespace polymorph { namespace sys {
 
 // print tag
 namespace { const char* TAG_RUNNER = "UISystemRunner";
 			const char* TAG_SYSTEM = "UISystem"; }
 
-UISystemRunner::UISystemRunner(Window::ConstructionData& winCtorData)
+UISystemRunner::UISystemRunner(Window::ConstructionData&& winCtorData)
 :	_window(winCtorData),
 	_grSys(_window),
  	_eventAdapter()
@@ -63,7 +63,7 @@ bool UISystemRunner::update()
 	while (_window.inputSource().handleInput())
 	{
 		if (TimeDuration::between(start, TimeStamp::now())
-			> TimeDuration::millis(settings::sys::uiSystemSyncMillis))
+			> TimeDuration::millis(15 /*settings::sys::uiSystemSyncMillis*/))
 			break;
 	}
 
@@ -86,13 +86,11 @@ GraphicsSystem& UISystemRunner::graphics()
 }
 
 
-UISystem::UISystem(Window::ConstructionData& winCtorData)
-:	System(TimeDuration::millis(settings::sys::uiSystemSyncMillis),
+UISystem::UISystem(Window::ConstructionData&& winCtorData)
+:	System(TimeDuration::millis( 15 /*settings::sys::uiSystemSyncMillis*/ ),
  	       256,
- 	       winCtorData),
- 	_states()
+ 	       std::forward<Window::ConstructionData>(winCtorData))
 {
-	pushState(StateDesc{event::UIEventManager()});
 
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }
@@ -117,30 +115,5 @@ GraphicsSystem& UISystem::waitForGraphicsSystem()
 	return runner->graphics();
 }
 
-void UISystem::pushState(const StateDesc& newState)
-{
-	_states.push(newState);
-	setState(_states.top());
-}
 
-void UISystem::popState()
-{
-	ASSERT(_states.size() > 1, "Stack underflow"); // _state[0] is "null state".
-
-	_states.pop();
-	setState(_states.top());
-}
-
-void UISystem::setState(const StateDesc& state)
-{
-	// Must be captured by value to avoid corruption due to concurrency.
-	_actions.pushAction([=](UISystemRunner& runner)
-    {
-		runner.uiEvents() = state.eventManager;
-    });
-}
-
-}
-
-
-
+} }

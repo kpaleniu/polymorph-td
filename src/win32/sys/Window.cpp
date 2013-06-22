@@ -16,7 +16,7 @@ static_assert(_WIN32_WINNT >= 0x0501,
 	"Windows target version not supported (_WIN32_WINNT < 0x0501)");
 
 
-namespace sys {
+namespace polymorph { namespace sys {
 namespace {
 
 ATOM registerClass(HINSTANCE hInstance)
@@ -38,7 +38,7 @@ ATOM registerClass(HINSTANCE hInstance)
 
 	ATOM name = RegisterClassEx(&wc);
 	if (name == 0)
-		throw sys::WindowException("Unable to register window class");
+		throw sys::WindowException(); //("Unable to register window class");
 	return name;
 }
 
@@ -70,7 +70,8 @@ HWND createWindow(const Window::ConstructionData& desc, Window* window)
 	HWND hwnd = CreateWindowEx(
 		dwExStyle,
 		MAKEINTATOM(name),
-		TEXT(settings::window::windowTitle),
+		// TEXT(settings::window::windowTitle),
+		TEXT("TODO: fix those build settings."),
 		dwStyle,
 		rect.left, rect.top,
 		rect.w, rect.h,
@@ -80,7 +81,7 @@ HWND createWindow(const Window::ConstructionData& desc, Window* window)
 		&window->inputSource());	// this value is attached as user data by sys::handler
 
 	if (!hwnd)
-		throw WindowException("Cannot create window.");
+		throw WindowException(); //("Cannot create window.");
 	return hwnd;
 }
 
@@ -161,4 +162,4 @@ HWND Window::nativeHandle()
 	return _windowHandle.get();
 }
 
-}	// namespace sys
+} }	// namespace sys
