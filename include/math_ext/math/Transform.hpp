@@ -17,6 +17,8 @@ template <typename Arithmetic, bool RowMajor = false>
 class Transform
 {
 public:
+	typedef Arithmetic radian_t;
+
 	Transform();
 
 	Transform(const Transform<Arithmetic, RowMajor>& other);
@@ -42,11 +44,13 @@ public:
 
 	static const Transform<Arithmetic, RowMajor> IDENTITY;
 
+
 	static Transform<Arithmetic, RowMajor> translate(
 		const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& translation);
 	
 	static Transform<Arithmetic, RowMajor> translate(
 		Arithmetic tx, Arithmetic ty, Arithmetic tz = 0);
+
 
 	static Transform<Arithmetic, RowMajor> scale(Arithmetic scaling);
 	
@@ -54,10 +58,13 @@ public:
 		const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& scaling);
 
 	static Transform<Arithmetic, RowMajor> scale(
-		Arithmetic sx, Arithmetic sy, Arithmetic sz);
+		Arithmetic sx, Arithmetic sy, Arithmetic sz = 0);
 
-	// static Transform<S, RowMajor> rotateAxis(const Matrix<S, 3u, 1u, RM>& axis, radian_t rads);
 
+	static Transform<Arithmetic, RowMajor> 
+		eulerAngle(radian_t zAngle, radian_t yAngle = 0, radian_t xAngle = 0);
+
+	
 private:
 	Matrix<Arithmetic, 3u, 3u, RowMajor> _topLeft;
 	Matrix<Arithmetic, 3u, 1u, RowMajor> _translation;
