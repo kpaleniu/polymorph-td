@@ -64,6 +64,8 @@ public:
 
 	void render(Renderer& renderer, const Transform& modelTransform) const;
 
+	const VertexList& vertices() const;
+
 private:
 	VertexList _vertexList;
 	std::vector<SubMesh> _subMeshes;

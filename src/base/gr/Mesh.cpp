@@ -10,14 +10,14 @@ Mesh::SubMesh::SubMesh(Mesh& parent,
 					   TextureManager::TextureHandle texHandle,
 					   std::vector<index_t>&& indices)
 :	_parent(parent),
-	// _texHandle(texHandle),
+	_texHandle(texHandle),
 	_indices(std::move(indices))
 {
 }
 
 Mesh::SubMesh::SubMesh(SubMesh&& other)
 :	_parent(other._parent),
-	// _texHandle(other._texHandle),
+	_texHandle(other._texHandle),
 	_indices(std::move(other._indices))
 {
 }
@@ -141,6 +141,11 @@ void Mesh::render(Renderer& renderer, const Transform& transform) const
 {
 	for (const auto& subMesh : _subMeshes)
 		subMesh.render(renderer, transform);
+}
+
+const VertexList& Mesh::vertices() const
+{
+	return _vertexList;
 }
 
 }
