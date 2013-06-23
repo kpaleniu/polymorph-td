@@ -49,7 +49,8 @@ void Thread::join()
 {
 	interruptionPoint();
 
-	_stdThread.join();
+	if (_stdThread.joinable())
+		_stdThread.join();
 }
 
 void Thread::interrupt()
@@ -95,8 +96,11 @@ void Thread::interruptionPoint()
 
 void Thread::interruptCurrent()
 {
-	currentThread()->_interruptionFlag = false;
-	throw detail::InterruptException();
+	Thread* thisThread = currentThread();
+	if (thisThread != nullptr)
+		thisThread->_interruptionFlag = false;
+
+	throw InterruptException();
 }
 
 const Thread::ID Thread::getCurrentID()
@@ -115,7 +119,7 @@ void Thread::threadRunner(Thread *thiz)
 		thiz->_threadState = ThreadState::RUNNING;
 		thiz->threadMain();
 	}
-	catch (detail::InterruptException&)
+	catch (InterruptException&)
 	{
 		// Normal exit.
 	}
