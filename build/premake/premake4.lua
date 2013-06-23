@@ -436,6 +436,12 @@ log()
 
 dofile(premakePath .. commandLine.solution .. ".lua")
 
+-- Trailer: configurations that needs to be defined only once
+-- and only in the end.
+
+configuration { "macosx" }
+	linkoptions { "-stdlib=libc++" }
+
 handleDependencies()
 
 log()
