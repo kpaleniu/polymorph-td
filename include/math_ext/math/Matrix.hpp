@@ -45,6 +45,9 @@ public:
 
 	static const Matrix<Arithmetic, Rows, Cols, RowMajor> ZERO;
 
+
+	using MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator=;
+
 	Matrix<Arithmetic, Rows, Cols, RowMajor>& 
 		operator=(const Matrix<Arithmetic, Rows, Cols, RowMajor>& other);
 
@@ -70,6 +73,8 @@ public:
 	static const Matrix<Arithmetic, Rows, Rows, RowMajor> ZERO;
 	static const Matrix<Arithmetic, Rows, Rows, RowMajor> IDENTITY;
 
+	using MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator=;
+
 	Matrix<Arithmetic, Rows, Rows, RowMajor>& 
 		operator=(const Matrix<Arithmetic, Rows, Rows, RowMajor>& other);
 
@@ -93,6 +98,9 @@ public:
 	Matrix(const Matrix<Arithmetic, Rows, 1u, RowMajor>& mat);
 
 	static const Matrix<Arithmetic, Rows, 1u, RowMajor> ZERO;
+
+
+	using MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator=;
 
 	Matrix<Arithmetic, Rows, 1u, RowMajor>& 
 		operator=(const Matrix<Arithmetic, Rows, 1u, RowMajor>& other);
