@@ -117,6 +117,30 @@ bool ResourceLoader<Product>::ResourceHandle::operator==(const ResourceHandle& o
 // ResourceLoader
 
 template <typename Product>
+ResourceLoader<Product>::ResourceLoader()
+:	_loaded()
+{
+}
+
+template <typename Product>
+ResourceLoader<Product>::ResourceLoader(ResourceLoader&& other)
+:	_loaded(std::move(other._loaded))
+{
+}
+
+template <typename Product>
+ResourceLoader<Product>::~ResourceLoader()
+{
+#ifdef _DEBUG
+	for (const auto& idResPair : _loaded)
+	{
+		const Res& res = idResPair.second;
+		ASSERT(res.refs == 0, "Trying to remove referenced product.");
+	}
+#endif
+}
+
+template <typename Product>
 inline void ResourceLoader<Product>::collectGarbage()
 {
 	// Removes all non-referenced resources.

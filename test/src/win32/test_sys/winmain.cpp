@@ -167,8 +167,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		{
 			auto transaction = grSys.sceneMutator();
 			auto& model = transaction.scene.model(TEST_MODEL_HASH);
-			model.transform() *= gr::Transform::translate(gr::real_t(arg.dx) * 0.001f,
-														  gr::real_t(arg.dy) * -0.001f);
+
+			DEBUG_OUT("MOVE_MODEL", "This is a drag!");
+			
+			model.transform() *= gr::Transform::translate(gr::real_t(arg.dx) * 0.001f, 0.0f);
+			model.transform() *= gr::Transform::eulerAngle(gr::real_t(arg.dy) * 0.001f);
 		}
 	);
 

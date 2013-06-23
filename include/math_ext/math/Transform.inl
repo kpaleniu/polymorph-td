@@ -95,6 +95,34 @@ Transform<Arithmetic, RowMajor>
 	return rVal;
 }
 
+template <typename Arithmetic, bool RowMajor>
+Transform<Arithmetic, RowMajor> 
+	Transform<Arithmetic, RowMajor>::eulerAngle(radian_t zAngle, radian_t yAngle, radian_t xAngle)
+{
+	Transform<Arithmetic, RowMajor> rVal;
+
+	Arithmetic 
+		cosX = std::cos(xAngle),
+		sinX = std::sin(xAngle),
+		cosY = std::cos(yAngle),
+		sinY = std::sin(yAngle),
+		cosZ = std::cos(zAngle),
+		sinZ = std::sin(zAngle);
+
+	rVal._topLeft(0, 0) = cosY * cosZ;
+	rVal._topLeft(1, 0) = -cosY * sinZ;
+	rVal._topLeft(2, 0) = sinY;
+	
+	rVal._topLeft(0, 1) = cosX * sinZ + sinX * sinY * cosZ;
+	rVal._topLeft(1, 1) = cosX * cosZ - sinX * sinY * sinZ;
+	rVal._topLeft(2, 1) = -sinX * cosY;
+
+	rVal._topLeft(0, 2) = sinX * sinZ - cosX * sinY * cosZ;
+	rVal._topLeft(1, 2) = sinX * cosZ + cosX * sinY * sinZ;
+	rVal._topLeft(2, 2) = cosX * cosY;
+
+	return rVal;
+}
 
 template <typename Arithmetic, bool RowMajor>
 void Transform<Arithmetic, RowMajor>::invert()

@@ -12,6 +12,9 @@ class MeshManager : public resource::ResourceLoader<Mesh>
 public:
 	typedef resource::ResourceLoader<Mesh>::ResourceHandle MeshHandle;
 
+	MeshManager();
+	MeshManager(MeshManager&& other);
+
 	MeshHandle addMesh(text::string_hash id, Mesh&& mesh);
 	MeshHandle getMesh(text::string_hash id) const;
 

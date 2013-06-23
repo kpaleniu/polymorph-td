@@ -10,6 +10,7 @@
 
 #include <math/Projection.hpp>
 #include <math/Transform.hpp>
+#include <math/Box.hpp>
 
 #include <array>
 
@@ -22,6 +23,9 @@ typedef GLenum 	enum_t;
 // OpenGL expects column-major matrices
 typedef math::Projection<real_t, false>	Projection;
 typedef math::Transform<real_t, false> 	Transform;
+
+typedef math::AxisAlignedBox<real_t, false> AABox;
+
 typedef math::Matrix<real_t, 2, 1> 		Vector2_r;
 typedef math::Matrix<real_t, 3, 1> 		Vector3_r;
 typedef math::MatrixMap<real_t, 2, 1>	MapVector2_r;

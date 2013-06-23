@@ -64,6 +64,10 @@ public:
 	};
 
 public:
+	ResourceLoader();
+	ResourceLoader(ResourceLoader&& other);
+	~ResourceLoader();
+
 	void collectGarbage();
 
 protected:

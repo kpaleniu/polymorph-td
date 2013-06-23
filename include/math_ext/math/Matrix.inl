@@ -2,7 +2,6 @@
 
 #include <Assert.hpp>
 #include <memory>
-#include <type_traits>
 
 namespace math {
 
@@ -13,20 +12,6 @@ Index storageIndex(unsigned int rows, unsigned int cols, Index row, Index col)
 {
 	return (RowMajor ? (row * cols + col) : (col * rows + row));
 }
-
-/*
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor, bool Square>
-const Matrix<Arithmetic, Rows, Cols, RowMajor> 
-	Constants<Arithmetic, Rows, Cols, RowMajor, Square>::ZERO = Matrix<Arithmetic, Rows, Cols, RowMajor>();
-
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-const Matrix<Arithmetic, Rows, Cols, RowMajor>
-	Constants<Arithmetic, Rows, Cols, RowMajor, false>::ZERO = Matrix<Arithmetic, Rows, Cols, RowMajor>();
-
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor, bool Square>
-const Matrix<Arithmetic, Rows, Cols, RowMajor> 
-	Constants<Arithmetic, Rows, Cols, RowMajor, Square>::IDENTITY(Arithmetic(1));
-*/
 
 }
 
@@ -219,7 +204,7 @@ template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMaj
 Matrix<Arithmetic, Rows, Cols, RowMajor>::Matrix(const Matrix<Arithmetic, Rows, Cols, RowMajor>& other)
 :	MatrixMap<Arithmetic, Rows, Cols, RowMajor>()
 {
-	std::memcpy(_data, other._data, sizeof(Arithmetic) * Rows * Cols);
+	std::memcpy(_data, other._mappedData, sizeof(Arithmetic) * Rows * Cols);
 
 	_mappedData = _data;
 }
@@ -228,7 +213,7 @@ template <typename Arithmetic, unsigned int Rows, bool RowMajor>
 Matrix<Arithmetic, Rows, Rows, RowMajor>::Matrix(const Matrix<Arithmetic, Rows, Rows, RowMajor>& other)
 :	MatrixMap<Arithmetic, Rows, Rows, RowMajor>()
 {
-	std::memcpy(_data, other._data, sizeof(Arithmetic) * Rows * Rows);
+	std::memcpy(_data, other._mappedData, sizeof(Arithmetic) * Rows * Rows);
 
 	_mappedData = _data;
 }
@@ -237,7 +222,7 @@ template <typename Arithmetic, unsigned int Rows, bool RowMajor>
 Matrix<Arithmetic, Rows, 1u, RowMajor>::Matrix(const Matrix<Arithmetic, Rows, 1u, RowMajor>& other)
 :	MatrixMap<Arithmetic, Rows, 1u, RowMajor>()
 {
-	std::memcpy(_data, other._data, sizeof(Arithmetic) * Rows);
+	std::memcpy(_data, other._mappedData, sizeof(Arithmetic) * Rows);
 
 	_mappedData = _data;
 }
@@ -256,6 +241,33 @@ Matrix<Arithmetic, Rows, 1u, RowMajor>::Matrix(std::initializer_list<Arithmetic>
 		_data[i] = *it++;
 
 	_mappedData = _data;
+}
+//
+
+// Matrix& Matrix::operator=(const Matrix&)
+//	Generic
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+Matrix<Arithmetic, Rows, Cols, RowMajor>& 
+	Matrix<Arithmetic, Rows, Cols, RowMajor>::operator=(const Matrix<Arithmetic, Rows, Cols, RowMajor>& other)
+{
+	MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator=(other);
+	return *this;
+}
+//	Square
+template <typename Arithmetic, unsigned int Rows, bool RowMajor>
+Matrix<Arithmetic, Rows, Rows, RowMajor>& 
+	Matrix<Arithmetic, Rows, Rows, RowMajor>::operator=(const Matrix<Arithmetic, Rows, Rows, RowMajor>& other)
+{
+	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator=(other);
+	return *this;
+}
+//	Vector
+template <typename Arithmetic, unsigned int Rows, bool RowMajor>
+Matrix<Arithmetic, Rows, 1u, RowMajor>& 
+	Matrix<Arithmetic, Rows, 1u, RowMajor>::operator=(const Matrix<Arithmetic, Rows, 1u, RowMajor>& other)
+{
+	MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator=(other);
+	return *this;
 }
 //
 
@@ -284,190 +296,76 @@ const Matrix<Arithmetic, Rows, Rows, RowMajor>
 	Matrix<Arithmetic, Rows, Rows, RowMajor>::IDENTITY = Matrix<Arithmetic, Rows, Rows, RowMajor>(Arithmetic(1));
 //
 
-// --- MatrixMap ---
+// ----- CommonMatrixMap -----
 
-// -- MatrixMap Constructors --
+namespace detail {
 
-// MatrixMap::MatrixMap()
-//	Generic
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Cols, RowMajor>::MatrixMap()
-:	_mappedData(nullptr)
-{}
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Rows, RowMajor>::MatrixMap()
-:	_mappedData(nullptr)
-{}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, 1u, RowMajor>::MatrixMap()
-:	_mappedData(nullptr)
-{}
-//	Dynamic vector
-template <typename Arithmetic, bool RowMajor>
-MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::MatrixMap()
-:	_mappedData(nullptr), _size(0)
-{}
-//
-
-// MatrixMap::MatrixMap(Arithmetic*)
-//	Generic
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Cols, RowMajor>::MatrixMap(Arithmetic* data)
+CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::CommonMatrixMap(Arithmetic* data)
 :	_mappedData(data)
-{}
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Rows, RowMajor>::MatrixMap(Arithmetic* data)
-:	_mappedData(data)
-{}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, 1u, RowMajor>::MatrixMap(Arithmetic* data)
-:	_mappedData(data)
-{}
-//
-
-// MatrixMap::MatrixMap(Arithmetic*, index_t)
-//	Dynamic vector
+{
+}
 template <typename Arithmetic, bool RowMajor>
-MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::MatrixMap(Arithmetic* data, index_t size)
-:	_mappedData(data), _size(size)
-{}
-//
+CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::CommonMatrixMap(Arithmetic* data, size_t rows)
+:	_mappedData(data), _rows(rows)
+{
+}
 
-// MatrixMap::MatrixMap(const MatrixMap&)
-//	Generic
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Cols, RowMajor>::MatrixMap(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other)
-:	_mappedData(other._mappedData)
-{}
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Rows, RowMajor>::MatrixMap(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other)
-:	_mappedData(other._mappedData)
-{}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, 1u, RowMajor>::MatrixMap(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>& other)
-:	_mappedData(other._mappedData)
-{}
-//	Dynamic vector
+Arithmetic* 
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::data()
+{
+	return _mappedData;
+}
 template <typename Arithmetic, bool RowMajor>
-MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::MatrixMap(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other)
-:	_mappedData(other._mappedData), _size(other._size)
-{}
-//
+Arithmetic* 
+	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::data()
+{
+	return _mappedData;
+}
 
-// -- Data Access --
-
-// Arithmetic* MatrixMap::data()
-//	Generic
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Arithmetic* MatrixMap<Arithmetic, Rows, Cols, RowMajor>::data()
-{ return _mappedData; }
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Arithmetic* MatrixMap<Arithmetic, Rows, Rows, RowMajor>::data()
-{ return _mappedData; }
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Arithmetic* MatrixMap<Arithmetic, Rows, 1u, RowMajor>::data()
-{ return _mappedData; }
-//	Dynamic vector
+const Arithmetic* 
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::data() const
+{
+	return _mappedData;
+}
 template <typename Arithmetic, bool RowMajor>
-Arithmetic* MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::data()
-{ return _mappedData; }
-//
+const Arithmetic* 
+	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::data() const
+{
+	return _mappedData;
+}
 
-// const Arithmetic* MatrixMap::data() const
-//	Generic
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-const Arithmetic* MatrixMap<Arithmetic, Rows, Cols, RowMajor>::data() const
-{ return _mappedData; }
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-const Arithmetic* MatrixMap<Arithmetic, Rows, Rows, RowMajor>::data() const
-{ return _mappedData; }
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-const Arithmetic* MatrixMap<Arithmetic, Rows, 1u, RowMajor>::data() const
-{ return _mappedData; }
-//	Dynamic vector
+Arithmetic& 
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator()(index_t row, index_t col)
+{ 
+	return _mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ];
+}
 template <typename Arithmetic, bool RowMajor>
-const Arithmetic* MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::data() const
-{ return _mappedData; }
-//
+Arithmetic& 
+	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator()(index_t row, index_t col)
+{ 
+	return _mappedData[ detail::storageIndex<index_t, RowMajor>(_rows, Cols, row, col) ];
+}
 
-// Arithmetic& MatrixMap::operator()(index_t row, index_t col)
-//	Generic
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Arithmetic& MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator()(index_t row, index_t col)
-{ return _mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ]; }
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Arithmetic& MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator()(index_t row, index_t col)
-{ return _mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, row, col) ]; }
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Arithmetic& MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator()(index_t row, index_t col)
-{ return _mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, 1u, row, col) ]; }
-//	Dynamic vector
+const Arithmetic& 
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator()(index_t row, index_t col) const
+{ 
+	return _mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ];
+}
 template <typename Arithmetic, bool RowMajor>
-Arithmetic& MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator()(index_t row, index_t col)
-{ return _mappedData[ detail::storageIndex<index_t, RowMajor>(_size, 1u, row, col) ]; }
-//
+const Arithmetic& 
+	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator()(index_t row, index_t col) const
+{ 
+	return _mappedData[ detail::storageIndex<index_t, RowMajor>(_rows, Cols, row, col) ];
+}
 
-// const Arithmetic& MatrixMap::operator()(index_t row, index_t col) const
-//	Generic
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-const Arithmetic& MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator()(index_t row, index_t col) const
-{ return _mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ]; }
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-const Arithmetic& MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator()(index_t row, index_t col) const
-{ return _mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, row, col) ]; }
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-const Arithmetic& MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator()(index_t row, index_t col) const
-{ return _mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, 1u, row, col) ]; }
-//	Dynamic vector
-template <typename Arithmetic, bool RowMajor>
-const Arithmetic& MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator()(index_t row, index_t col) const
-{ return _mappedData[ detail::storageIndex<index_t, RowMajor>(_size, 1u, row, col) ]; }
-//
-
-// Arithmetic& MatrixMap::operator[](index_t row)
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Arithmetic& MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator[](index_t row)
-{ return _mappedData[row]; }
-//	Dynamic vector
-template <typename Arithmetic, bool RowMajor>
-Arithmetic& MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator[](index_t row)
-{ return _mappedData[row]; }
-//
-
-// const Arithmetic& MatrixMap::operator[](index_t row) const
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-const Arithmetic& MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator[](index_t row) const
-{ return _mappedData[row]; }
-//	Dynamic vector
-template <typename Arithmetic, bool RowMajor>
-const Arithmetic& MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator[](index_t row) const
-{ return _mappedData[row]; }
-//
-
-
-// -- Arithmetics --
-
-// Matrix MatrixMap::operator*(Arithmetic) const
-//	Generic
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
 Matrix<Arithmetic, Rows, Cols, RowMajor>
-	MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator*(Arithmetic scalar) const
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator*(Arithmetic scalar) const
 {
 	Arithmetic buffer[Rows * Cols];
 
@@ -476,37 +374,10 @@ Matrix<Arithmetic, Rows, Cols, RowMajor>
 
 	return Matrix<Arithmetic, Rows, Cols, RowMajor>(buffer);
 }
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Matrix<Arithmetic, Rows, Rows, RowMajor>
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator*(Arithmetic scalar) const
-{
-	Arithmetic buffer[Rows * Rows];
 
-	for (index_t i = 0; i < Rows * Rows; ++i)
-		buffer[i] = _mappedData[i] * scalar;
-
-	return Matrix<Arithmetic, Rows, Rows, RowMajor>(buffer);
-}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Matrix<Arithmetic, Rows, 1u, RowMajor>
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator*(Arithmetic scalar) const
-{
-	Arithmetic buffer[Rows];
-
-	for (index_t i = 0; i < Rows; ++i)
-		buffer[i] = _mappedData[i] * scalar;
-
-	return Matrix<Arithmetic, Rows, 1u, RowMajor>(buffer);
-}
-//
-
-// Matrix MatrixMap::operator/(Arithmetic) const
-//	Generic
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
 Matrix<Arithmetic, Rows, Cols, RowMajor>
-	MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator/(Arithmetic scalar) const
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator/(Arithmetic scalar) const
 {
 	Arithmetic buffer[Rows * Cols];
 
@@ -515,123 +386,160 @@ Matrix<Arithmetic, Rows, Cols, RowMajor>
 
 	return Matrix<Arithmetic, Rows, Cols, RowMajor>(buffer);
 }
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Matrix<Arithmetic, Rows, Rows, RowMajor>
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator/(Arithmetic scalar) const
-{
-	Arithmetic buffer[Rows * Rows];
 
-	for (index_t i = 0; i < Rows * Rows; ++i)
-		buffer[i] = _mappedData[i] / scalar;
-
-	return Matrix<Arithmetic, Rows, Rows, RowMajor>(buffer);
-}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Matrix<Arithmetic, Rows, 1u, RowMajor>
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator/(Arithmetic scalar) const
-{
-	Arithmetic buffer[Rows];
-
-	for (index_t i = 0; i < Rows; ++i)
-		buffer[i] = _mappedData[i] / scalar;
-
-	return Matrix<Arithmetic, Rows, 1u, RowMajor>(buffer);
-}
-//
-
-// MatrixMap& MatrixMap::operator*=(Arithmetic)
-//	Generic
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
 MatrixMap<Arithmetic, Rows, Cols, RowMajor>&
-	MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator*=(Arithmetic scalar)
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator*=(Arithmetic scalar)
 {
 	for (index_t i = 0; i < Rows * Cols; ++i)
 		_mappedData[i] *= scalar;
 
-	return *this;
+	return *static_cast<MatrixMap<Arithmetic, Rows, Cols, RowMajor>*>(this);
 }
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator*=(Arithmetic scalar)
-{
-	for (index_t i = 0; i < Rows * Rows; ++i)
-		_mappedData[i] *= scalar;
-
-	return *this;
-}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, 1u, RowMajor>&
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator*=(Arithmetic scalar)
-{
-	for (index_t i = 0; i < Rows; ++i)
-		_mappedData[i] *= scalar;
-
-	return *this;
-}
-//	Dynamic vector
 template <typename Arithmetic, bool RowMajor>
 MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&
-	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator*=(Arithmetic scalar)
+	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator*=(Arithmetic scalar)
 {
-	for (index_t i = 0; i < _size; ++i)
+	for (index_t i = 0; i < _rows * Cols; ++i)
 		_mappedData[i] *= scalar;
 
-	return *this;
+	return *static_cast<MatrixMap<Arithmetic, DYNAMIC, Cols, RowMajor>*>(this);
 }
-//
 
-// MatrixMap& MatrixMap::operator/=(Arithmetic)
-//	Generic
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
 MatrixMap<Arithmetic, Rows, Cols, RowMajor>&
-	MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator/=(Arithmetic scalar)
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator/=(Arithmetic scalar)
 {
 	for (index_t i = 0; i < Rows * Cols; ++i)
 		_mappedData[i] /= scalar;
 
-	return *this;
+	return *static_cast<MatrixMap<Arithmetic, Rows, Cols, RowMajor>*>(this);
 }
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator/=(Arithmetic scalar)
-{
-	for (index_t i = 0; i < Rows * Rows; ++i)
-		_mappedData[i] /= scalar;
-
-	return *this;
-}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, 1u, RowMajor>&
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator/=(Arithmetic scalar)
-{
-	for (index_t i = 0; i < Rows; ++i)
-		_mappedData[i] /= scalar;
-
-	return *this;
-}
-//	Dynamic vector
 template <typename Arithmetic, bool RowMajor>
 MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&
-	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator/=(Arithmetic scalar)
+	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator/=(Arithmetic scalar)
 {
-	for (index_t i = 0; i < _size; ++i)
+	for (index_t i = 0; i < _rows; ++i)
 		_mappedData[i] /= scalar;
+
+	return *static_cast<MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>*>(this);
+}
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+Matrix<Arithmetic, Rows, Cols, RowMajor>
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator+(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other) const
+{
+	Matrix<Arithmetic, Rows, Cols, RowMajor> rMat;
+
+	for (index_t row = 0; row < Rows; ++row)
+	{
+		for (index_t col = 0; col < Cols; ++col)
+		{
+			rMat._mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ] = 
+				_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ]
+				+ other._mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ];
+		}
+	}
+
+	return rMat;
+}
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+Matrix<Arithmetic, Rows, Cols, RowMajor>
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator-(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other) const
+{
+	Matrix<Arithmetic, Rows, Cols, RowMajor> rMat;
+
+	for (index_t row = 0; row < Rows; ++row)
+	{
+		for (index_t col = 0; col < Cols; ++col)
+		{
+			rMat._mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ] = 
+				_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ]
+				- other._mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ];
+		}
+	}
+
+	return rMat;
+}
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+MatrixMap<Arithmetic, Rows, Cols, RowMajor>&
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator+=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other)
+{
+	for (index_t row = 0; row < Rows; ++row)
+	{
+		for (index_t col = 0; col < Cols; ++col)
+		{
+			_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ] +=
+				other._mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ];
+		}
+	}
+
+	return *static_cast<MatrixMap<Arithmetic, Rows, Cols, RowMajor>*>(this);
+}
+template <typename Arithmetic, bool RowMajor>
+MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&
+	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator+=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other)
+{
+	ASSERT(_rows == other._rows, "Arithmetics with different vector types forbidden.");
+
+	for (index_t row = 0; row < _rows; ++row)
+		_mappedData[row] += other._mappedData[row];
+
+	return *static_cast<MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>*>(this);
+}
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+MatrixMap<Arithmetic, Rows, Cols, RowMajor>&
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator-=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other)
+{
+	for (index_t row = 0; row < Rows; ++row)
+	{
+		for (index_t col = 0; col < Cols; ++col)
+		{
+			_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ] -=
+				other._mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, col) ];
+		}
+	}
+
+	return *static_cast<MatrixMap<Arithmetic, Rows, Cols, RowMajor>*>(this);
+}
+template <typename Arithmetic, bool RowMajor>
+MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&
+	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator-=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other)
+{
+	ASSERT(_rows == other._rows, "Arithmetics with different vector types forbidden.");
+
+	for (index_t row = 0; row < _rows; ++row)
+		_mappedData[row] -= other._mappedData[row];
+
+	return *static_cast<MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>*>(this);
+}
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>&
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator=(const CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>& other)
+{
+	for (index_t i = 0; i < Rows * Cols; ++i)
+		_mappedData[i] = other._mappedData[i];
 
 	return *this;
 }
-//
+template <typename Arithmetic, bool RowMajor>
+CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&
+	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator=(const CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other)
+{
+	ASSERT(_rows == other._rows, "Trying to assign dynamic vector with other size.");
 
-// Matrix MatrixMap::transpose() const
-//	Generic
+	for (index_t i = 0; i < _rows; ++i)
+		_mappedData[i] = other._mappedData[i];
+
+	return *this;
+}
+
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
 Matrix<Arithmetic, Cols, Rows, RowMajor>
-	MatrixMap<Arithmetic, Rows, Cols, RowMajor>::transpose() const
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::transpose() const
 {
 	Matrix<Arithmetic, Cols, Rows, RowMajor> rMat;
 
@@ -642,36 +550,101 @@ Matrix<Arithmetic, Cols, Rows, RowMajor>
 
 	return rMat;
 }
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Matrix<Arithmetic, Rows, Rows, RowMajor>
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::transpose() const
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+template <unsigned int N>
+Matrix<Arithmetic, Rows, N, RowMajor>
+	CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator*(const MatrixMap<Arithmetic, Cols, N, RowMajor>& other) const
 {
-	Matrix<Arithmetic, Cols, Rows, RowMajor> rMat;
+	Arithmetic buffer[Rows * N];
 
 	for (index_t row = 0; row < Rows; ++row)
-		for (index_t col = 0; col < Rows; ++col)
-			rMat(col, row) = 
-				_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, row, col) ];
+	{
+		for (index_t col = 0; col < N; ++col)
+		{
+			Arithmetic& value(buffer[ detail::storageIndex<index_t, RowMajor>(Rows, N, row, col) ]);
+			
+			value = Arithmetic(0);
 
-	return rMat;
+			for (index_t k = 0; k < Rows; ++k)
+			{
+				value +=
+				(
+					_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, k) ]
+					* other._mappedData[ detail::storageIndex<index_t, RowMajor>(Cols, N, k, col) ]
+				);
+			}
+		}
+	}
+
+	return Matrix<Arithmetic, Rows, N, RowMajor>(buffer);
 }
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Matrix<Arithmetic, 1u, Rows, RowMajor>
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>::transpose() const
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+bool CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator==(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other) const
 {
-	Matrix<Arithmetic, 1u, Rows, RowMajor> rMat;
-
-	for (index_t row = 0; row < Rows; ++row)
-		rMat(1u, row) = _mappedData[row];
-
-	return rMat;
+	for (index_t i = 0; i < Rows * Cols; ++i)
+		if (_mappedData[i] != other._mappedData[i])
+			return false;
+	
+	return true;
 }
-//
+template <typename Arithmetic, bool RowMajor>
+bool CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator==(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other) const
+{
+	ASSERT(_rows == other._rows, "Trying to assign dynamic vector with other size.");
+	for (index_t i = 0; i < _rows; ++i)
+		if (_mappedData[i] != other._mappedData[i])
+			return false;
+	
+	return true;
+}
 
-// MatrixMap transposeSelf()
-//	Square
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+bool CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator!=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other) const
+{ 
+	return !(*this == other); 
+}
+template <typename Arithmetic, bool RowMajor>
+bool CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator!=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other) const
+{ 
+	return !(*this == other); 
+}
+
+} /* namespace detail */
+
+// --- MatrixMap Generic ---
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+MatrixMap<Arithmetic, Rows, Cols, RowMajor>::MatrixMap()
+:	detail::CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>(nullptr)
+{}
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+MatrixMap<Arithmetic, Rows, Cols, RowMajor>::MatrixMap(Arithmetic* data)
+:	detail::CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>(data)
+{}
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+MatrixMap<Arithmetic, Rows, Cols, RowMajor>&
+	MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other)
+{
+	detail::CommonMatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator=(other);
+	return *this;
+}
+
+// --- MatrixMap Square ---
+
+template <typename Arithmetic, unsigned int Rows, bool RowMajor>
+MatrixMap<Arithmetic, Rows, Rows, RowMajor>::MatrixMap()
+:	detail::CommonMatrixMap<Arithmetic, Rows, Rows, RowMajor>(nullptr)
+{}
+
+template <typename Arithmetic, unsigned int Rows, bool RowMajor>
+MatrixMap<Arithmetic, Rows, Rows, RowMajor>::MatrixMap(Arithmetic* data)
+:	detail::CommonMatrixMap<Arithmetic, Rows, Rows, RowMajor>(data)
+{}
+
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
 MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
 	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::transposeSelf()
@@ -688,100 +661,10 @@ MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
 
 	return *this;
 }
-//
 
-// Matrix operator*(const MatrixMap&) const
-//	Generic
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-template <unsigned int N>
-Matrix<Arithmetic, Rows, N, RowMajor>
-	MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator*(const MatrixMap<Arithmetic, Cols, N, RowMajor>& other) const
-{
-	Arithmetic buffer[Rows * N];
-
-	for (index_t row = 0; row < Rows; ++row)
-	{
-		for (index_t col = 0; col < N; ++col)
-		{
-			Arithmetic& value(buffer[ detail::storageIndex<index_t, RowMajor>(Rows, N, row, col) ]);
-			
-			value = Arithmetic(0);
-			for (index_t k = 0; k < Rows; ++k)
-			{
-				value += 
-				(
-					_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Cols, row, k) ]
-					* other._mappedData[ detail::storageIndex<index_t, RowMajor>(Cols, N, k, col) ] 
-				);
-			}
-		}
-	}
-
-	return Matrix<Arithmetic, Rows, N, RowMajor>(buffer);
-}
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-template <unsigned int N>
-Matrix<Arithmetic, Rows, N, RowMajor>
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator*(const MatrixMap<Arithmetic, Rows, N, RowMajor>& other) const
-{
-	Arithmetic buffer[Rows * N];
-
-	for (index_t row = 0; row < Rows; ++row)
-	{
-		for (index_t col = 0; col < N; ++col)
-		{
-			Arithmetic& value(buffer[ detail::storageIndex<index_t, RowMajor>(Rows, N, row, col) ]);
-			
-			value = Arithmetic(0);
-			for (index_t k = 0; k < Rows; ++k)
-			{
-				value += 
-				(
-					_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, row, k) ]
-					* other._mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, N, k, col) ] 
-				);
-			}
-		}
-	}
-
-	return Matrix<Arithmetic, Rows, N, RowMajor>(buffer);
-}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-template <unsigned int N>
-Matrix<Arithmetic, Rows, N, RowMajor>
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator*(const MatrixMap<Arithmetic, 1u, N, RowMajor>& other) const
-{
-	Arithmetic buffer[Rows * N];
-
-	for (index_t row = 0; row < Rows; ++row)
-	{
-		for (index_t col = 0; col < N; ++col)
-		{
-			Arithmetic& value(buffer[ detail::storageIndex<index_t, RowMajor>(Rows, N, row, col) ]);
-			
-			value = Arithmetic(0);
-			for (index_t k = 0; k < Rows; ++k)
-			{
-				value += 
-				(
-					_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, 1u, row, k) ]
-					* other._mappedData[ detail::storageIndex<index_t, RowMajor>(1u, N, k, col) ] 
-				);
-			}
-		}
-	}
-
-	return Matrix<Arithmetic, Rows, N, RowMajor>(buffer);
-}
-//
-
-// MatrixMap& MatrixMap::operator*=(const MatrixMap&)
-//	Square
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
 MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator*=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other) const
+	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator*=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other)
 {
 	Arithmetic buffer[Rows * Rows];
 
@@ -807,10 +690,43 @@ MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
 
 	return *this;
 }
-//
 
-// Arithmetic MatrixMap::length() const
+template <typename Arithmetic, unsigned int Rows, bool RowMajor>
+MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
+	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other)
+{
+	detail::CommonMatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator=(other);
+	return *this;
+}
+
+
+// --- MatrixMap Vector ---
+
 //	Vector
+template <typename Arithmetic, unsigned int Rows, bool RowMajor>
+MatrixMap<Arithmetic, Rows, 1u, RowMajor>::MatrixMap()
+:	detail::CommonMatrixMap<Arithmetic, Rows, 1u, RowMajor>(nullptr)
+{}
+
+template <typename Arithmetic, unsigned int Rows, bool RowMajor>
+MatrixMap<Arithmetic, Rows, 1u, RowMajor>::MatrixMap(Arithmetic* data)
+:	detail::CommonMatrixMap<Arithmetic, Rows, 1u, RowMajor>(data)
+{}
+
+template <typename Arithmetic, unsigned int Rows, bool RowMajor>
+Arithmetic& MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator[](index_t row)
+{ 
+	ASSERT(row < Rows, "Index out of bounds.");
+	return _mappedData[row]; 
+}
+
+template <typename Arithmetic, unsigned int Rows, bool RowMajor>
+const Arithmetic& MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator[](index_t row) const
+{ 
+	ASSERT(row < Rows, "Index out of bounds.");
+	return _mappedData[row]; 
+}
+
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
 Arithmetic MatrixMap<Arithmetic, Rows, 1u, RowMajor>::length() const
 {
@@ -821,21 +737,7 @@ Arithmetic MatrixMap<Arithmetic, Rows, 1u, RowMajor>::length() const
 
 	return std::sqrt(rVal);
 }
-//	Dynamic vector
-template <typename Arithmetic, bool RowMajor>
-Arithmetic MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::length() const
-{
-	Arithmetic rVal = Arithmetic(0);
 
-	for (index_t row = 0; row < _size; ++row)
-		rVal += (_mappedData[row] * _mappedData[row]);
-
-	return std::sqrt(rVal);
-}
-//
-
-// Arithmetic MatrixMap::lengthSquared() const
-//	Vector
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
 Arithmetic MatrixMap<Arithmetic, Rows, 1u, RowMajor>::lengthSquared() const
 {
@@ -846,141 +748,77 @@ Arithmetic MatrixMap<Arithmetic, Rows, 1u, RowMajor>::lengthSquared() const
 
 	return rVal;
 }
-//	Dynamic vector
+
+template <typename Arithmetic, unsigned int Rows, bool RowMajor>
+MatrixMap<Arithmetic, Rows, 1u, RowMajor>&
+	MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator=(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>& other)
+{
+	detail::CommonMatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator=(other);
+	return *this;
+}
+
+
+// --- MatrixMap Dynamic Vector ---
+
+template <typename Arithmetic, bool RowMajor>
+MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::MatrixMap()
+:	detail::CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>(nullptr, 0u)
+{}
+
+template <typename Arithmetic, bool RowMajor>
+MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::MatrixMap(Arithmetic* data, index_t size)
+:	detail::CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>(data, size)
+{}
+
+template <typename Arithmetic, bool RowMajor>
+Arithmetic& MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator[](index_t row)
+{ 
+	ASSERT(row < _rows, "Index out of bounds.");
+	return _mappedData[row]; 
+}
+
+template <typename Arithmetic, bool RowMajor>
+const Arithmetic& MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator[](index_t row) const
+{ 
+	ASSERT(row < _rows, "Index out of bounds.");
+	return _mappedData[row]; 
+}
+
+template <typename Arithmetic, bool RowMajor>
+Arithmetic MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::length() const
+{
+	Arithmetic rVal = Arithmetic(0);
+
+	for (index_t row = 0; row < _rows; ++row)
+		rVal += (_mappedData[row] * _mappedData[row]);
+
+	return std::sqrt(rVal);
+}
+
 template <typename Arithmetic, bool RowMajor>
 Arithmetic MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::lengthSquared() const
 {
 	Arithmetic rVal = Arithmetic(0);
 
-	for (index_t row = 0; row < _size; ++row)
+	for (index_t row = 0; row < _rows; ++row)
 		rVal += (_mappedData[row] * _mappedData[row]);
 
 	return rVal;
 }
-//
 
-
-// -- Comparators --
-
-// bool MatrixMap::operator==(const MatrixMap&) const
-//	Generic
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-bool MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator==(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other) const
-{
-	for (index_t i = 0; i < Rows * Cols; ++i)
-		if (_mappedData[i] != other._mappedData[i])
-			return false;
-	
-	return true;
-}
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-bool MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator==(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other) const
-{
-	for (index_t i = 0; i < Rows * Rows; ++i)
-		if (_mappedData[i] != other._mappedData[i])
-			return false;
-	
-	return true;
-}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-bool MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator==(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>& other) const
-{
-	for (index_t i = 0; i < Rows; ++i)
-		if (_mappedData[i] != other._mappedData[i])
-			return false;
-	
-	return true;
-}
-//	Dynamic vector
 template <typename Arithmetic, bool RowMajor>
-bool MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator==(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other) const
+size_t
+	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::rows() const
 {
-	if (_size != other._size)
-		return false;
-
-	for (index_t i = 0; i < _size; ++i)
-		if (_mappedData[i] != other._mappedData[i])
-			return false;
-	
-	return true;
+	return _rows;
 }
-//
 
-// bool MatrixMap::operator!=(const MatrixMap&) const
-//	Generic
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-bool MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator!=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other) const
-{ return !(*this == other); }
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-bool MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator!=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other) const
-{ return !(*this == other); }
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-bool MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator!=(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>& other) const
-{ return !(*this == other); }
-//	Dynamic vector
-template <typename Arithmetic, bool RowMajor>
-bool MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator!=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other) const
-{ return !(*this == other); }
-//
-
-// MISC
-
-// MatrixMap& MatrixMap::operator=(const MatrixMap&)
-//	Generic
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Cols, RowMajor>&
-	MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator=(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& other)
-{
-	for (index_t i = 0; i < Rows * Cols; ++i)
-		_mappedData[i] = other._mappedData[i];
-
-	return *this;
-}
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other)
-{
-	for (index_t i = 0; i < Rows * Rows; ++i)
-		_mappedData[i] = other._mappedData[i];
-
-	return *this;
-}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-MatrixMap<Arithmetic, Rows, 1u, RowMajor>&
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator=(const MatrixMap<Arithmetic, Rows, 1u, RowMajor>& other)
-{
-	for (index_t i = 0; i < Rows; ++i)
-		_mappedData[i] = other._mappedData[i];
-
-	return *this;
-}
-//	Dynamic vector
 template <typename Arithmetic, bool RowMajor>
 MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&
 	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator=(const MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& other)
 {
-	ASSERT(_size == other._size, "Cannot copy assign matrix with different dimension.");
-
-	for (index_t i = 0; i < _size; ++i)
-		_mappedData[i] = other._mappedData[i];
-
+	detail::CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator=(other);
 	return *this;
 }
-//
 
-// size_t MatrixMap::rows() const
-//	Dynamic vector
-template <typename Arithmetic, bool RowMajor>
-typename MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::size_t
-	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::rows() const
-{
-	return _size;
-}
-//
 }
