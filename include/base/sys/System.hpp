@@ -36,17 +36,13 @@ PM_MAKE_EXCEPTION_CLASS(SystemDeadException, SystemException);
  * 					method update(void) that returns true if system should
  * 					continue running.
  *
- * 					FIX Current implementation crashes if runner is accessed
- * 					after it's been destroyed.
- *
  */
-template<typename Runner>
+template <typename Runner>
 class System : public concurrency::Thread
 {
 public:
-
 	System(const TimeDuration& sync, 
-		   size_t bufferSize, 
+		   std::size_t bufferSize, 
 		   typename Runner::ConstructionArgs&& args);
 	System(System&& system);
 	virtual ~System();
@@ -60,7 +56,6 @@ protected:
 	typename Runner::ConstructionArgs _runnerConstructionArgs;
 
 	SystemActionQueue<Runner> _actions;
-
 
 	std::atomic<Runner*> _runnerAccess;
 
