@@ -21,6 +21,13 @@ project "math"
 			externalPath .. "include/eigen",
 			includePath .. "eigen"
 		}
+
+	
+	configuration { "eigen", "macosx" }
+		pm.includedirs 
+		{
+			"/usr/local/include/eigen3"
+		}
 		
 	configuration "math_ext"
 		pm.cppFiles(
