@@ -18,9 +18,8 @@
 
 namespace polymorph { namespace concurrency {
 
-namespace detail {
-	PM_MAKE_EXCEPTION_CLASS(InterruptException, std::exception);
-}
+PM_MAKE_EXCEPTION_CLASS(InterruptException, std::exception);
+
 
 class Thread : NonCopyable
 {
