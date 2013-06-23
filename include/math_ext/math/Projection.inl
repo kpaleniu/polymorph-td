@@ -52,6 +52,16 @@ Projection<Arithmetic, RowMajor>
 }
 
 template <typename Arithmetic, bool RowMajor>
+Projection<Arithmetic, RowMajor>&
+	Projection<Arithmetic, RowMajor>::operator=(const Projection<Arithmetic, RowMajor>& other)
+{
+	_projMat = other._projMat;
+	_invMat = other._invMat;
+
+	return *this;
+}
+
+template <typename Arithmetic, bool RowMajor>
 Projection<Arithmetic, RowMajor>
 	Projection<Arithmetic, RowMajor>::ortho(
 		Arithmetic left, Arithmetic right, 

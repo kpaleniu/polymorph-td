@@ -312,6 +312,14 @@ Transform<Arithmetic, RowMajor>&
 }
 
 template <typename Arithmetic, bool RowMajor>
+Transform<Arithmetic, RowMajor>&
+	Transform<Arithmetic, RowMajor>::operator=(const Transform<Arithmetic, RowMajor>& other)
+{
+	_topLeft = other._topLeft;
+	_translation = other._translation;
+}
+
+template <typename Arithmetic, bool RowMajor>
 MatrixMap<Arithmetic, 3u, 1u, RowMajor>&
 	Transform<Arithmetic, RowMajor>::translation()
 {

@@ -31,11 +31,18 @@ public:
 	void transform(MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
 	void transform(MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>& vec) const;
 
-	Matrix<Arithmetic, 2u, 1u, RowMajor> operator*(const MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const;
-	Matrix<Arithmetic, 3u, 1u, RowMajor> operator*(const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
+	Matrix<Arithmetic, 2u, 1u, RowMajor> 
+		operator*(const MatrixMap<Arithmetic, 2u, 1u, RowMajor>& vec2) const;
+	Matrix<Arithmetic, 3u, 1u, RowMajor> 
+		operator*(const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
+	Transform<Arithmetic, RowMajor> 
+		operator*(const Transform<Arithmetic, RowMajor>& other) const;
 
-	Transform<Arithmetic, RowMajor> operator*(const Transform<Arithmetic, RowMajor>& other) const;
-	Transform<Arithmetic, RowMajor>& operator*=(const Transform<Arithmetic, RowMajor>& other);
+	Transform<Arithmetic, RowMajor>& 
+		operator*=(const Transform<Arithmetic, RowMajor>& other);
+
+	Transform<Arithmetic, RowMajor>&
+		operator=(const Transform<Arithmetic, RowMajor>& other);
 
 	Matrix<Arithmetic, 4u, 4u, RowMajor> asAffineMatrix() const;
 
