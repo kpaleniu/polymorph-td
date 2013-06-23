@@ -1,5 +1,6 @@
 #include "sys/SystemActionQueue.hpp"
 
+#include <Assert.hpp>
 
 namespace polymorph { namespace sys {
 
