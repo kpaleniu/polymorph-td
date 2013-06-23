@@ -180,7 +180,7 @@ pm =
 		{
 			["Headers" .. cnfName] = includePath .. "*.hpp",
 			["Inlines" .. cnfName] = inlinePath  .. "*.inl",
-			["Sources" .. cnfName] = sourcePath  .. "*.cpp",
+			["Sources" .. cnfName] = { sourcePath  .. "*.cpp", sourcePath .. "*.mm" },
 		}
 		
 		files
@@ -188,6 +188,7 @@ pm =
 			includePath .. "*.hpp",
 			inlinePath  .. "*.inl",
 			sourcePath  .. "*.cpp",
+			sourcePath  .. "*.mm"
 		}
 	end,
 	
@@ -414,6 +415,9 @@ function polymorphSolution()
 	configuration "not vs*"
 		buildoptions { "-std=c++0x" }
 		defines { "__GXX_EXPERIMENTAL_CXX0X__" }
+	
+	configuration "xcode4"
+		buildoptions { "-std=c++11 -stdlib=libc++" }
 	
 	-- From 'configurations'
 	configuration "Debug"
