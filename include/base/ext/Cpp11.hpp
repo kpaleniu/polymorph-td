@@ -58,4 +58,8 @@
 #	define NO_STD_SNPRINTF
 #endif
 
+#if defined(__APPLE__)
+#   define NO_TEMPLATE_FRIENDS
+#endif
+
 #endif
