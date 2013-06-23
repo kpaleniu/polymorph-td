@@ -19,6 +19,7 @@ public:
 	Scene(Scene&& other);
 	
 	void addModel(model_id id, Model&& model);
+	void removeModel(model_id id);
 
 	Model& model(model_id id);
 	const Model& model(model_id id) const;

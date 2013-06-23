@@ -21,6 +21,13 @@ void Scene::addModel(model_id id, Model&& model)
 	_modelRegister.insert(std::make_pair(id, std::move(model)));
 }
 
+void Scene::removeModel(model_id id)
+{
+	ASSERT(_modelRegister.find(id) != _modelRegister.end(), "Trying to remove non-existing model.");
+
+	_modelRegister.erase(id);
+}
+
 Model& Scene::model(model_id id)
 {
 	return _modelRegister.at(id);
