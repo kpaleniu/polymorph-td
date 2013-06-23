@@ -62,7 +62,7 @@ void System<Runner>::threadMain()
 
 	static const char* TAG = "System";
 
-	Runner runner( std::move(_runnerConstructionArgs) );
+	Runner runner( std::move(_runnerConstructionArgs), *this );
 
 	Scoped accessScope([&]{ _runnerAccess = &runner; },
 	                   [&]{ _runnerAccess = nullptr; });
@@ -76,6 +76,8 @@ void System<Runner>::threadMain()
 
 	//---------------- Main system loop ----------------//
 
+	TimeDuration lastDT = TimeDuration::millis(0);
+
 	DEBUG_OUT(TAG, "Started thread main loop");
 	for (;;)
 	{
@@ -86,7 +88,7 @@ void System<Runner>::threadMain()
 		{
 			// auto profileBlock = profiler::ThreadProfiler::profileBlock(updateName);
 
-			if (!runner.update())
+			if (!runner.update(lastDT))
 				return;
 		}
 
@@ -109,6 +111,8 @@ void System<Runner>::threadMain()
 			if ( waitDuration < TimeDuration::millis(0) )
 				break;
 		}
+
+		lastDT = TimeDuration::between(t0, TimeStamp::now());
 	}
 }
 

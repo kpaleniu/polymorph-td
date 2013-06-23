@@ -27,11 +27,11 @@ public:
 		GraphicsSystem& grSys;
 	};
 
-	GraphicsSystemRunner(ConstructionArgs args);
+	GraphicsSystemRunner(ConstructionArgs args, System<GraphicsSystemRunner>&);
 	GraphicsSystemRunner(GraphicsSystemRunner&& system);
 	~GraphicsSystemRunner();
 
-	bool update();
+	bool update(TimeDuration dt);
 
 	gr::Renderer&	renderer();
 	gr::Surface&	surface();

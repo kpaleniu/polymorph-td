@@ -89,7 +89,7 @@ public:
 		transaction.scene.removeModel(TEST_MODEL_HASH);
 	}
 
-	bool update()
+	bool update(TimeDuration)
 	{
 		return true;
 	}
@@ -148,10 +148,18 @@ private:
 						auto& model = transaction.scene.model(TEST_MODEL_HASH);
 
 						DEBUG_OUT("MOVE_MODEL", "This is a drag! (%i %i)", arg.dx, arg.dy);
-			
-						model.transform() *= gr::Transform::eulerAngle(gr::real_t(arg.dy) * 0.001f);
-						model.transform() *= gr::Transform::translate(gr::real_t(arg.dx) * 0.001f, 0.0f);
 						
+						auto rotTrans = gr::Transform::eulerAngle(gr::real_t(arg.dy) * 0.001f);
+
+						gr::Vector3_r worldPosDiff = { gr::real_t(arg.dx) * 0.001f, 0.0f, 0.0f };
+
+						model.transform().translation() += worldPosDiff;
+						model.transform() *= rotTrans;
+
+						DEBUG_OUT("MOVE_MODEL",
+								  "Pos: (%f %f)", 
+								  model.transform().translation()[0], 
+								  model.transform().translation()[1]);
 					}
 				);
 			}

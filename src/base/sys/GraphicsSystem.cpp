@@ -29,7 +29,7 @@ GraphicsSystemRunner::ConstructionArgs::ConstructionArgs(ConstructionArgs&& othe
 }
 
 
-GraphicsSystemRunner::GraphicsSystemRunner(ConstructionArgs args)
+GraphicsSystemRunner::GraphicsSystemRunner(ConstructionArgs args, System<GraphicsSystemRunner>&)
 :	_surface(args.win.surface()), 
 	_renderer(_surface), 
 	_scene(args.grSys._sourceScene),
@@ -52,7 +52,7 @@ GraphicsSystemRunner::~GraphicsSystemRunner()
 	DEBUG_OUT(TAG_RUNNER, "Destroyed");
 }
 
-bool GraphicsSystemRunner::update()
+bool GraphicsSystemRunner::update(TimeDuration)
 {
 	{
 		polymorph::concurrency::MutexLockGuard sceneLock(_system._sceneTransactionMutex);
