@@ -26,6 +26,17 @@ project "input"
 		{
 			includePath .. "win32"
 		}
+
+	configuration "macosx"
+		pm.cppFiles(
+			sourcePath .. "osx/input/",
+			includePath .. "osx/input/"
+		)
+		
+		pm.includedirs
+		{
+			includePath .. "osx"
+		}
 	
 	configuration {}
 	
