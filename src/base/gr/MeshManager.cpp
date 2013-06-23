@@ -3,8 +3,17 @@
 
 namespace gr {
 
-
 const MeshManager::MeshHandle MeshManager::NULL_MESH = MeshManager::MeshHandle();
+
+MeshManager::MeshManager()
+:	ResourceLoader()
+{
+}
+
+MeshManager::MeshManager(MeshManager&& other)
+:	ResourceLoader(std::forward<MeshManager>(other))
+{
+}
 
 MeshManager::MeshHandle MeshManager::addMesh(text::string_hash id, Mesh&& mesh)
 {
