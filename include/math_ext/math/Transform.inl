@@ -127,7 +127,7 @@ Transform<Arithmetic, RowMajor>
 template <typename Arithmetic, bool RowMajor>
 void Transform<Arithmetic, RowMajor>::invert()
 {
-	_topLeft = inverse(_topLeft);
+	_topLeft = math::inverse(_topLeft);
 	_translation = ( (_topLeft * Arithmetic(-1)) * _translation );
 }
 
