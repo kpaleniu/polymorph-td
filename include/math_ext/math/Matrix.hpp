@@ -48,9 +48,6 @@ public:
 
 	using MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator=;
 
-	Matrix<Arithmetic, Rows, Cols, RowMajor>& 
-		operator=(const Matrix<Arithmetic, Rows, Cols, RowMajor>& other);
-
 private:
 	Arithmetic _data[Rows * Cols];
 };
@@ -75,9 +72,6 @@ public:
 
 	using MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator=;
 
-	Matrix<Arithmetic, Rows, Rows, RowMajor>& 
-		operator=(const Matrix<Arithmetic, Rows, Rows, RowMajor>& other);
-
 private:
 	Arithmetic _data[Rows * Rows];
 };
@@ -101,9 +95,6 @@ public:
 
 
 	using MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator=;
-
-	Matrix<Arithmetic, Rows, 1u, RowMajor>& 
-		operator=(const Matrix<Arithmetic, Rows, 1u, RowMajor>& other);
 
 private:
 	Arithmetic _data[Rows];

@@ -18,6 +18,9 @@ public:
 
 	Projection<Arithmetic, RowMajor> inverse() const;
 
+	Projection<Arithmetic, RowMajor>& 
+		operator=(const Projection<Arithmetic, RowMajor>& other);
+
 	static Projection<Arithmetic, RowMajor> ortho(
 		Arithmetic left, Arithmetic right, 
 		Arithmetic bottom, Arithmetic top, 

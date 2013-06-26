@@ -245,32 +245,6 @@ Matrix<Arithmetic, Rows, 1u, RowMajor>::Matrix(std::initializer_list<Arithmetic>
 }
 //
 
-// Matrix& Matrix::operator=(const Matrix&)
-//	Generic
-template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-Matrix<Arithmetic, Rows, Cols, RowMajor>& 
-	Matrix<Arithmetic, Rows, Cols, RowMajor>::operator=(const Matrix<Arithmetic, Rows, Cols, RowMajor>& other)
-{
-	MatrixMap<Arithmetic, Rows, Cols, RowMajor>::operator=(other);
-	return *this;
-}
-//	Square
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Matrix<Arithmetic, Rows, Rows, RowMajor>& 
-	Matrix<Arithmetic, Rows, Rows, RowMajor>::operator=(const Matrix<Arithmetic, Rows, Rows, RowMajor>& other)
-{
-	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator=(other);
-	return *this;
-}
-//	Vector
-template <typename Arithmetic, unsigned int Rows, bool RowMajor>
-Matrix<Arithmetic, Rows, 1u, RowMajor>& 
-	Matrix<Arithmetic, Rows, 1u, RowMajor>::operator=(const Matrix<Arithmetic, Rows, 1u, RowMajor>& other)
-{
-	MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator=(other);
-	return *this;
-}
-//
 
 
 // -- Matrix Constants --
