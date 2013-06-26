@@ -60,6 +60,7 @@
 
 #if defined(__APPLE__)
 #   define NO_TEMPLATE_FRIENDS
+#   define NO_THREAD_LOCAL
 #endif
 
 #endif

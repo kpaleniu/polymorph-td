@@ -21,23 +21,21 @@ inline std::string format(const std::string& fmtstr, Arg&& arg, Args&& ... args)
 #ifdef NO_THREAD_LOCAL
 #	ifdef _MSC_VER
 		__declspec( thread ) static char buffer[FORMAT_BUFFER_SIZE];
-#	else
-		char buffer[FORMAT_BUFFER_SIZE];
-#	endif
-#else
+#   elif defined(__APPLE__) || ( __GNUC__ <= 4 && __GNUC_MINOR__ < 8 )
     /*
      * Clang does not seem to support thread_local keyword. In GCC
      * the support only came with 4.8. Therefore fallback to __thread
      * keyword.
-     * 
+     *
      * Caution! result of __thread keyword is highly platform,
      * compiler and standard library dependant.
      */
-#   if defined(__APPLE__) || ( __GNUC__ <= 4 && __GNUC_MINOR__ < 8 )
-        static __thread char buffer[FORMAT_BUFFER_SIZE];
-#   else
-        static thread_local char buffer[FORMAT_BUFFER_SIZE];
-#   endif
+    static __thread char buffer[FORMAT_BUFFER_SIZE];
+#	else
+		char buffer[FORMAT_BUFFER_SIZE];
+#	endif
+#else
+    static thread_local char buffer[FORMAT_BUFFER_SIZE];
 #endif
 	
 #ifdef NO_STD_SNPRINTF

@@ -146,8 +146,12 @@ void Thread::setCondition(std::condition_variable* cond)
 
 Thread* Thread::currentThread(Thread* setter)
 {
-#if defined(NO_THREAD_LOCAL) && defined(_MSC_VER)
-	__declspec( thread ) static Thread* thisThread = nullptr;
+#if defined(NO_THREAD_LOCAL)
+#   if defined(_MSC_VER)
+        __declspec( thread ) static Thread* thisThread = nullptr;
+#   elif defined(__APPLE__) || ( __GNUC__ <= 4 && __GNUC_MINOR__ < 8 )
+        static __thread Thread* thisThread = nullptr;
+#   endif
 #else
 	thread_local static Thread* thisThread = nullptr;
 #endif
