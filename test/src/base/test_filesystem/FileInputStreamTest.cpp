@@ -19,7 +19,7 @@ bool createTestFile(const char* path, std::size_t size)
 
 	for (std::size_t i = 0; i < size; ++i)
 	{
-		fileOut << unsigned char(i);
+		fileOut << (unsigned char)(i);
 
 		if (!fileOut)
 			return false;
@@ -46,7 +46,7 @@ void testRead()
 
 		fis >> tempC;
 
-		test::assertEqual(tempC, unsigned char(i));
+		test::assertEqual(tempC, (unsigned char)(i));
 	}
 
 	test::assertEqual(fis.available(), std::size_t(0));

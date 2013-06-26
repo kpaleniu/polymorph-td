@@ -27,23 +27,23 @@ void testWrite()
 
 	std::ifstream ifs("TestWrite.txt", std::ios_base::binary | std::ios_base::in);
 
-	test::assume(ifs, "Cannot open file.");
+	test::assume(ifs.good(), "Cannot open file.");
 
 	for (int i = 0; i < 20; ++i)
 	{
 		char temp;
 		ifs.get(temp);
 
-		test::assertTrue( ifs );
+		test::assertTrue( ifs >> temp );
 
 		test::assertEqual(temp, (char) i, "Unexpected file content.");
 		
 	}
 
-	test::assertTrue( ifs );
+	test::assertTrue( ifs.good() );
 
 	char c;
 	ifs.get(c);
 
-	test::assertTrue( !ifs );
+	test::assertTrue( ifs.fail() );
 }
