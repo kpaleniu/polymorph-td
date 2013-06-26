@@ -13,8 +13,8 @@ void testConstructors()
 	{
 		Matrix<Arithmetic, Rows, Cols, RowMajor> mat;
 
-		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
+		for (typename Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
+			for (typename Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
 				test::assertEqual(mat(row, col), Arithmetic(0));
 	}
 
@@ -29,9 +29,9 @@ void testSquareConstructors()
 		Arithmetic diagonal = 2;
 		Matrix<Arithmetic, Dim, Dim, RowMajor> mat((Arithmetic(diagonal)));
 
-		for (Matrix<Arithmetic, Dim, Dim, RowMajor>::index_t row = 0; row < Dim; ++row)
+		for (typename Matrix<Arithmetic, Dim, Dim, RowMajor>::index_t row = 0; row < Dim; ++row)
 		{
-			for (Matrix<Arithmetic, Dim, Dim, RowMajor>::index_t col = 0; col < Dim; ++col)
+			for (typename Matrix<Arithmetic, Dim, Dim, RowMajor>::index_t col = 0; col < Dim; ++col)
 			{
 				if (col == row)
 					test::assertEqual(mat(row, col), diagonal);
@@ -64,26 +64,26 @@ void testArithmetics()
 	{
 		Matrix<Arithmetic, Rows, Cols, RowMajor> mat;
 
-		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
+		for (typename Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
+			for (typename Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
 				mat(row, col) = row + Arithmetic(2) * col;
 
 		Matrix<Arithmetic, Rows, Cols, RowMajor> mat2 = mat * Arithmetic(2);
-		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
+		for (typename Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
+			for (typename Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
 				test::assertEqual(mat2(row, col), Arithmetic((row + Arithmetic(2) * col) * Arithmetic(2)));
 	}
 
 	{
 		Matrix<Arithmetic, Rows, Cols, RowMajor> mat;
 
-		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
+		for (typename Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
+			for (typename Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
 				mat(row, col) = row + Arithmetic(2) * col;
 
 		Matrix<Arithmetic, Rows, Cols, RowMajor> mat2 = mat / Arithmetic(2);
-		for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
-			for (Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
+		for (typename Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t row = 0; row < Rows; ++row)
+			for (typename Matrix<Arithmetic, Rows, Cols, RowMajor>::index_t col = 0; col < Cols; ++col)
 				test::assertEqual(mat2(row, col), Arithmetic((row + Arithmetic(2) * col) / Arithmetic(2) ));
 	}
 }

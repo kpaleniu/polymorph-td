@@ -76,7 +76,7 @@ Transform<Arithmetic, RowMajor>
 {
 	Transform<Arithmetic, RowMajor> rVal;
 
-	for (MatrixMap<Arithmetic, 3u, 1u, RowMajor>::index_t i = 0; i < 3u; ++i)
+	for (typename MatrixMap<Arithmetic, 3u, 1u, RowMajor>::index_t i = 0; i < 3u; ++i)
 		rVal._topLeft(i, i) = scaling(i, 0);
 
 	return rVal;
@@ -137,11 +137,11 @@ Matrix<Arithmetic, 4u, 4u, RowMajor>
 {
 	Matrix<Arithmetic, 4u, 4u, RowMajor> rMat(Arithmetic(1));
 
-	for (Matrix<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
-		for (Matrix<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col< 3; ++col)
+	for (typename Matrix<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
+		for (typename Matrix<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col< 3; ++col)
 			rMat(row, col) = _topLeft(row, col);
 
-	for (Matrix<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
+	for (typename Matrix<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
 		rMat(row, 3u) = _translation[row];
 
 	return rMat; // Last row is {0 0 0 1} due to constructor.
@@ -277,11 +277,11 @@ Transform<Arithmetic, RowMajor>
 
 	Transform<Arithmetic, RowMajor> rTransform;
 
-	for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
-		for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col < 3; ++col)
+	for (typename MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
+		for (typename MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col < 3; ++col)
 			rTransform._topLeft(row, col) = matProduct(row, col);
 
-	for (MatrixMap<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
+	for (typename MatrixMap<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
 		rTransform._translation(row, 0) = matProduct(row, 3);
 
 	return rTransform;
@@ -301,11 +301,11 @@ Transform<Arithmetic, RowMajor>&
 			&& (matProduct(3, 3) == Arithmetic(1)),
 			"Transformation is no longer affine." );
 
-	for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
-		for (MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col < 3; ++col)
+	for (typename MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t row = 0; row < 3; ++row)
+		for (typename MatrixMap<Arithmetic, 3u, 3u, RowMajor>::index_t col = 0; col < 3; ++col)
 			_topLeft(row, col) = matProduct(row, col);
 
-	for (MatrixMap<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
+	for (typename MatrixMap<Arithmetic, 3u, 1u, RowMajor>::index_t row = 0; row < 3; ++row)
 		_translation[row] = matProduct(row, 3);
 
 	return *this;

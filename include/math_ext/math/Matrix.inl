@@ -2,6 +2,7 @@
 
 #include <Assert.hpp>
 #include <memory>
+#include <cmath>
 
 namespace math {
 
@@ -122,7 +123,7 @@ Matrix<Arithmetic, Rows, Cols, RowMajor>::Matrix()
 	for (index_t i = 0; i < Rows * Cols; ++i)
 		_data[i] = Arithmetic(0);
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //	Square
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
@@ -132,7 +133,7 @@ Matrix<Arithmetic, Rows, Rows, RowMajor>::Matrix()
 	for (index_t i = 0; i < Rows * Rows; ++i)
 		_data[i] = Arithmetic(0);
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //	Vector
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
@@ -142,7 +143,7 @@ Matrix<Arithmetic, Rows, 1u, RowMajor>::Matrix()
 	for (index_t i = 0; i < Rows; ++i)
 		_data[i] = Arithmetic(0);
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //
 
@@ -164,7 +165,7 @@ Matrix<Arithmetic, Rows, Rows, RowMajor>::Matrix(Arithmetic value)
 		}
 	}
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //
 
@@ -176,7 +177,7 @@ Matrix<Arithmetic, Rows, Cols, RowMajor>::Matrix(const Arithmetic* data)
 {
 	std::memcpy(_data, data, sizeof(Arithmetic) * Rows * Cols);
 	
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //	Square
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
@@ -185,7 +186,7 @@ Matrix<Arithmetic, Rows, Rows, RowMajor>::Matrix(const Arithmetic* data)
 {
 	std::memcpy(_data, data, sizeof(Arithmetic) * Rows * Rows);
 	
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //	Vector
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
@@ -194,7 +195,7 @@ Matrix<Arithmetic, Rows, 1u, RowMajor>::Matrix(const Arithmetic* data)
 {
 	std::memcpy(_data, data, sizeof(Arithmetic) * Rows);
 	
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //
 
@@ -206,7 +207,7 @@ Matrix<Arithmetic, Rows, Cols, RowMajor>::Matrix(const Matrix<Arithmetic, Rows, 
 {
 	std::memcpy(_data, other._mappedData, sizeof(Arithmetic) * Rows * Cols);
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //	Square
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
@@ -215,7 +216,7 @@ Matrix<Arithmetic, Rows, Rows, RowMajor>::Matrix(const Matrix<Arithmetic, Rows, 
 {
 	std::memcpy(_data, other._mappedData, sizeof(Arithmetic) * Rows * Rows);
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //	Vector
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
@@ -224,7 +225,7 @@ Matrix<Arithmetic, Rows, 1u, RowMajor>::Matrix(const Matrix<Arithmetic, Rows, 1u
 {
 	std::memcpy(_data, other._mappedData, sizeof(Arithmetic) * Rows);
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //
 
@@ -240,7 +241,7 @@ Matrix<Arithmetic, Rows, 1u, RowMajor>::Matrix(std::initializer_list<Arithmetic>
 	for (index_t i = 0; i < data.size(); ++i)
 		_data[i] = *it++;
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 //
 
@@ -347,7 +348,7 @@ template <typename Arithmetic, bool RowMajor>
 Arithmetic& 
 	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator()(index_t row, index_t col)
 { 
-	return _mappedData[ detail::storageIndex<index_t, RowMajor>(_rows, Cols, row, col) ];
+	return _mappedData[ detail::storageIndex<index_t, RowMajor>(_rows, this->Cols, row, col) ];
 }
 
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
@@ -360,7 +361,7 @@ template <typename Arithmetic, bool RowMajor>
 const Arithmetic& 
 	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator()(index_t row, index_t col) const
 { 
-	return _mappedData[ detail::storageIndex<index_t, RowMajor>(_rows, Cols, row, col) ];
+	return _mappedData[ detail::storageIndex<index_t, RowMajor>(_rows, this->Cols, row, col) ];
 }
 
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
@@ -400,10 +401,10 @@ template <typename Arithmetic, bool RowMajor>
 MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>&
 	CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator*=(Arithmetic scalar)
 {
-	for (index_t i = 0; i < _rows * Cols; ++i)
+	for (index_t i = 0; i < _rows * this->Cols; ++i)
 		_mappedData[i] *= scalar;
 
-	return *static_cast<MatrixMap<Arithmetic, DYNAMIC, Cols, RowMajor>*>(this);
+	return *static_cast<MatrixMap<Arithmetic, DYNAMIC, this->Cols, RowMajor>*>(this);
 }
 
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
@@ -649,13 +650,15 @@ template <typename Arithmetic, unsigned int Rows, bool RowMajor>
 MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
 	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::transposeSelf()
 {
+    typedef typename Matrix<Arithmetic, Rows, Rows, RowMajor>::index_t index_t;
+
 	for (index_t row = 0; row < Rows; ++row)
 	{
 		for (index_t col = row + 1; col < Rows; ++col)
 		{
 			std::swap(
-				_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, col, row) ],
-				_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, row, col) ] );
+				this->_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, col, row) ],
+				this->_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, row, col) ] );
 		}
 	}
 
@@ -667,6 +670,7 @@ MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
 	MatrixMap<Arithmetic, Rows, Rows, RowMajor>::operator*=(const MatrixMap<Arithmetic, Rows, Rows, RowMajor>& other)
 {
 	Arithmetic buffer[Rows * Rows];
+    typedef typename Matrix<Arithmetic, Rows, Rows, RowMajor>::index_t index_t;
 
 	for (index_t row = 0; row < Rows; ++row)
 	{
@@ -679,14 +683,14 @@ MatrixMap<Arithmetic, Rows, Rows, RowMajor>&
 			{
 				value += 
 				(
-					_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, row, k) ]
+					this->_mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, row, k) ]
 					* other._mappedData[ detail::storageIndex<index_t, RowMajor>(Rows, Rows, k, col) ] 
 				);
 			}
 		}
 	}
 
-	std::memcpy(_mappedData, buffer, Rows * Rows * sizeof(Arithmetic));
+	std::memcpy(this->_mappedData, buffer, Rows * Rows * sizeof(Arithmetic));
 
 	return *this;
 }
@@ -717,14 +721,14 @@ template <typename Arithmetic, unsigned int Rows, bool RowMajor>
 Arithmetic& MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator[](index_t row)
 { 
 	ASSERT(row < Rows, "Index out of bounds.");
-	return _mappedData[row]; 
+	return this->_mappedData[row]; 
 }
 
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
 const Arithmetic& MatrixMap<Arithmetic, Rows, 1u, RowMajor>::operator[](index_t row) const
 { 
 	ASSERT(row < Rows, "Index out of bounds.");
-	return _mappedData[row]; 
+	return this->_mappedData[row]; 
 }
 
 template <typename Arithmetic, unsigned int Rows, bool RowMajor>
@@ -733,7 +737,7 @@ Arithmetic MatrixMap<Arithmetic, Rows, 1u, RowMajor>::length() const
 	Arithmetic rVal = Arithmetic(0);
 
 	for (index_t row = 0; row < Rows; ++row)
-		rVal += (_mappedData[row] * _mappedData[row]);
+		rVal += (this->_mappedData[row] * this->_mappedData[row]);
 
 	return std::sqrt(rVal);
 }
@@ -744,7 +748,7 @@ Arithmetic MatrixMap<Arithmetic, Rows, 1u, RowMajor>::lengthSquared() const
 	Arithmetic rVal = Arithmetic(0);
 
 	for (index_t row = 0; row < Rows; ++row)
-		rVal += (_mappedData[row] * _mappedData[row]);
+		rVal += (this->_mappedData[row] * this->_mappedData[row]);
 
 	return rVal;
 }
@@ -765,23 +769,25 @@ MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::MatrixMap()
 :	detail::CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>(nullptr, 0u)
 {}
 
+/*
 template <typename Arithmetic, bool RowMajor>
 MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::MatrixMap(Arithmetic* data, index_t size)
 :	detail::CommonMatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>(data, size)
 {}
+*/
 
 template <typename Arithmetic, bool RowMajor>
 Arithmetic& MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator[](index_t row)
 { 
-	ASSERT(row < _rows, "Index out of bounds.");
-	return _mappedData[row]; 
+	ASSERT(row < this->_rows, "Index out of bounds.");
+	return this->_mappedData[row]; 
 }
 
 template <typename Arithmetic, bool RowMajor>
 const Arithmetic& MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::operator[](index_t row) const
 { 
-	ASSERT(row < _rows, "Index out of bounds.");
-	return _mappedData[row]; 
+	ASSERT(row < this->_rows, "Index out of bounds.");
+	return this->_mappedData[row]; 
 }
 
 template <typename Arithmetic, bool RowMajor>
@@ -789,8 +795,8 @@ Arithmetic MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::length() const
 {
 	Arithmetic rVal = Arithmetic(0);
 
-	for (index_t row = 0; row < _rows; ++row)
-		rVal += (_mappedData[row] * _mappedData[row]);
+	for (index_t row = 0; row < this->_rows; ++row)
+		rVal += (this->_mappedData[row] * this->_mappedData[row]);
 
 	return std::sqrt(rVal);
 }
@@ -800,8 +806,8 @@ Arithmetic MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::lengthSquared() const
 {
 	Arithmetic rVal = Arithmetic(0);
 
-	for (index_t row = 0; row < _rows; ++row)
-		rVal += (_mappedData[row] * _mappedData[row]);
+	for (index_t row = 0; row < this->_rows; ++row)
+		rVal += (this->_mappedData[row] * this->_mappedData[row]);
 
 	return rVal;
 }
@@ -810,7 +816,7 @@ template <typename Arithmetic, bool RowMajor>
 size_t
 	MatrixMap<Arithmetic, DYNAMIC, 1u, RowMajor>::rows() const
 {
-	return _rows;
+	return this->_rows;
 }
 
 template <typename Arithmetic, bool RowMajor>
