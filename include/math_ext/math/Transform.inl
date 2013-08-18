@@ -317,6 +317,8 @@ Transform<Arithmetic, RowMajor>&
 {
 	_topLeft = other._topLeft;
 	_translation = other._translation;
+
+	return *this;
 }
 
 template <typename Arithmetic, bool RowMajor>
