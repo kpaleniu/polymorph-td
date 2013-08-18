@@ -24,7 +24,7 @@ project "sys"
 		
 		pm.includedirs
 		{
-			includePath .. "win32/sys"
+			includePath .. "win32"
 		}
 	
 	configuration {}
