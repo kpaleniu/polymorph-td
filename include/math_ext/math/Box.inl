@@ -9,7 +9,7 @@ namespace math {
 template <typename Arithmetic, bool RowMajor>
 AxisAlignedBox<Arithmetic, RowMajor>::AxisAlignedBox(Arithmetic minX, Arithmetic minY, Arithmetic minZ,
 													 Arithmetic maxX, Arithmetic maxY, Arithmetic maxZ)
-:	_minP( {minX, minY, minZ} ), _maxP( {minX, minY, minZ} )
+:	_minP( {minX, minY, minZ} ), _maxP( {maxX, maxY, maxZ} )
 {
 	ASSERT(minX <= maxX && minY <= maxY && minZ <= maxZ, "Bad arguments to Box constructor.");
 }
