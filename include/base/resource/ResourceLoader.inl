@@ -111,6 +111,9 @@ text::string_hash ResourceLoader<Product>::ResourceHandle::id() const
 template <typename Product>
 bool ResourceLoader<Product>::ResourceHandle::operator==(const ResourceHandle& other) const
 {
+	if (_val == nullptr || other._val == nullptr)
+		return _val == other._val;
+
 	return _val->first == other._val->first;
 }
 
