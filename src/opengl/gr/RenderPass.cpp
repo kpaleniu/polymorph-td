@@ -11,59 +11,32 @@
 
 namespace gr {
 
-RenderPass::RenderPass(VertexFormat format,
-                       Primitive shape,
-                       TextureManager::TextureHandle texture,
-					   const Shader* shader)
-:	_shape(shape),
- 	_vertices(format, BufferUsage::DYNAMIC),
- 	_indices(BufferUsage::DYNAMIC),
- 	_vertexWriter(_vertices, _indices),
- 	_texture(texture),
-	_shader(shader)
+RenderPass::RenderPass(Primitive shape_,
+                       TextureManager::TextureHandle texture_,
+					   const Shader* shader_)
+:	shape(shape_),
+ 	indices(),
+ 	texture(texture_),
+	shader(shader_),
+	indexBuffer(BufferUsage::DYNAMIC)
 {
 }
 
 RenderPass::RenderPass(RenderPass&& other)
-:	_shape(other._shape),
- 	_vertices(std::move(other._vertices)),
- 	_indices(std::move(other._indices)),
- 	_vertexWriter(_vertices, _indices),
- 	_texture(other._texture),
-	_shader(other._shader)
+:	shape(other.shape),
+ 	indices(std::move(other.indices)),
+ 	texture(other.texture),
+	shader(other.shader),
+	indexBuffer(std::move(other.indexBuffer))
 {
 }
 
-VertexWriter& RenderPass::vertexWriter()
+void RenderPass::buildIndices()
 {
-	return _vertexWriter;
-}
+	if (indexBuffer.getIndexCount() != indices.size())
+		indexBuffer = IndexBuffer(BufferUsage::DYNAMIC, indices.size());
 
-void RenderPass::flushVertices()
-{
-	_vertexWriter.flush();
-
-	if ( _vertices.isEmpty() )
-		return;
-
-	if (_texture)
-	{
-		gl::enable(GL_TEXTURE_2D);
-		_texture->bind();
-	}
-
-	if (_shader != nullptr)
-	{
-		// TODO Implement
-	}
-
-	_vertices.draw(_shape, _indices);
-
-	if (_texture)
-	{
-		_texture->unbind();
-		gl::disable(GL_TEXTURE_2D);
-	}
+	indexBuffer.writeIndices(0, indices.size(), indices.data());
 }
 
 }

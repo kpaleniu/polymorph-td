@@ -71,7 +71,6 @@ void Renderer::flipBuffers()
 void Renderer::render()
 {
 	_renderPassManager.render();
-	_renderPassManager.clear();
 	_surface.flipBuffers();
 
 	gl::clear(GL_COLOR_BUFFER_BIT);

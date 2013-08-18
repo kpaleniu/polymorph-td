@@ -60,24 +60,27 @@ VertexBuffer::VertexBuffer(VertexFormat format,
 	_usage(usage),
 	_vertexFormat(format)
 {
-#ifdef _DEBUG
-	VERBOSE_OUT(TAG,
-	            "Size %i", (int) getVertexFormatData(_vertexFormat).size);
-	VERBOSE_OUT(TAG,
-	            "vert dim %i", (int) getVertexFormatData(_vertexFormat).vertDim);
-	VERBOSE_OUT(TAG, "Count %i", vertexCount);
-	if (data != nullptr)
-	{
-		for (unsigned int i = 0;
-			 i < _vertexCount * getVertexFormatData(_vertexFormat).size;
-			 ++i)
-		{
-			VERBOSE_OUT(TAG, "%f ", data[i]);
-		}
-	}
-#endif
 	if (vertexCount > 0)
 	{
+#ifdef _DEBUG
+		VERBOSE_OUT(TAG,
+					"Vertex size %i", (int) getVertexFormatData(_vertexFormat).size);
+		VERBOSE_OUT(TAG,
+					"Vertex dim %i", (int) getVertexFormatData(_vertexFormat).vertDim);
+		VERBOSE_OUT(TAG,
+					"Vertex count %i", vertexCount);
+
+		if (data != nullptr)
+		{
+			for (unsigned int i = 0;
+				 i < _vertexCount * getVertexFormatData(_vertexFormat).size;
+				 ++i)
+			{
+				VERBOSE_OUT(TAG, "%f ", data[i]);
+			}
+		}
+#endif
+
 		gl::genBuffers(1, &_bufferID);
 
 		gl::bindBuffer(GL_ARRAY_BUFFER, _bufferID);
