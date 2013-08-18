@@ -410,6 +410,9 @@ function polymorphSolution()
 	
 	includedirs { includePath .. "base" }
 	
+	configuration "vs*"
+		defines { "NOMINMAX" }
+	
 	-- C++0x/11 mode has to be explicitly enabled on some platforms
 	configuration "not vs*"
 		buildoptions { "-std=c++0x" }
