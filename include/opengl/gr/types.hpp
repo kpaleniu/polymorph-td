@@ -93,7 +93,7 @@ enum class BufferFlag : enum_t
 
 }
 
-#define LOG_GL_CALLS			1
+#define LOG_GL_CALLS			0
 #define CHECK_GL_OUT_OF_MEMORY	1
 #define ASSERT_NO_GL_ERRORS		1
 

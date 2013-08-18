@@ -6,9 +6,7 @@
 
 namespace gl {
 
-#if LOG_GL_CALLS
-#	define LOG_TAG "OpenGL"
-#endif
+#define LOG_TAG "OpenGL"
 
 namespace detail
 {
