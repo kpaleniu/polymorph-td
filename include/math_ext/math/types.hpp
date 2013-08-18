@@ -8,10 +8,10 @@
 
 #include <Cpp11.hpp>
 
-#define PI			real_t(3.141592)
-#define TWO_PI		real_t(PI * real_t(2))
-#define HALF_PI		real_t(PI / real_t(2))
-#define QUARTER_PI	real_t(PI / real_t(4))
+#define PI			math::real_t(3.141592)
+#define TWO_PI		math::real_t(PI * math::real_t(2))
+#define HALF_PI		math::real_t(PI / math::real_t(2))
+#define QUARTER_PI	math::real_t(PI / math::real_t(4))
 
 
 namespace math {
