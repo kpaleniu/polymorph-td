@@ -210,7 +210,8 @@ template <MATRIX_SQUARE_TEMPLATES_DECLARATION>
 MatrixMap<MATRIX_SQUARE_TEMPLATES>&	operator*=(MatrixMap<MATRIX_SQUARE_TEMPLATES>& m1,
 												const MatrixMap<MATRIX_SQUARE_TEMPLATES>& m2)
 {
-	return m1 = m1 * m2;
+	Matrix<MATRIX_SQUARE_TEMPLATES> temp = m1 * m2;
+	return m1 = temp;
 }
 
 // Dot-product, vectors only.

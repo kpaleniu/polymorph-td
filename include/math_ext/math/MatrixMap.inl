@@ -81,7 +81,7 @@ template <MATRIX_TEMPLATES_DECLARATION>
 MatrixMap<MATRIX_TEMPLATES>& MatrixMap<MATRIX_TEMPLATES>::operator=(
 	const MatrixMap<MATRIX_TEMPLATES>& other)
 {
-	for (index_t i = 0; i < rows(); ++i)
+	for (index_t i = 0; i < rows() * cols(); ++i)
 		_mappedData[i] = other._mappedData[i];
 
 	return *this;
@@ -105,7 +105,7 @@ template <MATRIX_COLUMN_TEMPLATES_DECLARATION>
 MatrixMap<MATRIX_COLUMN_TEMPLATES>& MatrixMap<MATRIX_COLUMN_TEMPLATES>::operator=(
 	const MatrixMap<MATRIX_COLUMN_TEMPLATES>& other)
 {
-	for (index_t i = 0; i < rows(); ++i)
+	for (index_t i = 0; i < rows() * cols(); ++i)
 		_mappedData[i] = other._mappedData[i];
 
 	return *this;
@@ -114,7 +114,7 @@ template <MATRIX_COLUMN_DYNAMIC_TEMPLATES_DECLARATION>
 MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>& MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>::operator=(
 	const MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>& other)
 {
-	for (index_t i = 0; i < rows(); ++i)
+	for (index_t i = 0; i < rows() * cols(); ++i)
 		_mappedData[i] = other._mappedData[i];
 
 	return *this;
