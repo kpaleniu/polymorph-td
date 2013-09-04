@@ -27,19 +27,16 @@ public:
 	Vector2 operator*(const MapVector2& vec2) const;
 	Vector2 operator*(const MapVector& vec) const;
 
-	bool operator==(const Transform2<Arithmetic, RowMajor>& other) const;
-	bool operator!=(const Transform2<Arithmetic, RowMajor>& other) const;
-
 	Transform2 operator*(const Transform2& other) const;
 
-	Vector2&		translation();
-	const Vector2&	translation() const;
+	Vector2&			translation();
+	const Vector2&		translation() const;
 
-	Vector2&		scale();
-	const Vector2&	scale() const;
+	Arithmetic&			scale();
+	const Arithmetic&	scale() const;
 
-	radian_t&		rotation();
-	const radian_t&	rotation() const;
+	radian_t&			rotation();
+	const radian_t&		rotation() const;
 
 	Matrix<Arithmetic, 3u, 3u, RowMajor> asAffineMatrix2() const;
 
@@ -48,23 +45,17 @@ public:
 		const MapVector2& translation);
 
 	static Transform2<Arithmetic, RowMajor> createScaling(
-		const MapVector2& scale);
-
-	static Transform2<Arithmetic, RowMajor> createScaling(
 		Arithmetic uniformScale);
 
 	static Transform2<Arithmetic, RowMajor> createRotation(
 		radian_t rotation);
-
-	static Transform2<Arithmetic, RowMajor> createFromAffine(
-		const MatrixMap<Arithmetic, 3u, 3u, RowMajor>& mat);
 
 	static const Transform2<Arithmetic, RowMajor> IDENTITY;
 
 
 private:
 	Vector2		_translation;
-	Vector2		_scale;
+	Arithmetic	_scale;
 	radian_t	_rotation;
 };
 

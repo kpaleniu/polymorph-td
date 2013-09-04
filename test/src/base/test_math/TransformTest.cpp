@@ -5,7 +5,27 @@
 #include <math/Transform2.hpp>
 #include <math/Quaternion.hpp>
 
+#include <math/Matrix.hpp>
+
+#include <Assert.hpp>
+
 namespace {
+
+template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
+void assertAlmostEqualMatrices(
+	const math::MatrixMap<Arithmetic, Rows, Cols, RowMajor>& m1,
+	const math::MatrixMap<Arithmetic, Rows, Cols, RowMajor>& m2,
+	Arithmetic eps)
+{
+	ASSERT(m1.rows() == m2.rows() && m1.cols() == m2.cols(), "Bad dimensions");
+
+	unsigned int rows = m1.rows();
+	unsigned int cols = m1.cols();
+
+	for (unsigned int row = 0; row < rows; ++row)
+		for (unsigned int col = 0; col < cols; ++col)
+			test::assertAlmostEqual(m1(row, col), m2(row, col), eps);
+}
 
 void testConstructors()
 {
@@ -89,7 +109,8 @@ void testTransform2()
 
 	real_t eps = 0.0001f;
 
-	{
+	// Empty constructor
+	{ 
 		Transform2<int> trans;
 
 		Matrix<int, 2, 1> v2 = { 1, 2 };
@@ -97,6 +118,7 @@ void testTransform2()
 		test::assertEqual(v2, trans * v2, "Transform2 ctor not identity.");
 	}
 
+	// Rotation factory
 	{
 		auto trans = Transform2<real_t>::createRotation(HALF_PI);
 
@@ -105,10 +127,10 @@ void testTransform2()
 
 		auto res = trans * v2;
 
-		test::assertAlmostEqual(res[0], exp[0], eps);
-		test::assertAlmostEqual(res[1], exp[1], eps);
+		assertAlmostEqualMatrices(res, exp, eps);
 	}
 
+	// Scale factory
 	{
 		auto trans = Transform2<real_t>::createScaling(2);
 		Matrix<real_t, 2, 1> v2 = { 1, 0.5 };
@@ -116,21 +138,10 @@ void testTransform2()
 
 		auto res = trans * v2;
 
-		test::assertAlmostEqual(res[0], exp[0], eps);
-		test::assertAlmostEqual(res[1], exp[1], eps);
+		assertAlmostEqualMatrices(res, exp, eps);
 	}
 
-	{
-		auto trans = Transform2<real_t>::createScaling(Matrix<real_t, 2, 1>{ 2, 1 });
-		Matrix<real_t, 2, 1> v2 = { 1, 0.5 };
-		Matrix<real_t, 2, 1> exp = { 2, 0.5 };
-
-		auto res = trans * v2;
-
-		test::assertAlmostEqual(res[0], exp[0], eps);
-		test::assertAlmostEqual(res[1], exp[1], eps);
-	}
-
+	// Translation factory
 	{
 		auto trans = Transform2<real_t>::createTranslation(Matrix<real_t, 2, 1>{ 2, 1 });
 		Matrix<real_t, 2, 1> v2 = { 1, 0.5 };
@@ -138,52 +149,46 @@ void testTransform2()
 
 		auto res = trans * v2;
 
-		test::assertAlmostEqual(res[0], exp[0], eps);
-		test::assertAlmostEqual(res[1], exp[1], eps);
+		assertAlmostEqualMatrices(res, exp, eps);
 	}
 
+	// Transform2::operator*(const Vector&)
 	{
-		Transform2<real_t> trans1;
+		Transform2<real_t> trans;
 
-		trans1.scale()       = Matrix<real_t, 2, 1>{0.1f, -0.5f};
-		trans1.translation() = Matrix<real_t, 2, 1>{1.5f, 8.5f};
-		trans1.rotation()    = 4.15f;
+		trans.scale() = 0.1f;
+		trans.translation() = Matrix<real_t, 2, 1>{1.5f, 8.5f};
+		trans.rotation() = 4.15f;
 
-		auto trans2 = 
-			Transform2<real_t>::createFromAffine(trans1.asAffineMatrix2());
+		Matrix<real_t, 2, 1> v = { 1.5f, -5.2f };
 
-		auto mat1 = trans1.asAffineMatrix2();
-		auto mat2 = trans2.asAffineMatrix2();
+		auto v1 = trans * v;
+		auto v2 = trans.asAffineMatrix2() * Matrix<real_t, 3, 1>{v[0], v[1], 1.0f};
 
-		int i = 0;
+		test::assertAlmostEqual(v1[0], v2[0], eps);
+		test::assertAlmostEqual(v1[1], v2[1], eps);
 	}
 
+	// Transform2::operator*(const Transform2&)
 	{
-		Transform2<real_t> trans1;
-		Transform2<real_t> trans2;
+		Transform2<real_t, true> trans1;
+		Transform2<real_t, true> trans2;
 
 		trans1.rotation() = PI * 0.12f;
 		trans2.rotation() = PI * 1.32f;
 
-		trans1.scale() = Matrix<real_t, 2, 1>({ 1.5f, -3.8f });
-		trans2.scale() = Matrix<real_t, 2, 1>({ 0.1f, 1.8f });
+		trans1.scale() = 1.5f;
+		trans2.scale() = -0.8f;
 
-		trans1.translation() = Matrix<real_t, 2, 1>({ 1.0f, 0.8f });
-		trans2.scale() = Matrix<real_t, 2, 1>({ 3.1f, 5.7f });
+		trans1.translation() = Matrix<real_t, 2, 1, true>({ 1.0f, 0.8f });
+		trans2.translation() = Matrix<real_t, 2, 1, true>({ 3.1f, 5.7f });
 
 		auto trans3 = trans1 * trans2;
-		Matrix<real_t, 3, 3> mat = trans1.asAffineMatrix2() * trans2.asAffineMatrix2();
-		Matrix<real_t, 3, 3> mat2 = trans3.asAffineMatrix2();
 
-		Matrix<real_t, 2, 1> v2 = { 1.0f, 0.5f };
+		auto mat1 = trans1.asAffineMatrix2() * trans2.asAffineMatrix2();
+		auto mat2 = trans3.asAffineMatrix2();
 
-		Matrix<real_t, 2, 1> vA = trans3 * v2;
-		Matrix<real_t, 3, 1> vB = mat * Matrix<real_t, 3, 1>{v2[0], v2[1], 1.0f};
-		Matrix<real_t, 2, 1> vC = trans2 * (trans1 * v2);
-
-		test::assertEqual(vA[0], vB[0]);
-		test::assertEqual(vA[1], vB[1]);
-
+		assertAlmostEqualMatrices(mat1, mat2, eps);
 	}
 }
 
