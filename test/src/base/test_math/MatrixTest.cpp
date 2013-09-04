@@ -136,6 +136,14 @@ void testMatrixMult()
 		359, 288
 	};
 
+	int m4[] =
+	{
+		 3,  6,  0,  5,
+		-2, -1,  5,  7,
+		-4,  7,  3, -3,
+		 4,  9, 10,  1
+	};
+
 	{
 		Matrix<int, 4, 4, true> mat1(m1);
 		Matrix<int, 4, 2, true> mat2(m2);
@@ -145,6 +153,16 @@ void testMatrixMult()
 		Matrix<int, 4, 2, true> resMat = mat1 * mat2;
 
 		test::assertEqual(mat3, resMat);
+	}
+
+	{
+		Matrix<int, 4, 4, true> mat1(m1);
+		Matrix<int, 4, 4, true> mat2(m4);
+
+		Matrix<int, 4, 4, true> mat3 = mat1 * mat2;
+		mat1 *= mat2;
+
+		test::assertEqual(mat3, mat1);
 	}
 }
 
