@@ -102,7 +102,7 @@ void createTestWindow(HINSTANCE hinstance)
 gr::Surface createSurface()
 {
 	auto surface = gr::Surface(g_hwnd);
-	surface.activate();
+	surface.setActive(true);
 
 	GLenum err = glewInit();
 	if (err != GLEW_OK)
