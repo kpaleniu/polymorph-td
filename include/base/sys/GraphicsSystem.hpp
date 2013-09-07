@@ -18,7 +18,7 @@ class GraphicsSystem;
 class GraphicsSystemRunner : NonCopyable
 {
 public:
-	struct ConstructionArgs
+	struct ConstructionArgs : NonCopyable
 	{
 		ConstructionArgs(Window& win_, GraphicsSystem& grSys_);
 		ConstructionArgs(ConstructionArgs&& other);
@@ -36,7 +36,9 @@ public:
 	gr::Renderer&	renderer();
 	gr::Surface&	surface();
 
-	const gr::Scene& scene() const;
+	gr::MeshManager& meshManager() { return _meshManager; } // TODO Add to .cpp-file
+
+	const gr::Scene<gr::Transform2>& scene() const;
 
 	static const char* getSystemName()
 	{ return "GraphicsSystem"; }
@@ -45,7 +47,8 @@ private:
 	gr::Surface& _surface;
 
 	gr::Renderer _renderer;
-	const gr::Scene& _scene;
+	gr::MeshManager _meshManager;
+	const gr::Scene<gr::Transform2>& _scene;
 
 	GraphicsSystem& _system;
 };
@@ -58,10 +61,11 @@ public:
 	class SceneMutateScope : ::NonCopyable
 	{
 	public:
-		SceneMutateScope(polymorph::concurrency::Mutex& mutex, gr::Scene& scene_);
+		SceneMutateScope(polymorph::concurrency::Mutex& mutex, 
+						 gr::Scene<gr::Transform2>& scene_);
 		SceneMutateScope(SceneMutateScope&& other);
 
-		gr::Scene& scene;
+		gr::Scene<gr::Transform2>& scene;
 
 	private:
 		polymorph::concurrency::MutexLockGuard _lockGuard;
@@ -72,10 +76,10 @@ public:
 	GraphicsSystem(GraphicsSystem&& grSys);
 
 	SceneMutateScope sceneMutator();
-	const gr::Scene& scene() const;
+	const gr::Scene<gr::Transform2>& scene() const;
 
 private:
-	gr::Scene _sourceScene;
+	gr::Scene<gr::Transform2> _sourceScene;
 
 	polymorph::concurrency::Mutex _sceneTransactionMutex;
 };

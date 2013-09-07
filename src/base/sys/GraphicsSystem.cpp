@@ -18,7 +18,8 @@ namespace polymorph { namespace sys {
 namespace { const char* TAG_RUNNER = "GraphicsSystemRunner";
 			const char* TAG_SYSTEM = "GraphicsSystem"; }
 
-GraphicsSystemRunner::ConstructionArgs::ConstructionArgs(Window& win_, GraphicsSystem& grSys_)
+GraphicsSystemRunner::ConstructionArgs::ConstructionArgs(Window& win_, 
+														 GraphicsSystem& grSys_)
 :	win(win_), grSys(grSys_)
 {
 }
@@ -29,7 +30,8 @@ GraphicsSystemRunner::ConstructionArgs::ConstructionArgs(ConstructionArgs&& othe
 }
 
 
-GraphicsSystemRunner::GraphicsSystemRunner(ConstructionArgs args, System<GraphicsSystemRunner>&)
+GraphicsSystemRunner::GraphicsSystemRunner(ConstructionArgs args, 
+										   System<GraphicsSystemRunner>&)
 :	_surface(args.win.surface()), 
 	_renderer(_surface), 
 	_scene(args.grSys._sourceScene),
@@ -74,7 +76,7 @@ gr::Surface& GraphicsSystemRunner::surface()
 	return _surface;
 }
 
-const gr::Scene& GraphicsSystemRunner::scene() const
+const gr::Scene<gr::Transform2>& GraphicsSystemRunner::scene() const
 {
 	return _scene;
 }
@@ -82,7 +84,7 @@ const gr::Scene& GraphicsSystemRunner::scene() const
 //
 
 GraphicsSystem::SceneMutateScope::SceneMutateScope(polymorph::concurrency::Mutex& mutex, 
-												   gr::Scene& scene_)
+												   gr::Scene<gr::Transform2>& scene_)
 :	_lockGuard(mutex), scene(scene_)
 {
 }
@@ -113,7 +115,7 @@ GraphicsSystem::SceneMutateScope GraphicsSystem::sceneMutator()
 	return SceneMutateScope(_sceneTransactionMutex, _sourceScene);
 }
 
-const gr::Scene& GraphicsSystem::scene() const
+const gr::Scene<gr::Transform2>& GraphicsSystem::scene() const
 {
 	return _sourceScene;
 }
