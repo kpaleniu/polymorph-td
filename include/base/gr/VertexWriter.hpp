@@ -69,7 +69,7 @@ private:
 	const index_t _startIndex;
 };
 
-class IndexWriter
+class IndexWriter : NonCopyable
 {
 public:
 	IndexWriter(std::vector<index_t>& indexSource);

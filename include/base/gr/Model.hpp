@@ -13,7 +13,7 @@
 namespace gr {
 
 template <typename TransformType = Transform3>
-class Model
+class Model : NonCopyable
 {
 public:
 	struct ModelMesh
