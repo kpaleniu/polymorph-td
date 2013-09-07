@@ -10,6 +10,7 @@
 
 namespace gr {
 
+template <typename TransformType = Transform3>
 class Scene
 {
 public:
@@ -18,20 +19,21 @@ public:
 	Scene();
 	Scene(Scene&& other);
 	
-	void addModel(model_id id, Model&& model);
+	void addModel(model_id id, Model<TransformType>&& model);
 	void removeModel(model_id id);
 
-	Model& model(model_id id);
-	const Model& model(model_id id) const;
+	Model<TransformType>& model(model_id id);
+	const Model<TransformType>& model(model_id id) const;
 	
 	void render(Renderer& renderer) const;
 
 
-
 private:
-	std::map<model_id, Model> _modelRegister;
+	std::map<model_id, Model<TransformType>> _modelRegister;
 };
 
 }
+
+#include "gr/Scene.inl"
 
 #endif

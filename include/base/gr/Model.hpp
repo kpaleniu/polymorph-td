@@ -12,31 +12,27 @@
 
 namespace gr {
 
-/**
- * Mesh composition.
- *
- * 2D vertices are treated as on z=0 plane.
- */
+template <typename TransformType = Transform3>
 class Model
 {
 public:
 	struct ModelMesh
 	{
-		Transform transform;
+		TransformType transform;
 		MeshManager::MeshHandle mesh;
 	};
 
 
 	Model(std::vector<ModelMesh>&& modelMeshes,
-		  const Transform& transform = Transform());
+		  const TransformType& transform = TransformType());
 
 	Model(Model&& other);
 
 	void render(Renderer& renderer) const;
-	void render(Renderer& renderer, const Transform& parentTransform) const;
+	void render(Renderer& renderer, const TransformType& parentTransform) const;
 
-	Transform& transform()				{ return _transform; }
-	const Transform& transform() const	{ return _transform; }
+	TransformType& transform();
+	const TransformType& transform() const;
 
 	bool insideBoundBox(const MapVector2_r& p) const;
 	bool insideBoundBox(const MapVector3_r& p) const;
@@ -44,12 +40,13 @@ public:
 
 private:
 	std::vector<ModelMesh>	_modelMeshes;
-	Transform				_transform;
+	TransformType			_transform;
 	const AABox				_localBounds; // Must be initialized after _modelMeshes.
 };
 
 
 }
 
+#include "gr/Model.inl"
 
 #endif

@@ -86,8 +86,40 @@ void Mesh::render(Renderer& renderer) const
 		subMesh.render(renderer, vertexWriter.startIndex());
 }
 
+void Mesh::render(Renderer& renderer,
+				  const Transform2& transform) const
+{
+	// FIXME Should handle more than 2D vectors.
+
+	auto& passManager = renderer.renderPassManager();
+	auto vertexWriter =
+		passManager.vertexWriter(_vertexList.format);
+
+	const VertexFormatData& fmtData =
+		getVertexFormatData(_vertexList.format);
+
+	ASSERT(fmtData.vertDim < 5,
+		   "Vertex dimension not supported.");
+
+	for (index_t i = 0; i < _vertexList.vertexCount(); ++i)
+	{
+		const real_t* vertices = _vertexList.vertexData(i);
+
+		// const MapVector_r will not modify the data.
+		const MapVector2_r mapVec(const_cast<real_t*>(vertices));
+
+		Vector2_r resVec = transform * mapVec;
+
+		vertexWriter.vertices().write(resVec.data(),
+									  resVec.rows());
+	}
+
+	for (const auto& subMesh : _subMeshes)
+		subMesh.render(renderer, vertexWriter.startIndex());
+}
+
 void Mesh::render(Renderer& renderer, 
-				  const Transform& transform) const
+				  const Transform3& transform) const
 {
 	auto& passManager = renderer.renderPassManager();
 	auto vertexWriter =

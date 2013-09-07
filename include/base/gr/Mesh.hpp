@@ -62,7 +62,8 @@ public:
 
 	void render(Renderer& renderer) const;
 
-	void render(Renderer& renderer, const Transform& modelTransform) const;
+	void render(Renderer& renderer, const Transform3& modelTransform) const;
+	void render(Renderer& renderer, const Transform2& modelTransform) const;
 
 	const VertexList& vertices() const;
 
