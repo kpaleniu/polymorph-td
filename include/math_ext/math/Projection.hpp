@@ -9,7 +9,11 @@ template <typename Arithmetic, bool RowMajor=false>
 class Projection
 {
 public:
+	Projection();
+
 	const Arithmetic* data() const;
+
+	operator const Matrix<Arithmetic, 4u, 4u, RowMajor>&();
 
 	Matrix<Arithmetic, 3u, 1u, RowMajor> operator*(
 		const MatrixMap<Arithmetic, 3u, 1u, RowMajor>& vec3) const;
