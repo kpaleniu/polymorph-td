@@ -52,14 +52,6 @@ SystemActionQueue<Runner>& System<Runner>::actionQueue()
 template <typename Runner>
 void System<Runner>::threadMain()
 {
-	// Strings for profiler.
-	text::string_hash updateName =
-			text::intern(std::string(Runner::getSystemName()) + ": update");
-
-	text::string_hash actionName =
-			text::intern(std::string(Runner::getSystemName()) + ": action");
-	//
-
 	static const char* TAG = "System";
 
 	Runner runner( std::move(_runnerConstructionArgs), *this );
