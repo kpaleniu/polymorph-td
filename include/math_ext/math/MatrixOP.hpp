@@ -20,7 +20,7 @@ MatrixMap<Arithmetic, Rows, Cols, RowMajor> &
 //  Unary operators:
 
 template <typename Arithmetic, unsigned int Rows, unsigned int Cols, bool RowMajor>
-MatrixMap<Arithmetic, Rows, Cols, RowMajor> &
+Matrix<Arithmetic, Rows, Cols, RowMajor>
 	operator-(const MatrixMap<Arithmetic, Rows, Cols, RowMajor>& m);
 
 //  Comparison operators:

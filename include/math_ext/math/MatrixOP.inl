@@ -285,12 +285,14 @@ MatrixMap<MATRIX_TEMPLATES>& operator/=(const MatrixMap<MATRIX_TEMPLATES>& m, Ar
 //  Unary operators:
 
 template <MATRIX_TEMPLATES_DECLARATION>
-MatrixMap<MATRIX_TEMPLATES>& operator-(const MatrixMap<MATRIX_TEMPLATES>& m)
+Matrix<MATRIX_TEMPLATES> operator-(const MatrixMap<MATRIX_TEMPLATES>& m)
 {
-	for (index_t k = 0; k < Rows * Cols; ++k)
-		m.data()[k] = -m.data()[k];
+	Matrix<MATRIX_TEMPLATES> rMat;
 
-	return m;
+	for (index_t k = 0; k < Rows * Cols; ++k)
+		rMat.data()[k] = -m.data()[k];
+
+	return rMat;
 }
 
 //  Comparison operators:
