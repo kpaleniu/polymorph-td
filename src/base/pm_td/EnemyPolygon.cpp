@@ -57,7 +57,7 @@ const text::string_hash polyMeshHash(unsigned short vertCount)
 
 	char buffer[] = "PolygonMeshHash##";
 	buffer[sizeof(buffer) - 2] = vertCount & 0x00ff;
-	buffer[sizeof(buffer) - 1] = (vertCount & 0xff00) >> 2;
+	buffer[sizeof(buffer) - 1] = (vertCount & 0xff00) >> 8;
 
 	return text::hash(buffer);
 }
