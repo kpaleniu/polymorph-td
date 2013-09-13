@@ -29,6 +29,9 @@ public:
 
 	Transform2 operator*(const Transform2& other) const;
 
+	Transform2 inverse() const;
+
+
 	Vector2&			translation();
 	const Vector2&		translation() const;
 
@@ -39,8 +42,8 @@ public:
 	const radian_t&		rotation() const;
 
 	Matrix<Arithmetic, 3u, 3u, RowMajor> asAffineMatrix2() const;
-
-
+	Matrix<Arithmetic, 4u, 4u, RowMajor> asAffineMatrix3() const;
+	
 	static Transform2<Arithmetic, RowMajor> createTranslation(
 		const MapVector2& translation);
 

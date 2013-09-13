@@ -66,8 +66,8 @@ Transform2<Arithmetic, RowMajor>
 
 	rTrans._translation[0] =
 		_scale *
-		(cosThis * other._translation[0]
-		- sinThis * other._translation[1]) + _translation[0];
+			(cosThis * other._translation[0]
+			- sinThis * other._translation[1]) + _translation[0];
 
 	rTrans._translation[1] =
 		_scale *
@@ -77,6 +77,28 @@ Transform2<Arithmetic, RowMajor>
 	return rTrans;
 }
 
+template <typename Arithmetic, bool RowMajor>
+Transform2<Arithmetic, RowMajor>
+	Transform2<Arithmetic, RowMajor>::inverse() const
+{
+	Arithmetic
+		sinMinRot = std::sin(-_rotation),
+		cosMinRot = std::cos(-_rotation),
+		invScale = Arithmetic(1) / _scale,
+		x = _translation[0],
+		y = _translation[1];
+
+
+	Transform2<Arithmetic, RowMajor> rTrans;
+
+	rTrans._rotation = -_rotation;
+	rTrans._scale = invScale;
+
+	rTrans._translation[0] = -invScale * (cosMinRot * x - sinMinRot * y);
+	rTrans._translation[1] = -invScale * (sinMinRot * x + cosMinRot * y);
+
+	return rTrans;
+}
 
 template <typename Arithmetic, bool RowMajor>
 typename Transform2<Arithmetic, RowMajor>::Vector2&
@@ -130,13 +152,32 @@ Matrix<Arithmetic, 3u, 3u, RowMajor>
 	return rMat;
 }
 
+template <typename Arithmetic, bool RowMajor>
+Matrix<Arithmetic, 4u, 4u, RowMajor>
+	Transform2<Arithmetic, RowMajor>::asAffineMatrix3() const
+{
+	auto rMat(Matrix<Arithmetic, 4u, 4u, RowMajor>::IDENTITY);
+
+	rMat(0, 0) = cos(_rotation) * _scale;
+	rMat(0, 1) = -sin(_rotation) * _scale;
+	
+	rMat(0, 3) = _translation[0];
+
+	
+	rMat(1, 0) = sin(_rotation) * _scale;
+	rMat(1, 1) = cos(_rotation) * _scale;
+	
+	rMat(1, 3) = _translation[1];
+
+	return rMat;
+}
 
 template <typename Arithmetic, bool RowMajor>
 Transform2<Arithmetic, RowMajor> 
 	Transform2<Arithmetic, RowMajor>::createTranslation(
 		const typename Transform2<Arithmetic, RowMajor>::MapVector2& translation)
 {
-	Transform2 rTrans;
+	Transform2<Arithmetic, RowMajor> rTrans;
 
 	rTrans._translation = translation;
 	
@@ -147,7 +188,7 @@ template <typename Arithmetic, bool RowMajor>
 Transform2<Arithmetic, RowMajor>
 	Transform2<Arithmetic, RowMajor>::createScaling(Arithmetic scale)
 {
-	Transform2 rTrans;
+	Transform2<Arithmetic, RowMajor> rTrans;
 
 	rTrans._scale = scale;
 
@@ -158,7 +199,7 @@ template <typename Arithmetic, bool RowMajor>
 Transform2<Arithmetic, RowMajor>
 	Transform2<Arithmetic, RowMajor>::createRotation(radian_t rotation)
 {
-	Transform2 rTrans;
+	Transform2<Arithmetic, RowMajor> rTrans;
 
 	rTrans._rotation = rotation;
 
