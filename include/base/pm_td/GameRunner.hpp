@@ -16,8 +16,13 @@ namespace pm_td {
 class GameRunner : NonCopyable
 {
 public:
-	struct ConstructionArgs
+	struct ConstructionArgs : ::NonCopyable
 	{
+		ConstructionArgs(polymorph::sys::UISystem& uiSys_,
+						 polymorph::sys::GraphicsSystem& grSys_);
+
+		ConstructionArgs(ConstructionArgs&& other);
+
 		polymorph::sys::UISystem&		uiSys;
 		polymorph::sys::GraphicsSystem& grSys;
 	};

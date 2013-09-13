@@ -39,6 +39,16 @@ void removeEventHandlers(polymorph::sys::UISystem& uiSys)
 }
 
 
+GameRunner::ConstructionArgs::ConstructionArgs(polymorph::sys::UISystem& uiSys_,
+											   polymorph::sys::GraphicsSystem& grSys_)
+:	uiSys(uiSys_), grSys(grSys_)
+{
+}
+
+GameRunner::ConstructionArgs::ConstructionArgs(ConstructionArgs&& other)
+:	uiSys(other.uiSys), grSys(other.grSys)
+{
+}
 
 GameRunner::GameRunner(GameRunner::ConstructionArgs&& args,
 					   polymorph::sys::NTSystem<GameRunner>& system)
