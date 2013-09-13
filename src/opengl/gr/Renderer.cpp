@@ -68,8 +68,8 @@ void Renderer::flipBuffers()
 	_surface.flipBuffers();
 }
 
-void Renderer::render(const MapVector4_r& projection,
-					  const MapVector4_r& worldInverseTransform)
+void Renderer::render(const MapMatrix4x4_r& projection,
+					  const MapMatrix4x4_r& worldInverseTransform)
 {
 	_renderPassManager.render(projection, worldInverseTransform);
 	_surface.flipBuffers();
