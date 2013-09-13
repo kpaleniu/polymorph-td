@@ -64,21 +64,14 @@ VertexBuffer::VertexBuffer(VertexFormat format,
 	{
 #ifdef _DEBUG
 		VERBOSE_OUT(TAG,
-					"Vertex size %i", (int) getVertexFormatData(_vertexFormat).size);
+					"Vertex channels %i", 
+					(int) getVertexFormatData(_vertexFormat).size);
 		VERBOSE_OUT(TAG,
-					"Vertex dim %i", (int) getVertexFormatData(_vertexFormat).vertDim);
+					"Vertex dim      %iD", 
+					(int) getVertexFormatData(_vertexFormat).vertDim);
 		VERBOSE_OUT(TAG,
-					"Vertex count %i", vertexCount);
-
-		if (data != nullptr)
-		{
-			for (unsigned int i = 0;
-				 i < _vertexCount * getVertexFormatData(_vertexFormat).size;
-				 ++i)
-			{
-				VERBOSE_OUT(TAG, "%f ", data[i]);
-			}
-		}
+					"Vertex count    %i", 
+					vertexCount);
 #endif
 
 		gl::genBuffers(1, &_bufferID);
