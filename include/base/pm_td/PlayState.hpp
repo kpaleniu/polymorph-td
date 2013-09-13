@@ -2,22 +2,47 @@
 #define PMTD_PLAY_STATE_HPP_
 
 #include "pm_td/GameState.hpp"
+#include "pm_td/EnemyPolygon.hpp"
+#include "pm_td/Path.hpp"
 
 #include <gr/Scene.hpp>
 
-#include <atomic>
+#include <Timer.hpp>
+#include <NonCopyable.hpp>
+
+#include <map>
+#include <set>
 
 namespace pm_td {
 
-class PlayState : public GameState
+class GameRunner;
+
+class PlayState : 
+	public EnemyPolygon::Listener,
+	NonCopyable
 {
 public:
-	void enterState(GameRunner& runner);
-	void exitState(GameRunner& runner);
-	void update(GameRunner& runner, TimeDuration dt);
+	PlayState(GameRunner& runner);
+	PlayState(PlayState&& other);
+
+	void spawnEnemy(unsigned int hp);
+
+	void enterState();
+	void exitState();
+	void update(TimeDuration dt);
+
+	void onReachedEnd(const EnemyPolygon& enemy) override;
 
 private:
-	std::atomic_bool _initialized;
+	GameRunner& _runner;
+
+	std::map<size_t, EnemyPolygon> _enemies;
+	std::set<size_t> _queuedForDestruction;
+
+	unsigned int _enemyCounter;
+	Path _gamePath;
+
+	Timer _spawnTimer;
 };
 
 

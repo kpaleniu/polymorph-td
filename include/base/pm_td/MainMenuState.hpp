@@ -5,12 +5,20 @@
 
 namespace pm_td {
 
-class MainMenuState : public GameState
+class GameRunner;
+
+class MainMenuState : NonCopyable
 {
 public:
-	void enterState(GameRunner& runner);
-	void exitState(GameRunner& runner);
-	void update(GameRunner& runner, TimeDuration dt);
+	MainMenuState(GameRunner& runner);
+	MainMenuState(MainMenuState&& other);
+
+	void enterState();
+	void exitState();
+	void update(TimeDuration dt);
+
+private:
+	GameRunner& _runner;
 };
 
 

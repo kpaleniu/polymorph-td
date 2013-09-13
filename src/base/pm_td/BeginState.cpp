@@ -5,11 +5,22 @@
 
 namespace pm_td {
 
-void BeginState::update(GameRunner& runner, TimeDuration /*dt*/)
+BeginState::BeginState(GameRunner& runner)
+:	_runner(runner)
 {
-	// TODO Do something, load persistent assets?
+}
 
-	runner.setState(std::shared_ptr<MainMenuState>(new MainMenuState()));
+void BeginState::enterState()
+{
+}
+
+void BeginState::update(TimeDuration /*dt*/)
+{
+	_runner.setState(MainMenuState(_runner));
+}
+
+void BeginState::exitState()
+{
 }
 
 }

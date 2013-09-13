@@ -5,10 +5,19 @@
 
 namespace pm_td {
 
-class BeginState : public GameState
+class GameRunner;
+
+class BeginState
 {
 public:
-	void update(GameRunner& runner, TimeDuration dt);
+	BeginState(GameRunner& runner);
+
+	void enterState();
+	void update(TimeDuration dt);
+	void exitState();
+
+private:
+	GameRunner& _runner;
 };
 
 }

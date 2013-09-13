@@ -7,11 +7,13 @@
 #include <sys/UISystem.hpp>
 #include <sys/GraphicsSystem.hpp>
 
+#include <NonCopyable.hpp>
+
 #include <memory>
 
 namespace pm_td {
 
-class GameRunner
+class GameRunner : NonCopyable
 {
 public:
 	struct ConstructionArgs
@@ -28,7 +30,7 @@ public:
 
 	bool update(TimeDuration dt);
 
-	void setState(std::shared_ptr<GameState> nextState);
+	void setState(GameState&& nextState);
 
 	void quit();
 
@@ -43,8 +45,8 @@ private:
 
 	bool _quitting;
 
-	std::shared_ptr<GameState> _state;
-	std::shared_ptr<GameState> _nextState;
+	GameState _state;
+	GameState _nextState;
 };
 
 }

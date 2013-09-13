@@ -46,43 +46,41 @@ GameRunner::GameRunner(GameRunner::ConstructionArgs&& args,
 	_grSys(args.grSys),
 	_parentSystem(system),
 	_quitting(false),
-	_state(std::shared_ptr<BeginState>(new BeginState())),
-	_nextState(_state)
+	_state(BeginState(*this)),
+	_nextState()
 {
 	setupEventHandlers(_uiSys, _parentSystem);
 }
 
 GameRunner::~GameRunner()
 {
-	if (_state != nullptr)
-		_state->exitState(*this);
+	if (_state)
+		_state.exitState();
 
 	removeEventHandlers(_uiSys);
 }
 
 bool GameRunner::update(TimeDuration dt)
 {
-	ASSERT(_nextState, "Next state is null");
-
 	if (_quitting)
 		return false;
 
-	if (_state != _nextState)
+	if (_nextState)
 	{
-		_state->exitState(*this);
-		_nextState->enterState(*this);
-		_state = _nextState;
+		_state.exitState();
+		_nextState.enterState();
+		_state = std::move(_nextState);
 	}
 
-	_state->update(*this, dt);
+	_state.update(dt);
 
 	return true;
 }
 
-void GameRunner::setState(std::shared_ptr<GameState> nextState)
+void GameRunner::setState(GameState&& nextState)
 {
-	ASSERT(nextState, "Next state is null");
-	_nextState = nextState;
+	ASSERT(nextState, "Next state is nothing");
+	_nextState = std::move(nextState);
 }
 
 void GameRunner::quit()
