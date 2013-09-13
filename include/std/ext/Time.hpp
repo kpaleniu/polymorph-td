@@ -3,6 +3,8 @@
 
 #include <chrono>
 
+
+
 class TimeStamp
 {
 public:
@@ -25,15 +27,6 @@ public:
 	 */
 	typedef int64_t tick_type;
 
-	TimeDuration operator-(const TimeDuration& other) const;
-
-	bool operator==(const TimeDuration& other) const;
-	bool operator!=(const TimeDuration& other) const;
-	bool operator<(const TimeDuration& other) const;
-	bool operator>(const TimeDuration& other) const;
-	bool operator<=(const TimeDuration& other) const;
-	bool operator>=(const TimeDuration& other) const;
-
 	tick_type toMillis() const;
 
 public:
@@ -41,15 +34,26 @@ public:
 	static TimeDuration between(const TimeStamp& t1,
 	                            const TimeStamp& t2);
 
-
 	static TimeDuration millis(tick_type ms);
 
 public:
-	std::chrono::milliseconds timeDuration;
+	// May only be used inside ext-api std.
 
-private:
+	std::chrono::milliseconds _std__timeDuration;
 	TimeDuration(const std::chrono::milliseconds& _timeDuration);
-
 };
+
+TimeDuration operator-(const TimeDuration& t1, const TimeDuration& t2);
+TimeDuration operator+(const TimeDuration& t1, const TimeDuration& t2);
+
+TimeDuration& operator-=(TimeDuration& t1, const TimeDuration& t2);
+TimeDuration& operator+=(TimeDuration& t1, const TimeDuration& t2);
+
+bool operator==(const TimeDuration& t1, const TimeDuration& t2);
+bool operator!=(const TimeDuration& t1, const TimeDuration& t2);
+bool operator<(const TimeDuration& t1, const TimeDuration& t2);
+bool operator>(const TimeDuration& t1, const TimeDuration& t2);
+bool operator<=(const TimeDuration& t1, const TimeDuration& t2);
+bool operator>=(const TimeDuration& t1, const TimeDuration& t2);
 
 #endif
