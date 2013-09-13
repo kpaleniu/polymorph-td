@@ -50,7 +50,7 @@ PlayState::PlayState(PlayState&& other)
 	_queuedForDestruction(std::move(other._queuedForDestruction)),
 	_gamePath(std::move(other._gamePath)),
 	_enemyCounter(other._enemyCounter),
-	_spawnTimer(other._spawnTimer)
+	_spawnTimer(std::move(other._spawnTimer))
 {
 }
 
