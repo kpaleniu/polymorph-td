@@ -7,14 +7,16 @@
 namespace gr {
 
 template <typename TransformType>
-Scene<TransformType>::Scene()
-:	_modelRegister()
+Scene<TransformType>::Scene(const Camera<TransformType>& camera)
+:	_modelRegister(),
+	_camera(camera)
 {
 }
 
 template <typename TransformType>
 Scene<TransformType>::Scene(Scene<TransformType>&& other)
-	: _modelRegister(std::move(other._modelRegister))
+:	_modelRegister(std::move(other._modelRegister)),
+	_camera(other._camera)
 {
 }
 
@@ -51,6 +53,18 @@ void Scene<TransformType>::render(Renderer& renderer) const
 {
 	for (const auto& idModelPair : _modelRegister)
 		idModelPair.second.render(renderer);
+}
+
+template <typename TransformType>
+const Camera<TransformType>& Scene<TransformType>::camera() const
+{
+	return _camera;
+}
+
+template <typename TransformType>
+Camera<TransformType>& Scene<TransformType>::camera()
+{
+	return _camera;
 }
 
 }

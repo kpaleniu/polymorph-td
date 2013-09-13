@@ -139,12 +139,14 @@ IndexWriter RenderPassManager::indexWriter(VertexFormat format,
 	return IndexWriter(foundPass->indices);
 }
 
-void RenderPassManager::render()
+void RenderPassManager::render(const MapMatrix4x4_r& projection,
+							   const MapMatrix4x4_r& worldInverseTransform)
 {
 	gl::matrixMode(GL_PROJECTION);
-	gl::loadIdentity();
+	gl::loadMatrix(projection.data());
+
 	gl::matrixMode(GL_MODELVIEW);
-	gl::loadIdentity();
+	gl::loadMatrix(worldInverseTransform.data());
 
 	for (auto& fmtContexPair : _vertexContexts)
 	{

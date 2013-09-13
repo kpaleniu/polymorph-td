@@ -3,6 +3,7 @@
 
 #include "gr/types.hpp"
 #include "gr/Model.hpp"
+#include "gr/Camera.hpp"
 
 #include <text/util.hpp>
 
@@ -16,7 +17,7 @@ class Scene
 public:
 	typedef text::string_hash model_id;
 	
-	Scene();
+	Scene(const Camera<TransformType>& camera = Camera<TransformType>());
 	Scene(Scene&& other);
 	
 	void addModel(model_id id, Model<TransformType>&& model);
@@ -27,9 +28,13 @@ public:
 	
 	void render(Renderer& renderer) const;
 
+	const Camera<TransformType>& camera() const;
+	Camera<TransformType>& camera();
 
 private:
 	std::map<model_id, Model<TransformType>> _modelRegister;
+
+	Camera<TransformType> _camera;
 };
 
 }

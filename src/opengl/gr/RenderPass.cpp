@@ -36,7 +36,8 @@ void RenderPass::buildIndices()
 	if (indexBuffer.getIndexCount() != indices.size())
 		indexBuffer = IndexBuffer(BufferUsage::DYNAMIC, indices.size());
 
-	indexBuffer.writeIndices(0, indices.size(), indices.data());
+	if (indices.size() > 0)
+		indexBuffer.writeIndices(0, indices.size(), indices.data());
 }
 
 }

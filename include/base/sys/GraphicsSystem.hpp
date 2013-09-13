@@ -36,8 +36,9 @@ public:
 	gr::Renderer&	renderer();
 	gr::Surface&	surface();
 
-	gr::MeshManager& meshManager() { return _meshManager; } // TODO Add to .cpp-file
-
+	/**
+	 * Should only be accessed when scene is not being written to.
+	 */
 	const gr::Scene<gr::Transform2>& scene() const;
 
 	static const char* getSystemName()
@@ -47,7 +48,6 @@ private:
 	gr::Surface& _surface;
 
 	gr::Renderer _renderer;
-	gr::MeshManager _meshManager;
 	const gr::Scene<gr::Transform2>& _scene;
 
 	GraphicsSystem& _system;
@@ -62,10 +62,12 @@ public:
 	{
 	public:
 		SceneMutateScope(polymorph::concurrency::Mutex& mutex, 
-						 gr::Scene<gr::Transform2>& scene_);
+						 gr::Scene<gr::Transform2>& scene_,
+						 gr::MeshManager& meshes_);
 		SceneMutateScope(SceneMutateScope&& other);
 
 		gr::Scene<gr::Transform2>& scene;
+		gr::MeshManager&           meshes;
 
 	private:
 		polymorph::concurrency::MutexLockGuard _lockGuard;
@@ -79,7 +81,9 @@ public:
 	const gr::Scene<gr::Transform2>& scene() const;
 
 private:
+	gr::MeshManager			  _meshManager;
 	gr::Scene<gr::Transform2> _sourceScene;
+	
 
 	polymorph::concurrency::Mutex _sceneTransactionMutex;
 };

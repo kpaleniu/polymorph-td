@@ -56,12 +56,17 @@ GraphicsSystemRunner::~GraphicsSystemRunner()
 
 bool GraphicsSystemRunner::update(TimeDuration)
 {
+	gr::Camera<gr::Transform2> sceneCamera;
+
 	{
 		polymorph::concurrency::MutexLockGuard sceneLock(_system._sceneTransactionMutex);
 		_scene.render(_renderer);
+
+		sceneCamera = _scene.camera();
 	}
 
-	_renderer.render();
+	_renderer.render(sceneCamera.projection, 
+					 sceneCamera.transform.inverse().asAffineMatrix3());
 
 	return true;
 }
@@ -83,36 +88,46 @@ const gr::Scene<gr::Transform2>& GraphicsSystemRunner::scene() const
 
 //
 
-GraphicsSystem::SceneMutateScope::SceneMutateScope(polymorph::concurrency::Mutex& mutex, 
-												   gr::Scene<gr::Transform2>& scene_)
-:	_lockGuard(mutex), scene(scene_)
+GraphicsSystem::SceneMutateScope::SceneMutateScope(
+		polymorph::concurrency::Mutex& mutex, 
+		gr::Scene<gr::Transform2>& scene_,
+		gr::MeshManager& meshes_)
+:	_lockGuard(mutex), 
+	scene(scene_), 
+	meshes(meshes_)
 {
 }
 
 GraphicsSystem::SceneMutateScope::SceneMutateScope(
-	GraphicsSystem::SceneMutateScope&& other)
-:	_lockGuard(std::move(other._lockGuard)), scene(other.scene)
+		GraphicsSystem::SceneMutateScope&& other)
+:	_lockGuard(std::move(other._lockGuard)), 
+	scene(other.scene), 
+	meshes(other.meshes)
 {
 }
 
 
 GraphicsSystem::GraphicsSystem(Window& window)
-:	System(TimeDuration::millis( 33 /*settings::sys::grSystemSyncMillis*/), 
+:	System(TimeDuration::millis( 16 /*settings::sys::grSystemSyncMillis*/), 
 		   256, 
-		   GraphicsSystemRunner::ConstructionArgs(window, *this))
+		   GraphicsSystemRunner::ConstructionArgs(window, *this)),
+	_meshManager(),
+	_sourceScene()
 {
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }
 
 GraphicsSystem::GraphicsSystem(GraphicsSystem&& grSys)
-: System(std::move(grSys))
+:	System(std::move(grSys))
 {
 	VERBOSE_OUT(TAG_SYSTEM, "Moved");
 }
 
 GraphicsSystem::SceneMutateScope GraphicsSystem::sceneMutator()
 {
-	return SceneMutateScope(_sceneTransactionMutex, _sourceScene);
+	return SceneMutateScope(_sceneTransactionMutex, 
+							_sourceScene,
+							_meshManager);
 }
 
 const gr::Scene<gr::Transform2>& GraphicsSystem::scene() const

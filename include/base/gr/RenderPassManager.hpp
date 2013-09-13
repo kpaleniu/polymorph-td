@@ -32,7 +32,8 @@ public:
 							 TextureManager::TextureHandle tex,
 							 const Shader* shader);
 
-	void render();
+	void render(const MapVector4_r& projection,
+				const MapVector4_r& worldInverseTransform);
 
 private:
 

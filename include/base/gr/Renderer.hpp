@@ -3,6 +3,7 @@
 
 #include "gr/DebugDraw.hpp"
 #include "gr/RenderPassManager.hpp"
+#include "gr/types.hpp"
 
 #include <PrivateHandle.hpp>
 #include <NonCopyable.hpp>
@@ -29,7 +30,8 @@ public:
 
 	void flipBuffers();
 
-	void render();
+	void render(const MapMatrix4x4_r& projection,
+				const MapVector4x4_r& worldInverseTransform);
 
 	DebugDraw& debugDraw();
 	RenderPassManager& renderPassManager();
