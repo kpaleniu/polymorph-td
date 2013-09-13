@@ -33,6 +33,8 @@ typedef math::Matrix<real_t, 3, 1> 		Vector3_r;
 typedef math::MatrixMap<real_t, 2, 1>	MapVector2_r;
 typedef math::MatrixMap<real_t, 3, 1>	MapVector3_r;
 
+typedef math::MatrixMap<real_t, 4, 4>   MapMatrix4x4_r;
+
 typedef math::MatrixMap<real_t, math::DYNAMIC, 1> MapVector_r;
 
 namespace detail {
