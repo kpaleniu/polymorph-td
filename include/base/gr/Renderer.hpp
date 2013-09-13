@@ -31,7 +31,7 @@ public:
 	void flipBuffers();
 
 	void render(const MapMatrix4x4_r& projection,
-				const MapVector4x4_r& worldInverseTransform);
+				const MapMatrix4x4_r& worldInverseTransform);
 
 	DebugDraw& debugDraw();
 	RenderPassManager& renderPassManager();
