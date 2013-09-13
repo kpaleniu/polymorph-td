@@ -25,7 +25,7 @@ public:
 	PlayState(GameRunner& runner);
 	PlayState(PlayState&& other);
 
-	void spawnEnemy(unsigned int hp);
+	void spawnEnemy(unsigned short hp);
 
 	void enterState();
 	void exitState();
@@ -39,7 +39,7 @@ private:
 	std::map<size_t, EnemyPolygon> _enemies;
 	std::set<size_t> _queuedForDestruction;
 
-	unsigned int _enemyCounter;
+	unsigned short _enemyCounter;
 	Path _gamePath;
 
 	Timer _spawnTimer;

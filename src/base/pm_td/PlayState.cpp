@@ -54,7 +54,7 @@ PlayState::PlayState(PlayState&& other)
 {
 }
 
-void PlayState::spawnEnemy(unsigned int hp)
+void PlayState::spawnEnemy(unsigned short hp)
 {
 	++_enemyCounter;
 

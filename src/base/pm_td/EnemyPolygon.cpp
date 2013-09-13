@@ -67,7 +67,7 @@ const text::string_hash polyMeshHash(unsigned short vertCount)
 
 EnemyPolygon::EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
 						   std::size_t id, 
-						   unsigned int hp,
+						   unsigned short hp,
 						   const Path& path,
 						   Listener* listener)
 :	_model(id),

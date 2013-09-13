@@ -23,7 +23,7 @@ public:
 
 	EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
 				 std::size_t id, 
-				 unsigned int hp,
+				 unsigned short hp,
 				 const Path& path,
 				 Listener* listener = nullptr);
 
