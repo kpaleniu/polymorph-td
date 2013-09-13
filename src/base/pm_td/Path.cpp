@@ -62,6 +62,14 @@ PathPoint::PathPoint(const std::vector<gr::Vector2_r>& checkPoints,
 		_lastCheckPointIndex = _checkPoints.size() - 1;
 }
 
+PathPoint::PathPoint(const PathPoint& other)
+:	_checkPoints(other._checkPoints),
+	_distanceView(other._distanceView),
+	_lastCheckPointIndex(other._lastCheckPointIndex),
+	_distanceFromLastCheckPoint(other._distanceFromLastCheckPoint)
+{
+}
+
 void PathPoint::advance(gr::real_t distance)
 {
 	// Don't advance if passed end.
@@ -96,7 +104,6 @@ bool PathPoint::reachedEnd() const
 {
 	return _lastCheckPointIndex == _checkPoints.size() - 1;
 }
-
 
 
 Path::Path(std::vector<gr::Vector2_r> && checkPoints)

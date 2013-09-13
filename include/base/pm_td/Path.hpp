@@ -14,6 +14,8 @@ public:
 			  const std::vector<gr::real_t>& distanceView,
 			  gr::real_t traveled = 0.0f);
 
+	PathPoint(const PathPoint& other);
+
 	void advance(gr::real_t distance);
 
 	gr::Vector2_r currentPosition() const;
@@ -21,6 +23,8 @@ public:
 	bool reachedEnd() const;
 
 private:
+	PathPoint& operator=(const PathPoint&);
+
 	const std::vector<gr::Vector2_r>& _checkPoints;
 	const std::vector<gr::real_t>& _distanceView;
 
