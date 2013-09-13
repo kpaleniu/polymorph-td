@@ -28,12 +28,13 @@ ResourceLoader<Product>::ResourceHandle::ResourceHandle()
 {
 }
 
+
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::ResourceHandle(id_res_pointer dataPointer)
 :	PrivateHandle<id_res_pointer>(dataPointer)
 {
-	ASSERT(_val != nullptr, "Product is null");
-	++_val->second.refs;
+	if (_val != nullptr)
+		++_val->second.refs;
 }
 
 template <typename Product>
