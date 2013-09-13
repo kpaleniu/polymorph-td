@@ -12,10 +12,25 @@
 
 namespace gr {
 
+/**
+ * Mesh composition class.
+ *
+ * A model is a composition of meshes with local transformations
+ * as well as an own transformation.
+ *
+ * Note, this class is not sutable for static terrain (i.e.
+ * where transformations are expected to be constant). This is due
+ * to the fact that the meshes local transformation will be 
+ * generated with every render call.
+ */
 template <typename TransformType = Transform3>
 class Model : NonCopyable
 {
 public:
+
+	/**
+	 * Local transformation (in model space) - mesh pair.
+	 */
 	struct ModelMesh
 	{
 		TransformType transform;
