@@ -10,11 +10,16 @@ BeginState::BeginState(GameRunner& runner)
 {
 }
 
+BeginState::BeginState(BeginState&& other)
+:	_runner(other._runner)
+{
+}
+
 void BeginState::enterState()
 {
 }
 
-void BeginState::update(TimeDuration /*dt*/)
+void BeginState::update(TimeDuration)
 {
 	_runner.setState(MainMenuState(_runner));
 }
