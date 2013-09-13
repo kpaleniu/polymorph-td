@@ -116,7 +116,7 @@ void MainMenuState::exitState()
 	_runner.uiSystem().removeEventAction<polymorph::sys::event::PointerDown>(UI_CLICK_ID);
 }
 
-void MainMenuState::update(TimeDuration dt)
+void MainMenuState::update(TimeDuration)
 {
 
 }
