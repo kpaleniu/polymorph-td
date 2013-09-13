@@ -190,6 +190,31 @@ void testTransform2()
 
 		assertAlmostEqualMatrices(mat1, mat2, eps);
 	}
+
+	// Transform2::inverse
+	{
+		Transform2<real_t, true> trans1;
+
+		trans1.rotation() = PI * 0.12f;
+		trans1.scale() = 1.5f;
+		trans1.translation() = Matrix<real_t, 2, 1, true>({ 1.0f, 0.8f });
+
+		auto trans2 = trans1.inverse();
+
+		auto res1 = trans1 * trans2;
+		auto res2 = trans2 * trans1;
+
+		auto mat1 = res1.asAffineMatrix2();
+		auto mat2 = res2.asAffineMatrix2();
+
+		assertAlmostEqualMatrices(mat1,
+								  Matrix<real_t, 3, 3, true>::IDENTITY,
+								  eps);
+
+		assertAlmostEqualMatrices(mat2,
+								  Matrix<real_t, 3, 3, true>::IDENTITY,
+								  eps);
+	}
 }
 
 void testQuaternion()
