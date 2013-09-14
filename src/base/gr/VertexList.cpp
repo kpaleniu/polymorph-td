@@ -22,7 +22,7 @@ VertexList::VertexList(VertexFormat format_,
 	unsigned int count = vertices.size() / fmtData.vertDim;
 
 	ASSERT(colors.size() == fmtData.colorDim * count, "Bad color input to VertexList");
-	ASSERT(texCoords.size() == fmtData.textDim * count, "Bad color input to VertexList");
+	ASSERT(texCoords.size() == fmtData.textDim * count, "Bad texture coord input to VertexList");
 
 #endif
 }
