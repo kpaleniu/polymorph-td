@@ -2,6 +2,7 @@
 #define PMTD_ENEMY_POLYGON_HPP_
 
 #include "pm_td/Path.hpp"
+#include "pm_td/EnemyType.hpp"
 
 #include <sys/GraphicsSystem.hpp>
 #include <gr/Scene.hpp>
@@ -21,17 +22,31 @@ public:
 		virtual void onReachedEnd(const EnemyPolygon&) = 0;
 	};
 
+	struct LayerData
+	{
+		unsigned short hp;
+		EnemyType type;
+	};
+
 	EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
 				 std::size_t id, 
-				 unsigned short hp,
 				 const Path& path,
+				 LayerData data,
 				 Listener* listener = nullptr);
+
+	/* 2 layers not implemented yet.
+	EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
+				 std::size_t id,
+				 const Path& path,
+				 LayerData data[2],
+				 Listener* listener = nullptr);
+	*/
 
 	EnemyPolygon(EnemyPolygon&& other);
 
 	~EnemyPolygon();
 
-	const std::size_t id() const;
+	std::size_t id() const;
 
 	void update(TimeDuration dt);
 
@@ -39,7 +54,7 @@ public:
 
 private:
 	gr::Scene<gr::Transform2>::model_id _model;
-	unsigned int _hp;
+	unsigned short _hp;
 
 	polymorph::sys::GraphicsSystem& _grSys;
 

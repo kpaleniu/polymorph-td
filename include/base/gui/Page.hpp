@@ -12,11 +12,14 @@
 
 namespace gui {
 
-class Page : NonCopyable
+class Page
 {
 public:
 	Page(gr::SpriteSheet& sheet);
 	Page(Page&& other);
+
+	Page(const Page& other) = default;
+
 	/**
 	 * Sets the sprite sheet and widgets to the render pass.
 	 */

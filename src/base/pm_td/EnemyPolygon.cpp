@@ -5,9 +5,9 @@ namespace pm_td {
 namespace {
 
 gr::Mesh createMeshPolygon(unsigned short vertCount,
-							gr::real_t radius,
-							gr::real_t thickness,
-							gr::TextureManager::TextureHandle texture)
+						   gr::real_t radius,
+						   gr::real_t thickness,
+						   const gr::real_t* rgbColor)
 {
 	ASSERT(vertCount > 2, "Too few vertices to create polygon.");
 
@@ -16,6 +16,9 @@ gr::Mesh createMeshPolygon(unsigned short vertCount,
 
 	std::vector<gr::index_t> indices;
 	indices.reserve(vertCount * 2);
+
+	std::vector<gr::real_t> colors;
+	colors.reserve(vertCount * 3);
 
 	gr::real_t innerRad = radius - 0.5f * thickness;
 	gr::real_t outerRad = radius + 0.5f * thickness;
@@ -32,10 +35,22 @@ gr::Mesh createMeshPolygon(unsigned short vertCount,
 		gr::real_t outX = outerRad * cosRad;
 		gr::real_t outY = outerRad * sinRad;
 
+		
+		colors.push_back(rgbColor[0]);
+		colors.push_back(rgbColor[1]);
+		colors.push_back(rgbColor[2]);
+
 		vertices.push_back(inX);
 		vertices.push_back(inY);
+
+		
+		colors.push_back(rgbColor[0]);
+		colors.push_back(rgbColor[1]);
+		colors.push_back(rgbColor[2]);
+
 		vertices.push_back(outX);
 		vertices.push_back(outY);
+
 
 		indices.push_back(2 * i);
 		indices.push_back(2 * i + 1);
@@ -43,21 +58,27 @@ gr::Mesh createMeshPolygon(unsigned short vertCount,
 		indices.push_back(2 * ((i + 1) % vertCount));
 	}
 
-	gr::Mesh rMesh(gr::VertexList(gr::VertexFormat::V2, std::move(vertices)),
-					gr::Primitive::QUADS);
+	gr::VertexList vl(gr::VertexFormat::V2_C3,
+					  std::move(vertices),
+					  std::move(colors));
 
-	rMesh.addSubMesh(texture, std::move(indices));
+	gr::Mesh rMesh(std::move(vl), gr::Primitive::QUADS);
+
+	rMesh.addSubMesh(nullptr, std::move(indices));
 
 	return rMesh;
 }
 
-const text::string_hash polyMeshHash(unsigned short vertCount)
+text::string_hash polyMeshHash(unsigned short vertCount,
+							   EnemyType enemyType)
 {
 	ASSERT(vertCount > 2, "Too few vertices to create polygon.");
 
-	char buffer[] = "PolygonMeshHash##";
-	buffer[sizeof(buffer) - 2] = vertCount & 0x00ff;
-	buffer[sizeof(buffer) - 1] = (vertCount & 0xff00) >> 8;
+	static char buffer[] = "PolygonMeshHash###";
+
+	buffer[sizeof(buffer) - 3] = vertCount & 0x00ff;
+	buffer[sizeof(buffer) - 2] = (vertCount & 0xff00) >> 8;
+	buffer[sizeof(buffer) - 1] = char(enemyType);
 
 	return text::hash(buffer);
 }
@@ -67,11 +88,11 @@ const text::string_hash polyMeshHash(unsigned short vertCount)
 
 EnemyPolygon::EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
 						   std::size_t id, 
-						   unsigned short hp,
 						   const Path& path,
+						   LayerData data,
 						   Listener* listener)
 :	_model(id),
-	_hp(hp),
+	_hp(data.hp),
 	_grSys(grSys),
 	_pathPoint(path.getStart()),
 	_listener(listener)
@@ -82,15 +103,19 @@ EnemyPolygon::EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
 
 	//auto mesh = sceneMutator.meshes.getMesh(polyMeshHash(hp + 2));
 
-	auto mesh = sceneMutator.meshes.addMesh(polyMeshHash(hp + 2),
-											createMeshPolygon(hp + 2,
-															  0.5f,
-															  0.15f,
-															  nullptr));
+	auto& meshManager = sceneMutator.meshes;
+
+	auto mesh = meshManager.addMesh(polyMeshHash(_hp + 2, data.type),
+									createMeshPolygon(_hp + 2,
+													  0.5f,
+													  0.1f,
+													  getEnemyColorRGB(data.type)));
 
 	gr::Model<gr::Transform2>
 		model(std::vector<gr::Model<gr::Transform2>::ModelMesh>
 			  { {gr::Transform2::IDENTITY, mesh} });
+
+	model.transform().translation() = _pathPoint.currentPosition();
 
 	sceneMutator.scene.addModel(_model, std::move(model));
 }
@@ -114,7 +139,7 @@ EnemyPolygon::~EnemyPolygon()
 	}
 }
 
-const std::size_t EnemyPolygon::id() const
+std::size_t EnemyPolygon::id() const
 {
 	return _model;
 }

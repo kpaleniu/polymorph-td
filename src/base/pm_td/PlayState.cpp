@@ -23,12 +23,12 @@ std::vector<gr::Vector2_r> createTestMap()
 {
 	return std::vector<gr::Vector2_r>
 	{ 
-		{  0.0f,  0.0f }, 
-		{ -1.0f, -1.0f }, 
-		{  1.0f, -1.0f },
-		{  1.0f,  1.0f },
-		{ -1.0f,  1.0f },
-		{  0.0f,  0.0f }
+		{ -4.0f,  4.0f }, 
+		{ -4.0f, -4.0f }, 
+		{  4.0f, -4.0f },
+		{  4.0f,  4.0f },
+		{ -4.0f,  4.0f },
+		{ -4.0f,  4.0f }
 	};
 }
 
@@ -69,8 +69,11 @@ void PlayState::spawnEnemy(unsigned short hp)
 				(
 					_runner.graphicsSystem(),
 					_enemyCounter,
-					hp,
 					_gamePath,
+					{
+						hp, 
+						EnemyType::BLUE 
+					},
 					this
 				)
 			)
