@@ -114,6 +114,12 @@ void Mesh::render(Renderer& renderer,
 									  resVec.rows());
 	}
 
+	vertexWriter.colors().write(_vertexList.colors.data(),
+								_vertexList.colors.size());
+
+	vertexWriter.texCoords().write(_vertexList.texCoords.data(),
+								   _vertexList.texCoords.size());
+
 	for (const auto& subMesh : _subMeshes)
 		subMesh.render(renderer, vertexWriter.startIndex());
 }
@@ -150,6 +156,12 @@ void Mesh::render(Renderer& renderer,
 		vertexWriter.vertices().write(bufVec.data(), 
 									  bufVec.rows());
 	}
+
+	vertexWriter.colors().write(_vertexList.colors.data(),
+								_vertexList.colors.size());
+
+	vertexWriter.texCoords().write(_vertexList.texCoords.data(),
+								   _vertexList.texCoords.size());
 
 	for (const auto& subMesh : _subMeshes)
 		subMesh.render(renderer, vertexWriter.startIndex());
