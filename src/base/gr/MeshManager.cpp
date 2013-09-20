@@ -25,5 +25,10 @@ MeshManager::MeshHandle MeshManager::getMesh(text::string_hash id) const
 	return getProduct(id);
 }
 
+bool MeshManager::hasMesh(text::string_hash id) const
+{
+	return hasProduct(id);
+}
+
 
 }

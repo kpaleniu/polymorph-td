@@ -17,6 +17,7 @@ public:
 
 	MeshHandle addMesh(text::string_hash id, Mesh&& mesh);
 	MeshHandle getMesh(text::string_hash id) const;
+	bool hasMesh(text::string_hash id) const;
 
 	static const MeshHandle NULL_MESH;
 };
