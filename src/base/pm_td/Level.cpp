@@ -58,7 +58,7 @@ void Level::update(TimeDuration)
 	firstCall = false;
 }
 
-std::vector<EnemyPolygon::LayerData> Level::indexLayerData() const
+std::vector<Enemy::LayerData> Level::indexLayerData() const
 {
 	return { {12, EnemyType::BLUE}, { 12, EnemyType::RED } };
 }

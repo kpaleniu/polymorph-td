@@ -47,7 +47,7 @@ void PlayState::enterState()
 		sceneMutator.scene.camera().projection = 
 			gr::Projection::ortho(-5, 5, -5, 5, 5, -5);
 
-		EnemyPolygon::loadMeshes(sceneMutator.meshes, _level.indexLayerData());
+		Enemy::loadMeshes(sceneMutator.meshes, _level.indexLayerData());
 	}
 }
 
@@ -71,13 +71,13 @@ void PlayState::update(TimeDuration dt)
 		idEnemyPair.second.update(dt);
 }
 
-void PlayState::onReachedEnd(const EnemyPolygon& enemy)
+void PlayState::onReachedEnd(const Enemy& enemy)
 {
 	_queuedForDestruction.insert(enemy.id());
 }
 
 void PlayState::spawnEnemy(const Path& path,
-						   const EnemyPolygon::LayerDatas& layerData)
+						   const Enemy::LayerDatas& layerData)
 {
 	++_enemyCounter;
 
@@ -88,7 +88,7 @@ void PlayState::spawnEnemy(const Path& path,
 			_enemyCounter,
 			std::move
 			(
-				EnemyPolygon
+				Enemy
 				(
 					_runner.graphicsSystem(),
 					_enemyCounter,

@@ -1,7 +1,7 @@
 #ifndef PMTD_LEVEL_HPP_
 #define PMTD_LEVEL_HPP_
 
-#include "pm_td/EnemyPolygon.hpp"
+#include "pm_td/Enemy.hpp"
 #include "pm_td/Path.hpp"
 
 #include <NonCopyable.hpp>
@@ -17,7 +17,7 @@ public:
 	{
 	public:
 		virtual void spawnEnemy(const Path& path, 
-								const EnemyPolygon::LayerDatas& layerData) = 0;
+								const Enemy::LayerDatas& layerData) = 0;
 	};
 
 public:
@@ -34,7 +34,7 @@ public:
 	 * Note, this will iterate through all possible spawning enemies so
 	 * you should buffer the return value.
 	 */
-	std::vector<EnemyPolygon::LayerData> indexLayerData() const;
+	std::vector<Enemy::LayerData> indexLayerData() const;
 
 private:
 	

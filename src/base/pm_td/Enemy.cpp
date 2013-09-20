@@ -1,4 +1,4 @@
-#include "pm_td/EnemyPolygon.hpp"
+#include "pm_td/Enemy.hpp"
 
 namespace pm_td {
 
@@ -95,8 +95,8 @@ gr::Scene<gr::Transform2>::model_id getModelId(std::size_t enemyPolygonId,
 }
 
 
-EnemyPolygon::Layer::Layer(LayerData initialData_,
-						   gr::Scene<gr::Transform2>::model_id modelId_)
+Enemy::Layer::Layer(LayerData initialData_,
+				    gr::Scene<gr::Transform2>::model_id modelId_)
 :	initialData(initialData_),
 	modelId(modelId_),
 	hp(initialData.hp)
@@ -105,7 +105,7 @@ EnemyPolygon::Layer::Layer(LayerData initialData_,
 
 
 
-EnemyPolygon::EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
+Enemy::Enemy(polymorph::sys::GraphicsSystem& grSys,
 						   std::size_t id, 
 						   const Path& path,
 						   LayerData data,
@@ -137,7 +137,7 @@ EnemyPolygon::EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
 	scene.addModel(_layers[0].modelId, std::move(model));
 }
 
-EnemyPolygon::EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
+Enemy::Enemy(polymorph::sys::GraphicsSystem& grSys,
 						   std::size_t id,
 						   const Path& path,
 						   const LayerDatas& data,
@@ -175,7 +175,7 @@ EnemyPolygon::EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
 	}
 }
 
-EnemyPolygon::EnemyPolygon(EnemyPolygon&& other)
+Enemy::Enemy(Enemy&& other)
 :	_layers(other._layers),
 	_id(other._id),
 	_grSys(other._grSys),
@@ -188,7 +188,7 @@ EnemyPolygon::EnemyPolygon(EnemyPolygon&& other)
 	other._id = 0;
 }
 
-EnemyPolygon::~EnemyPolygon()
+Enemy::~Enemy()
 {
 	if (!_id)
 		return;
@@ -199,12 +199,12 @@ EnemyPolygon::~EnemyPolygon()
 		sceneMutator.scene.removeModel(layer.modelId);
 }
 
-std::size_t EnemyPolygon::id() const
+std::size_t Enemy::id() const
 {
 	return _id;
 }
 
-void EnemyPolygon::update(TimeDuration dt)
+void Enemy::update(TimeDuration dt)
 {
 	if (_pathPoint.reachedEnd())
 	{
@@ -232,7 +232,7 @@ void EnemyPolygon::update(TimeDuration dt)
 
 }
 
-void EnemyPolygon::loadMeshes(gr::MeshManager& meshManager,
+void Enemy::loadMeshes(gr::MeshManager& meshManager,
 							  const std::vector<LayerData>& layerTypes)
 {
 	// TODO Move data someplace else.
@@ -249,7 +249,7 @@ void EnemyPolygon::loadMeshes(gr::MeshManager& meshManager,
 			if (meshManager.hasMesh(meshHash))
 				continue;
 
-			DEBUG_OUT("EnemyPolygon",
+			DEBUG_OUT("Enemy",
 					  "Creating mesh %i (%i, %i)",
 					  int(meshHash), int(i), int(layerData.type));
 

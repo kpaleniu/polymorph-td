@@ -2,7 +2,7 @@
 #define PMTD_PLAY_STATE_HPP_
 
 #include "pm_td/GameState.hpp"
-#include "pm_td/EnemyPolygon.hpp"
+#include "pm_td/Enemy.hpp"
 #include "pm_td/Path.hpp"
 #include "pm_td/Level.hpp"
 
@@ -19,7 +19,7 @@ namespace pm_td {
 class GameRunner;
 
 class PlayState : 
-	public EnemyPolygon::Listener,
+	public Enemy::Listener,
 	public Level::Director,
 	NonCopyable
 {
@@ -31,14 +31,14 @@ public:
 	void exitState();
 	void update(TimeDuration dt);
 
-	void onReachedEnd(const EnemyPolygon& enemy) override;
+	void onReachedEnd(const Enemy& enemy) override;
 	void spawnEnemy(const Path& path,
-					const EnemyPolygon::LayerDatas& layerData) override;
+					const Enemy::LayerDatas& layerData) override;
 
 private:
 	GameRunner& _runner;
 
-	std::map<size_t, EnemyPolygon> _enemies;
+	std::map<size_t, Enemy> _enemies;
 	std::set<size_t> _queuedForDestruction;
 
 	unsigned short _enemyCounter;

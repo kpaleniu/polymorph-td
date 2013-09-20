@@ -15,14 +15,14 @@
 
 namespace pm_td {
 
-class EnemyPolygon : NonCopyable
+class Enemy : NonCopyable
 {
 public:
 
 	class Listener
 	{
 	public:
-		virtual void onReachedEnd(const EnemyPolygon&) = 0;
+		virtual void onReachedEnd(const Enemy&) = 0;
 	};
 
 	struct LayerData
@@ -34,21 +34,21 @@ public:
 	typedef std::vector<LayerData> LayerDatas;
 
 public:
-	EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
+	Enemy(polymorph::sys::GraphicsSystem& grSys,
 				 std::size_t id, 
 				 const Path& path,
 				 LayerData data,
 				 Listener* listener = nullptr);
 
-	EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
+	Enemy(polymorph::sys::GraphicsSystem& grSys,
 				 std::size_t id,
 				 const Path& path,
 				 const LayerDatas& data,
 				 Listener* listener = nullptr);
 
-	EnemyPolygon(EnemyPolygon&& other);
+	Enemy(Enemy&& other);
 
-	~EnemyPolygon();
+	~Enemy();
 
 	std::size_t id() const;
 
