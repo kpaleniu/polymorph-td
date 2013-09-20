@@ -10,12 +10,15 @@
 #include <NonCopyable.hpp>
 
 #include <atomic>
+#include <array>
+#include <vector>
 
 namespace pm_td {
 
 class EnemyPolygon : NonCopyable
 {
 public:
+
 	class Listener
 	{
 	public:
@@ -28,19 +31,20 @@ public:
 		EnemyType type;
 	};
 
+	typedef std::vector<LayerData> LayerDatas;
+
+public:
 	EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
 				 std::size_t id, 
 				 const Path& path,
 				 LayerData data,
 				 Listener* listener = nullptr);
 
-	/* 2 layers not implemented yet.
 	EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
 				 std::size_t id,
 				 const Path& path,
-				 LayerData data[2],
+				 const LayerDatas& data,
 				 Listener* listener = nullptr);
-	*/
 
 	EnemyPolygon(EnemyPolygon&& other);
 
@@ -50,11 +54,29 @@ public:
 
 	void update(TimeDuration dt);
 
-	static void loadMeshes(polymorph::sys::GraphicsSystem& grSys);
+	/** 
+	 * Creates and loads all meshes used by polygons with specified layer types
+	 * and all meshes with lower and equal hp than the specified.
+	 */
+	static void loadMeshes(gr::MeshManager& meshManager, 
+						   const LayerDatas& layerTypes);
 
 private:
-	gr::Scene<gr::Transform2>::model_id _model;
-	unsigned short _hp;
+	class Layer
+	{
+	public:
+		Layer(LayerData initialData_, 
+			   gr::Scene<gr::Transform2>::model_id modelId_);
+
+		LayerData initialData;
+
+		gr::Scene<gr::Transform2>::model_id modelId;
+		unsigned short hp;
+	};
+	
+	std::vector<Layer> _layers;
+
+	std::size_t _id;
 
 	polymorph::sys::GraphicsSystem& _grSys;
 

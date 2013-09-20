@@ -74,16 +74,35 @@ text::string_hash polyMeshHash(unsigned short vertCount,
 {
 	ASSERT(vertCount > 2, "Too few vertices to create polygon.");
 
-	static char buffer[] = "PolygonMeshHash###";
+	static const text::string_hash hash = text::hash("PolygonMeshHash");
 
-	buffer[sizeof(buffer) - 3] = vertCount & 0x00ff;
-	buffer[sizeof(buffer) - 2] = (vertCount & 0xff00) >> 8;
-	buffer[sizeof(buffer) - 1] = char(enemyType);
+	auto rHash = hash;
 
-	return text::hash(buffer);
+	rHash += vertCount;
+	rHash += (int(enemyType) << 8);
+
+	DEBUG_OUT("PolyHash", "Hashing (%i, %i): %i", int(vertCount), int(enemyType), int(rHash));
+
+	return rHash;
+}
+
+gr::Scene<gr::Transform2>::model_id getModelId(std::size_t enemyPolygonId,
+											   unsigned short layer)
+{
+	return enemyPolygonId * 2 + layer;
 }
 
 }
+
+
+EnemyPolygon::Layer::Layer(LayerData initialData_,
+						   gr::Scene<gr::Transform2>::model_id modelId_)
+:	initialData(initialData_),
+	modelId(modelId_),
+	hp(initialData.hp)
+{
+}
+
 
 
 EnemyPolygon::EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
@@ -91,57 +110,98 @@ EnemyPolygon::EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
 						   const Path& path,
 						   LayerData data,
 						   Listener* listener)
-:	_model(id),
-	_hp(data.hp),
+:	_layers{ { Layer(data, getModelId(id, 0)) } },
+	_id(id),
 	_grSys(grSys),
 	_pathPoint(path.getStart()),
 	_listener(listener)
 {
-	ASSERT(id != 0, "Unit requires non-zero model id.");
+	ASSERT(_id != 0, "Unit requires non-zero model id.");
 
 	auto sceneMutator = grSys.sceneMutator();
-
-	//auto mesh = sceneMutator.meshes.getMesh(polyMeshHash(hp + 2));
-
 	auto& meshManager = sceneMutator.meshes;
+	auto& scene		  = sceneMutator.scene;
 
-	auto mesh = meshManager.addMesh(polyMeshHash(_hp + 2, data.type),
-									createMeshPolygon(_hp + 2,
-													  0.5f,
-													  0.1f,
-													  getEnemyColorRGB(data.type)));
+	ASSERT(meshManager.hasMesh(polyMeshHash(data.hp + 2, data.type)),
+		   "Mesh is not loaded, did you forget to call 'loadMeshes'?.");
+
+	auto meshHandle = meshManager.getMesh( polyMeshHash(data.hp + 2, data.type) );
 
 	gr::Model<gr::Transform2>
 		model(std::vector<gr::Model<gr::Transform2>::ModelMesh>
-			  { {gr::Transform2::IDENTITY, mesh} });
+			  { {gr::Transform2::IDENTITY, meshHandle} });
 
 	model.transform().translation() = _pathPoint.currentPosition();
+	model.transform().scale() = 1.0f;
 
-	sceneMutator.scene.addModel(_model, std::move(model));
+	scene.addModel(_layers[0].modelId, std::move(model));
+}
+
+EnemyPolygon::EnemyPolygon(polymorph::sys::GraphicsSystem& grSys,
+						   std::size_t id,
+						   const Path& path,
+						   const LayerDatas& data,
+						   Listener* listener)
+:	_layers(),
+	_id(id),
+	_grSys(grSys),
+	_pathPoint(path.getStart()),
+	_listener(listener)
+{
+	ASSERT(_id != 0, "Unit requires non-zero model id.");
+
+	for (unsigned short i = 0; i < data.size(); ++i)
+		_layers.push_back(Layer(data[i], getModelId(id, i)));
+
+	{
+		auto sceneMutator = grSys.sceneMutator();
+		auto& meshManager = sceneMutator.meshes;
+		auto& scene = sceneMutator.scene;
+
+		for (unsigned int i = 0; i < data.size(); ++i)
+		{
+			auto meshHandle = meshManager.getMesh(polyMeshHash(data[i].hp + 2,
+				data[i].type));
+
+			gr::Model<gr::Transform2>
+				model(std::vector<gr::Model<gr::Transform2>::ModelMesh>
+			{ {gr::Transform2::IDENTITY, meshHandle} });
+
+			model.transform().translation() = _pathPoint.currentPosition();
+			model.transform().scale() = 0.8f * gr::real_t(data.size() - (i + 1)) + 0.5f;
+
+			scene.addModel(_layers[i].modelId, std::move(model));
+		}
+	}
 }
 
 EnemyPolygon::EnemyPolygon(EnemyPolygon&& other)
-:	_model(other._model),
-	_hp(other._hp),
+:	_layers(other._layers),
+	_id(other._id),
 	_grSys(other._grSys),
 	_pathPoint(std::move(other._pathPoint)),
 	_listener(other._listener)
 {
-	other._model = 0;
+	for (auto& layer : other._layers)
+		layer.modelId = 0;
+	
+	other._id = 0;
 }
 
 EnemyPolygon::~EnemyPolygon()
 {
-	if (_model)
-	{
-		auto sceneMutator = _grSys.sceneMutator();
-		sceneMutator.scene.removeModel(_model);
-	}
+	if (!_id)
+		return;
+
+	auto sceneMutator = _grSys.sceneMutator();
+
+	for (const auto& layer : _layers)
+		sceneMutator.scene.removeModel(layer.modelId);
 }
 
 std::size_t EnemyPolygon::id() const
 {
-	return _model;
+	return _id;
 }
 
 void EnemyPolygon::update(TimeDuration dt)
@@ -157,12 +217,50 @@ void EnemyPolygon::update(TimeDuration dt)
 	{
 		auto sceneMutator = _grSys.sceneMutator();
 
-		auto& thisModel = sceneMutator.scene.model(_model);
-		
-		thisModel.transform().rotation() += PI * 0.0005f * dt.toMillis();
-		thisModel.transform().translation() = _pathPoint.currentPosition();
+		for (unsigned int i = 0; i < _layers.size(); ++i)
+		{
+			auto& thisModel = sceneMutator.scene.model(_layers[i].modelId);
+
+			if (i % 2 == 0)
+				thisModel.transform().rotation() -= PI * 0.0005f * dt.toMillis();
+			else
+				thisModel.transform().rotation() += PI * 0.0005f * dt.toMillis();
+
+			thisModel.transform().translation() = _pathPoint.currentPosition();
+		}
 	}
 
+}
+
+void EnemyPolygon::loadMeshes(gr::MeshManager& meshManager,
+							  const std::vector<LayerData>& layerTypes)
+{
+	// TODO Move data someplace else.
+	static const gr::real_t radius = 0.5f;
+	static const gr::real_t thickness = 0.1f;
+
+
+	for (const auto& layerData : layerTypes)
+	{
+		for (unsigned short i = 1; i <= layerData.hp; ++i)
+		{
+			auto meshHash = polyMeshHash(i + 2, layerData.type);
+
+			if (meshManager.hasMesh(meshHash))
+				continue;
+
+			DEBUG_OUT("EnemyPolygon",
+					  "Creating mesh %i (%i, %i)",
+					  int(meshHash), int(i), int(layerData.type));
+
+			auto mesh = createMeshPolygon(i + 2,
+										  radius,
+										  thickness,
+										  getEnemyColorRGB(layerData.type));
+
+			meshManager.addMesh(meshHash, std::move(mesh));
+		}
+	}
 }
 
 }

@@ -4,6 +4,7 @@
 #include "pm_td/GameState.hpp"
 #include "pm_td/EnemyPolygon.hpp"
 #include "pm_td/Path.hpp"
+#include "pm_td/Level.hpp"
 
 #include <gr/Scene.hpp>
 
@@ -19,19 +20,20 @@ class GameRunner;
 
 class PlayState : 
 	public EnemyPolygon::Listener,
+	public Level::Director,
 	NonCopyable
 {
 public:
 	PlayState(GameRunner& runner);
 	PlayState(PlayState&& other);
 
-	void spawnEnemy(unsigned short hp);
-
 	void enterState();
 	void exitState();
 	void update(TimeDuration dt);
 
 	void onReachedEnd(const EnemyPolygon& enemy) override;
+	void spawnEnemy(const Path& path,
+					const EnemyPolygon::LayerDatas& layerData) override;
 
 private:
 	GameRunner& _runner;
@@ -40,9 +42,7 @@ private:
 	std::set<size_t> _queuedForDestruction;
 
 	unsigned short _enemyCounter;
-	Path _gamePath;
-
-	Timer _spawnTimer;
+	Level _level;
 };
 
 
