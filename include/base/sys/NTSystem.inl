@@ -70,6 +70,8 @@ void NTSystem<Runner>::enter()
 
 		//---------------- Main system loop ----------------//
 
+		TimeDuration lastDT = TimeDuration::millis(0);
+
 		DEBUG_OUT(TAG, "Started thread main loop");
 		for (;;)
 		{
@@ -80,7 +82,7 @@ void NTSystem<Runner>::enter()
 			{
 				// auto profileBlock = profiler::ThreadProfiler::profileBlock(updateName);
 
-				if (!runner.update())
+				if (!runner.update(lastDT))
 					return;
 			}
 
@@ -103,6 +105,8 @@ void NTSystem<Runner>::enter()
 				if ( waitDuration < TimeDuration::millis(0) )
 					break;
 			}
+
+			lastDT = TimeDuration::between(t0, TimeStamp::now());
 		}
 	}
 	catch (polymorph::concurrency::InterruptException&)

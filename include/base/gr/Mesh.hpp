@@ -25,15 +25,15 @@ public:
 		friend class MeshIO;
 		friend class Mesh;
 
-		void render(Renderer& renderer) const;
-		void render(Renderer& renderer, const Transform& transform) const;
-
-		SubMesh(Mesh& parent, 
+		SubMesh(Mesh& parent,
 				TextureManager::TextureHandle texHandle,
 				std::vector<index_t>&& indices);
 
 		// Note, should only be used when parent doesn't change.
 		SubMesh(SubMesh&& other);
+		
+		void render(Renderer& renderer, 
+					index_t meshStart) const;
 
 	private:
 		Mesh& _parent;
@@ -62,7 +62,8 @@ public:
 
 	void render(Renderer& renderer) const;
 
-	void render(Renderer& renderer, const Transform& modelTransform) const;
+	void render(Renderer& renderer, const Transform3& modelTransform) const;
+	void render(Renderer& renderer, const Transform2& modelTransform) const;
 
 	const VertexList& vertices() const;
 

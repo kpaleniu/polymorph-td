@@ -78,7 +78,7 @@ void Thread::sleep(TimeDuration timeDuration)
 	if (currentThread() != nullptr)
 		interruptionPoint();
 
-	std::this_thread::sleep_for(timeDuration.timeDuration);
+	std::this_thread::sleep_for(timeDuration._std__timeDuration);
 }
 
 void Thread::interruptionPoint()

@@ -20,6 +20,7 @@ project "game"
 	{
 		"resource",
 		"gr",
-		"math"
+		"math",
+		"sys"
 	}
 	

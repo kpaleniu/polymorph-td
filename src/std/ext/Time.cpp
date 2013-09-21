@@ -20,50 +20,14 @@ TimeStamp TimeStamp::now()
 // TimeDuration implementation
 
 TimeDuration::TimeDuration(const std::chrono::milliseconds& _timeDuration)
-		: timeDuration(_timeDuration)
+:	_std__timeDuration(_timeDuration)
 {
 	//
 }
 
-TimeDuration TimeDuration::operator-(const TimeDuration &other) const
-{
-	return TimeDuration(timeDuration
-	                    - other.timeDuration);
-}
-
-bool TimeDuration::operator==(const TimeDuration& other) const
-{
-	return timeDuration == other.timeDuration;
-}
-
-bool TimeDuration::operator!=(const TimeDuration& other) const
-{
-	return timeDuration != other.timeDuration;
-}
-
-bool TimeDuration::operator<(const TimeDuration& other) const
-{
-	return timeDuration < other.timeDuration;
-}
-
-bool TimeDuration::operator>(const TimeDuration& other) const
-{
-	return timeDuration > other.timeDuration;
-}
-
-bool TimeDuration::operator<=(const TimeDuration& other) const
-{
-	return timeDuration <= other.timeDuration;
-}
-
-bool TimeDuration::operator>=(const TimeDuration& other) const
-{
-	return timeDuration >= other.timeDuration;
-}
-
 TimeDuration::tick_type TimeDuration::toMillis() const
 {
-	return timeDuration.count();
+	return _std__timeDuration.count();
 }
 
 TimeDuration TimeDuration::between(const TimeStamp &t1,
@@ -79,3 +43,54 @@ TimeDuration TimeDuration::millis(tick_type ms)
 }
 
 
+TimeDuration operator-(const TimeDuration& t1, const TimeDuration& t2)
+{
+	return TimeDuration(t1._std__timeDuration - t2._std__timeDuration);
+}
+
+TimeDuration operator+(const TimeDuration& t1, const TimeDuration& t2)
+{
+	return TimeDuration(t1._std__timeDuration + t2._std__timeDuration);
+}
+
+TimeDuration& operator-=(TimeDuration& t1, const TimeDuration& t2)
+{
+	t1._std__timeDuration -= t2._std__timeDuration;
+	return t1;
+}
+
+TimeDuration& operator+=(TimeDuration& t1, const TimeDuration& t2)
+{
+	t1._std__timeDuration += t2._std__timeDuration;
+	return t1;
+}
+
+bool operator==(const TimeDuration& t1, const TimeDuration& t2)
+{
+	return t1._std__timeDuration == t2._std__timeDuration;
+}
+
+bool operator!=(const TimeDuration& t1, const TimeDuration& t2)
+{
+	return t1._std__timeDuration != t2._std__timeDuration;
+}
+
+bool operator<(const TimeDuration& t1, const TimeDuration& t2)
+{
+	return t1._std__timeDuration < t2._std__timeDuration;
+}
+
+bool operator>(const TimeDuration& t1, const TimeDuration& t2)
+{
+	return t1._std__timeDuration > t2._std__timeDuration;
+}
+
+bool operator<=(const TimeDuration& t1, const TimeDuration& t2)
+{
+	return t1._std__timeDuration <= t2._std__timeDuration;
+}
+
+bool operator>=(const TimeDuration& t1, const TimeDuration& t2)
+{
+	return t1._std__timeDuration >= t2._std__timeDuration;
+}

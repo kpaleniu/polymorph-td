@@ -3,16 +3,30 @@
 namespace math {
 
 template <typename Arithmetic, bool RowMajor>
+Projection<Arithmetic, RowMajor>::Projection()
+:	_projMat(Matrix<Arithmetic, 4u, 4u, RowMajor>::IDENTITY),
+	_invMat(Matrix<Arithmetic, 4u, 4u, RowMajor>::IDENTITY)
+{
+}
+
+template <typename Arithmetic, bool RowMajor>
 Projection<Arithmetic, RowMajor>::Projection(
 	const Matrix<Arithmetic, 4u, 4u, RowMajor>& projMat,
 	const Matrix<Arithmetic, 4u, 4u, RowMajor>& invMat)
 :	_projMat(projMat), _invMat(invMat)
-{}
+{
+}
 
 template <typename Arithmetic, bool RowMajor>
 const Arithmetic* Projection<Arithmetic, RowMajor>::data() const
 {
 	return _projMat.data();
+}
+
+template <typename Arithmetic, bool RowMajor>
+Projection<Arithmetic, RowMajor>::operator const math::Matrix<Arithmetic, 4U, 4U, RowMajor>&()
+{
+	return _projMat;
 }
 
 template <typename Arithmetic, bool RowMajor>

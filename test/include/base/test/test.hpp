@@ -56,6 +56,9 @@ inline void assertEqual(const T& a, const T& b, const std::string& msg = std::st
 template <typename T>
 inline void assertNotEqual(const T& a, const T& b, const std::string& msg = std::string());
 
+template <typename T>
+inline void assertAlmostEqual(const T& a, const T& b, const T& epsilon, const std::string& msg = std::string());
+
 }
 
 #define ASSERT_EXCEPTION(exceptionType, block)	\
@@ -65,7 +68,7 @@ inline void assertNotEqual(const T& a, const T& b, const std::string& msg = std:
 	{ block }									\
 	catch (exceptionType&)						\
 	{ detail__caughtException = true; }			\
-	test::assertTrue(detail__caughtException);		\
+	test::assertTrue(detail__caughtException);	\
 }
 
 #define ASSUME_NO_EXCEPTION(exceptionType, block) \

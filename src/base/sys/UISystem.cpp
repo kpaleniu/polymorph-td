@@ -19,7 +19,7 @@ namespace polymorph { namespace sys {
 namespace { const char* TAG_RUNNER = "UISystemRunner";
 			const char* TAG_SYSTEM = "UISystem"; }
 
-UISystemRunner::UISystemRunner(Window::ConstructionData&& winCtorData)
+UISystemRunner::UISystemRunner(Window::ConstructionData&& winCtorData, System<UISystemRunner>&)
 :	_window(winCtorData),
 	_grSys(_window),
  	_eventAdapter()
@@ -56,7 +56,7 @@ UISystemRunner::~UISystemRunner()
 	DEBUG_OUT(TAG_RUNNER, "Destroyed");
 }
 
-bool UISystemRunner::update()
+bool UISystemRunner::update(TimeDuration)
 {
 	TimeStamp start = TimeStamp::now();
 

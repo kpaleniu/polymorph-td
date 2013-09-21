@@ -13,30 +13,41 @@
 namespace gr {
 
 /**
- * Mesh composition.
+ * Mesh composition class.
  *
- * 2D vertices are treated as on z=0 plane.
+ * A model is a composition of meshes with local transformations
+ * as well as an own transformation.
+ *
+ * Note, this class is not sutable for static terrain (i.e.
+ * where transformations are expected to be constant). This is due
+ * to the fact that the meshes local transformation will be 
+ * generated with every render call.
  */
-class Model
+template <typename TransformType = Transform3>
+class Model : NonCopyable
 {
 public:
+
+	/**
+	 * Local transformation (in model space) - mesh pair.
+	 */
 	struct ModelMesh
 	{
-		Transform transform;
+		TransformType transform;
 		MeshManager::MeshHandle mesh;
 	};
 
 
 	Model(std::vector<ModelMesh>&& modelMeshes,
-		  const Transform& transform = Transform());
+		  const TransformType& transform = TransformType());
 
 	Model(Model&& other);
 
 	void render(Renderer& renderer) const;
-	void render(Renderer& renderer, const Transform& parentTransform) const;
+	void render(Renderer& renderer, const TransformType& parentTransform) const;
 
-	Transform& transform()				{ return _transform; }
-	const Transform& transform() const	{ return _transform; }
+	TransformType& transform();
+	const TransformType& transform() const;
 
 	bool insideBoundBox(const MapVector2_r& p) const;
 	bool insideBoundBox(const MapVector3_r& p) const;
@@ -44,12 +55,13 @@ public:
 
 private:
 	std::vector<ModelMesh>	_modelMeshes;
-	Transform				_transform;
+	TransformType			_transform;
 	const AABox				_localBounds; // Must be initialized after _modelMeshes.
 };
 
 
 }
 
+#include "gr/Model.inl"
 
 #endif

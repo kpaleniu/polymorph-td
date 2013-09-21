@@ -1,5 +1,6 @@
 #include "gr/Mesh.hpp"
 
+#include <algorithm>
 
 namespace gr {
 
@@ -22,85 +23,23 @@ Mesh::SubMesh::SubMesh(SubMesh&& other)
 {
 }
 
-void Mesh::SubMesh::render(Renderer& renderer) const
+void Mesh::SubMesh::render(Renderer& renderer, 
+						   index_t meshStartIndex) const
 {
-	auto& vertexWriter = 
-		renderer.renderPassManager().vertexWriter(_parent._vertexList.format, 
-												  _parent._shape,
-												  _texHandle,
-												  nullptr);
+	auto& passManager = renderer.renderPassManager();
 
-	index_t startIndex = vertexWriter.getVertexCount();
-	const VertexFormatData& fmtData = getVertexFormatData(_parent._vertexList.format);
+	std::vector<index_t> transformedIndices(_indices);
+	for (index_t& index : transformedIndices)
+		index += meshStartIndex;
 
-	for (index_t index : _indices)
-	{
-		{
-			const real_t* vertices = _parent._vertexList.vertexData(index);
-			for (unsigned int i = 0; i < fmtData.vertDim; ++i)
-				vertexWriter.vertices() << vertices[i];
-		}
+	auto indexWriter =
+		passManager.indexWriter(_parent._vertexList.format,
+								_parent._shape,
+								_texHandle,
+								nullptr);
 
-		{
-			const real_t* colors = _parent._vertexList.colorData(index);
-			for (unsigned int i = 0; i < fmtData.colorDim; ++i)
-				vertexWriter.colors() << colors[i];
-		}
-
-		{
-			const real_t* texCoords = _parent._vertexList.texCoordData(index);
-			for (unsigned int i = 0; i < fmtData.textDim; ++i)
-				vertexWriter.texCoords() << texCoords[i];
-		}
-
-		vertexWriter.indices() << (startIndex + index);
-	}
-}
-
-void Mesh::SubMesh::render(Renderer& renderer, const Transform& transform) const
-{
-	real_t vertBuffer[4];
-
-	auto& vertexWriter = 
-		renderer.renderPassManager().vertexWriter(_parent._vertexList.format, 
-												  _parent._shape,
-												  _texHandle,
-												  nullptr);
-
-	index_t startIndex = vertexWriter.getVertexCount();
-	const VertexFormatData& fmtData = getVertexFormatData(_parent._vertexList.format);
-
-	ASSERT(fmtData.vertDim < 5, "Vertex dimension not supported.");
-
-	for (index_t index : _indices)
-	{
-		{
-			real_t* vertices = _parent._vertexList.vertexData(index);
-			MapVector_r mapVec(vertices, fmtData.vertDim);
-
-			MapVector_r bufVec(vertBuffer, fmtData.vertDim);
-			bufVec = mapVec;
-
-			transform.transform(bufVec);
-
-			for (unsigned int i = 0; i < bufVec.rows(); ++i)
-				vertexWriter.vertices() << bufVec[i];
-		}
-
-		{
-			const real_t* colors = _parent._vertexList.colorData(index);
-			for (unsigned int i = 0; i < fmtData.colorDim; ++i)
-				vertexWriter.colors() << colors[i];
-		}
-
-		{
-			const real_t* texCoords = _parent._vertexList.texCoordData(index);
-			for (unsigned int i = 0; i < fmtData.textDim; ++i)
-				vertexWriter.texCoords() << texCoords[i];
-		}
-
-		vertexWriter.indices() << (startIndex + index);
-	}
+	indexWriter.write(transformedIndices.data(),
+					  transformedIndices.size());
 }
 
 // Mesh
@@ -119,7 +58,10 @@ Mesh::Mesh(Mesh&& other)
 {
 	for (SubMesh& subMesh : other._subMeshes)
 	{
-		_subMeshes.push_back(SubMesh(*this, subMesh._texHandle, std::move(subMesh._indices)));
+		_subMeshes.push_back(
+			SubMesh(*this, 
+				    subMesh._texHandle, 
+					std::move(subMesh._indices)));
 	}
 
 	other._subMeshes.clear();
@@ -133,14 +75,84 @@ void Mesh::addSubMesh(TextureManager::TextureHandle texture,
 
 void Mesh::render(Renderer& renderer) const
 {
+	auto& passManager = renderer.renderPassManager();
+	auto vertexWriter = 
+		passManager.vertexWriter(_vertexList.format);
+
+	vertexWriter.writeVertexData(_vertexList);
+
+
 	for (const auto& subMesh : _subMeshes)
-		subMesh.render(renderer);
+		subMesh.render(renderer, vertexWriter.startIndex());
 }
 
-void Mesh::render(Renderer& renderer, const Transform& transform) const
+void Mesh::render(Renderer& renderer,
+				  const Transform2& transform) const
 {
+	// FIXME Should handle more than 2D vectors.
+
+	auto& passManager = renderer.renderPassManager();
+	auto vertexWriter =
+		passManager.vertexWriter(_vertexList.format);
+
+	const VertexFormatData& fmtData =
+		getVertexFormatData(_vertexList.format);
+
+	ASSERT(fmtData.vertDim < 5,
+		   "Vertex dimension not supported.");
+
+	for (index_t i = 0; i < _vertexList.vertexCount(); ++i)
+	{
+		const real_t* vertices = _vertexList.vertexData(i);
+
+		// const MapVector_r will not modify the data.
+		const MapVector2_r mapVec(const_cast<real_t*>(vertices));
+
+		Vector2_r resVec = transform * mapVec;
+
+		vertexWriter.vertices().write(resVec.data(),
+									  resVec.rows());
+	}
+
 	for (const auto& subMesh : _subMeshes)
-		subMesh.render(renderer, transform);
+		subMesh.render(renderer, vertexWriter.startIndex());
+}
+
+void Mesh::render(Renderer& renderer, 
+				  const Transform3& transform) const
+{
+	auto& passManager = renderer.renderPassManager();
+	auto vertexWriter =
+		passManager.vertexWriter(_vertexList.format);
+
+	const VertexFormatData& fmtData =
+		getVertexFormatData(_vertexList.format);
+
+	ASSERT(fmtData.vertDim < 5,
+		   "Vertex dimension not supported.");
+
+
+	real_t buffVec[4];
+	
+	for (index_t i = 0; i < _vertexList.vertexCount(); ++i)
+	{
+		const real_t* vertices = _vertexList.vertexData(i);
+
+		// const MapVector_r will not modify the data.
+		const MapVector_r mapVec(const_cast<real_t*>(vertices), 
+								 fmtData.vertDim);
+
+		MapVector_r bufVec(buffVec, fmtData.vertDim);
+		bufVec = mapVec;
+
+		transform.transform(bufVec);
+
+		vertexWriter.vertices().write(bufVec.data(), 
+									  bufVec.rows());
+	}
+
+	for (const auto& subMesh : _subMeshes)
+		subMesh.render(renderer, vertexWriter.startIndex());
 }
 
 const VertexList& Mesh::vertices() const

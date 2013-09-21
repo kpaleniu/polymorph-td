@@ -9,8 +9,8 @@ bin
 /.project
 /apidoc/html
 /apidoc/latex
-/build/gmake
-/build/codeblocks
+/build/**
+/build/!premake!
 /doc\architecture/*.png
 /doc\architecture/*.png
 /doc\architecture/*.png

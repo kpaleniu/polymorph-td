@@ -3,6 +3,7 @@
 
 #include "gr/types.hpp"
 #include "gr/Model.hpp"
+#include "gr/Camera.hpp"
 
 #include <text/util.hpp>
 
@@ -10,28 +11,34 @@
 
 namespace gr {
 
+template <typename TransformType = Transform3>
 class Scene
 {
 public:
 	typedef text::string_hash model_id;
 	
-	Scene();
+	Scene(const Camera<TransformType>& camera = Camera<TransformType>());
 	Scene(Scene&& other);
 	
-	void addModel(model_id id, Model&& model);
+	void addModel(model_id id, Model<TransformType>&& model);
 	void removeModel(model_id id);
 
-	Model& model(model_id id);
-	const Model& model(model_id id) const;
+	Model<TransformType>& model(model_id id);
+	const Model<TransformType>& model(model_id id) const;
 	
 	void render(Renderer& renderer) const;
 
-
+	const Camera<TransformType>& camera() const;
+	Camera<TransformType>& camera();
 
 private:
-	std::map<model_id, Model> _modelRegister;
+	std::map<model_id, Model<TransformType>> _modelRegister;
+
+	Camera<TransformType> _camera;
 };
 
 }
+
+#include "gr/Scene.inl"
 
 #endif

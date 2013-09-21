@@ -1,11 +1,9 @@
-
-
-
 #ifndef VERTEXWRITER_HPP
 #define VERTEXWRITER_HPP
 
 #include "gr/VertexBuffer.hpp"
 #include "gr/IndexBuffer.hpp"
+#include "gr/VertexList.hpp"
 
 #include <NonCopyable.hpp>
 
@@ -13,111 +11,76 @@
 
 namespace gr {
 
+class VertexSource : NonCopyable
+{
+public:
+	VertexSource(VertexFormat format_);
+	VertexSource(VertexSource&& other);
+
+	VertexFormat format;
+
+	std::vector<real_t> vertices;
+	std::vector<real_t> colors;
+	std::vector<real_t> texCoords;
+	std::vector<real_t> normals;
+
+	void clear();
+};
+
+/**
+ * Interface for writing vertices to a vertex source 
+ * and index source.
+ */
 class VertexWriter
 {
 public:
-	template <typename T>
 	class DataWriter : NonCopyable
 	{
 	public:
-		DataWriter(std::vector<T>& dataSource);
+		DataWriter(std::vector<real_t>& dataSource);
 
-		DataWriter<T>& operator<<(const T& data);
-
-		DataWriter<T>& write(const T* data, size_t size);
+		DataWriter& operator<<(real_t data);
+		DataWriter& write(const real_t* data, 
+						  std::size_t size);
 
 	private:
-		std::vector<T>& _dataSource;
+		std::vector<real_t>& _dataSource;
 	};
 
+
 public:
-	VertexWriter(VertexBuffer& vertices, IndexBuffer& indices);
+	VertexWriter(VertexSource& writeTarget);
 
-	DataWriter<real_t>& vertices();
-	DataWriter<real_t>& colors();
-	DataWriter<real_t>& texCoords();
-	DataWriter<real_t>& normals();
-	DataWriter<index_t>& indices();
+	DataWriter& vertices();
+	DataWriter& colors();
+	DataWriter& texCoords();
+	DataWriter& normals();
 
-	/**
-	 * Writes the vertices to the Vertex- and IndexBuffer
-	 * and resets the write position to the start.
-	 *
-	 * This should be called once per frame.
-	 */
-	void flush();
+	void writeVertexData(const VertexList& vl);
 
-	size_t getVertexCount() const;
+	index_t startIndex() const;
 
 private:
-	VertexBuffer& _vertices;
-	IndexBuffer&  _indices;
+	DataWriter _vertexWriter;
+	DataWriter _colorWriter;
+	DataWriter _texCoordWriter;
+	DataWriter _normalWriter;
 
-	std::vector<real_t>  _vertBuffer;
-	std::vector<real_t>  _colorBuffer;
-	std::vector<real_t>  _texCoordBuffer;
-	std::vector<real_t>  _normalBuffer;
-	std::vector<index_t> _indexBuffer;
-
-	DataWriter<real_t> _vertexWriter;
-	DataWriter<real_t> _colorWriter;
-	DataWriter<real_t> _texCoordWriter;
-	DataWriter<real_t> _normalWriter;
-	DataWriter<index_t> _indexWriter;
+	const index_t _startIndex;
 };
 
-//
-
-inline VertexWriter::DataWriter<real_t>& VertexWriter::vertices()
+class IndexWriter : NonCopyable
 {
-	return _vertexWriter;
-}
+public:
+	IndexWriter(std::vector<index_t>& indexSource);
 
-inline VertexWriter::DataWriter<real_t>& VertexWriter::colors()
-{
-	return _colorWriter;
-}
+	IndexWriter& operator<<(index_t data);
+	IndexWriter& write(const index_t* data,
+					   std::size_t size);
 
-inline VertexWriter::DataWriter<real_t>& VertexWriter::texCoords()
-{
-	return _texCoordWriter;
-}
-
-inline VertexWriter::DataWriter<real_t>& VertexWriter::normals()
-{
-	return _normalWriter;
-}
-
-inline VertexWriter::DataWriter<index_t>& VertexWriter::indices()
-{
-	return _indexWriter;
-}
-//
-
-template<typename T>
-VertexWriter::DataWriter<T>::DataWriter(std::vector<T>& dataSource)
-:	_dataSource(dataSource)
-{
-}
-
-template<typename T>
-VertexWriter::DataWriter<T>& VertexWriter::DataWriter<T>::operator<<(const T& data)
-{
-	_dataSource.push_back(data);
-
-	return *this;
-}
-
-template<typename T>
-VertexWriter::DataWriter<T>& VertexWriter::DataWriter<T>::write(const T* data, size_t size)
-{
-	for (size_t i = 0; i < size; ++i)
-		_dataSource.push_back(data[i]);
-
-	return *this;
-}
-
-
+private:
+	std::vector<index_t>& _indexSource;
+};
 
 }
 

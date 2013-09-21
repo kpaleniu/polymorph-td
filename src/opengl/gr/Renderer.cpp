@@ -68,10 +68,10 @@ void Renderer::flipBuffers()
 	_surface.flipBuffers();
 }
 
-void Renderer::render()
+void Renderer::render(const MapMatrix4x4_r& projection,
+					  const MapMatrix4x4_r& worldInverseTransform)
 {
-	_renderPassManager.render();
-	_renderPassManager.clear();
+	_renderPassManager.render(projection, worldInverseTransform);
 	_surface.flipBuffers();
 
 	gl::clear(GL_COLOR_BUFFER_BIT);

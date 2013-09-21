@@ -60,7 +60,7 @@ bool Condition::waitUntil(std::function<bool()> callable,
 		return _cond.wait_for
 		(
 			lock, 
-			timeout.timeDuration, 
+			timeout._std__timeDuration, 
 			[&]() -> bool
 			{
 				Thread::interruptionPoint();

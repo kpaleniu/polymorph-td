@@ -39,6 +39,7 @@ public:
 	 * 					pointer to this instance.
 	 */
 	WindowInputSource(HWND window);
+
 	bool handleInput();
 
 private:
@@ -53,7 +54,7 @@ private:
 	void handleRawInput(WPARAM wParam, LPARAM lParam); // Only called by handler
 
 	void mouseInput(const RAWMOUSE& mouse);
-	void keyboardInput(UINT, WPARAM /*wParam*/, LPARAM);
+	void keyboardInput(const RAWKEYBOARD& keyboard);
 
 private:
 	HWND _window;

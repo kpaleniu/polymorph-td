@@ -8,6 +8,7 @@
 
 #include "gr/RenderPass.hpp"
 #include "gr/TextureManager.hpp"
+#include "gr/VertexWriter.hpp"
 
 #include <NonCopyable.hpp>
 
@@ -24,70 +25,33 @@ public:
 	RenderPassManager();
 	RenderPassManager(RenderPassManager&& other);
 
-	void pushProjection(const Projection& projection);
-	void popProjection();
+	VertexWriter vertexWriter(VertexFormat format);
 
-	void pushTransform(const Transform& transform);
-	void popTransform();
+	IndexWriter  indexWriter(VertexFormat format,
+							 Primitive shape,
+							 TextureManager::TextureHandle tex,
+							 const Shader* shader);
 
-	VertexWriter& vertexWriter(VertexFormat format, 
-							   Primitive shape,
-							   TextureManager::TextureHandle tex, 
-							   const Shader* shader);
-
-	void render();
-	void clear();
+	void render(const MapMatrix4x4_r& projection,
+				const MapMatrix4x4_r& worldInverseTransform);
 
 private:
 
-	typedef unsigned int projection_index;
-	typedef unsigned int transform_index;
-	
-
-	// To keep track of stack history a tree is needed.
-
-	template <typename T>
-	struct RandomAccessTreeEntry
+	class VertexRenderContext : NonCopyable
 	{
-		RandomAccessTreeEntry(unsigned int parentIndex_, const T& data_)
-		:	parentIndex(parentIndex_), data(data_)
-		{}
+	public:
+		VertexRenderContext(VertexFormat format);
+		VertexRenderContext(VertexRenderContext&& other);
 
-		unsigned int parentIndex;
-		T data;
+		// Writes source vectors to buffer.
+		void buildVertexBuffer();
 
-		static const unsigned int NULL_PARENT_INDEX = static_cast<unsigned int>(-1);
+		VertexSource source;
+		VertexBuffer buffer;
 	};
 
-	std::vector<RandomAccessTreeEntry<Projection>> _projectionPool;
-	std::vector<RandomAccessTreeEntry<Transform>> _transformPool;
-
-	projection_index _currentProjectionIndex;
-	transform_index _currentTransformIndex;
-
-	struct WorldState
-	{
-		projection_index projection;
-		transform_index transformation;
-
-		bool operator<(const WorldState& other) const
-		{
-			// Same operator< as for std::pair<unsigned int, unsigned int>.
-
-			if (projection < other.projection)
-				return true;
-			
-			if (projection > other.projection)
-				return false;
-
-			return transformation < other.transformation;
-		}
-	};
-
-
-	// TODO Needs refactoring
-
-	std::multimap<WorldState, RenderPass> _renderPasses;
+	std::multimap<VertexFormat, RenderPass> _renderPasses;
+	std::map<VertexFormat, VertexRenderContext> _vertexContexts;
 
 };
 

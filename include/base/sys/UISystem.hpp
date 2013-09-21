@@ -25,11 +25,11 @@ class UISystemRunner : NonCopyable
 public:
 	typedef Window::ConstructionData ConstructionArgs;
 
-	UISystemRunner(Window::ConstructionData&& winCtorData);
+	UISystemRunner(Window::ConstructionData&& winCtorData, System<UISystemRunner>&);
 	UISystemRunner(UISystemRunner&& runner);
 	~UISystemRunner();
 
-	bool update();
+	bool update(TimeDuration dt);
 
 	Window& window();
 	GraphicsSystem& graphics();

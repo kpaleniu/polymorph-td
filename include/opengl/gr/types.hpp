@@ -10,6 +10,7 @@
 
 #include <math/Projection.hpp>
 #include <math/Transform.hpp>
+#include <math/Transform2.hpp>
 #include <math/Box.hpp>
 
 #include <array>
@@ -22,7 +23,8 @@ typedef GLenum 	enum_t;
 
 // OpenGL expects column-major matrices
 typedef math::Projection<real_t, false>	Projection;
-typedef math::Transform<real_t, false> 	Transform;
+typedef math::Transform<real_t, false> 	Transform3;
+typedef math::Transform2<real_t, false> Transform2;
 
 typedef math::AxisAlignedBox<real_t, false> AABox;
 
@@ -30,6 +32,8 @@ typedef math::Matrix<real_t, 2, 1> 		Vector2_r;
 typedef math::Matrix<real_t, 3, 1> 		Vector3_r;
 typedef math::MatrixMap<real_t, 2, 1>	MapVector2_r;
 typedef math::MatrixMap<real_t, 3, 1>	MapVector3_r;
+
+typedef math::MatrixMap<real_t, 4, 4>   MapMatrix4x4_r;
 
 typedef math::MatrixMap<real_t, math::DYNAMIC, 1> MapVector_r;
 
@@ -93,7 +97,7 @@ enum class BufferFlag : enum_t
 
 }
 
-#define LOG_GL_CALLS			1
+#define LOG_GL_CALLS			0
 #define CHECK_GL_OUT_OF_MEMORY	1
 #define ASSERT_NO_GL_ERRORS		1
 

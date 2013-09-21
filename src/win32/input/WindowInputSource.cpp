@@ -87,77 +87,74 @@ void setUserData(HWND window, T ud)
 
 LRESULT CALLBACK handler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	switch (msg) {
-	case WM_CREATE:
+	switch (msg) 
 	{
-		// DEBUG_OUT(TAG, "WM_CREATE");
-
-		// set pointer to Window as the HWND user data
-		// NOTE: receives last argument of CreateWindowEx() as lpCreateParams
-		CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
-		setUserData(hwnd, pCreate->lpCreateParams);
-		return 0;
-	}
-
-	case WM_ACTIVATE:
-	{
-		// DEBUG_OUT(TAG, "WM_ACTIVATE");
-
-		//Window* thiz = getUserData<Window*>(hwnd);
-		//bool active = LOWORD(wParam) != WA_INACTIVE;
-		//bool minimized = HIWORD(wParam);
-		//thiz->_winEventQueue.push(WindowEvent(IN/ACTIVATE, 0, 0));
-
-		return 0;
-	}
-
-	case WM_SYSCOMMAND: // look for screensavers and powersave mode
-		switch (wParam)
+		case WM_CREATE:
 		{
-			case SC_SCREENSAVE: // screensaver trying to start
-			case SC_MONITORPOWER: // monitor going to powersave mode
-				// returning 0 prevents either from happening
-				return 0;
-			default:
-				break;
+			// DEBUG_OUT(TAG, "WM_CREATE");
+
+			// set pointer to Window as the HWND user data
+			// NOTE: receives last argument of CreateWindowEx() as lpCreateParams
+			CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+			setUserData(hwnd, pCreate->lpCreateParams);
+			return 0;
 		}
-		break;
 
-	case WM_CLOSE:
-		// DEBUG_OUT(TAG, "WM_CLOSE");
+		case WM_ACTIVATE:
+		{
+			// DEBUG_OUT(TAG, "WM_ACTIVATE");
 
-		// TODO: show confirmation dialog?
-		PostQuitMessage(0);
-		return 0;
+			//Window* thiz = getUserData<Window*>(hwnd);
+			//bool active = LOWORD(wParam) != WA_INACTIVE;
+			//bool minimized = HIWORD(wParam);
+			//thiz->_winEventQueue.push(WindowEvent(IN/ACTIVATE, 0, 0));
 
-	case WM_SIZE:
-	{
-		// DEBUG_OUT(TAG, "WM_SIZE");
+			return 0;
+		}
 
-		//Window* thiz = getUserData<Window*>(hwnd);
-		//int width  = LOWORD(lParam);
-		//int height = HIWORD(lParam);
-		// thiz->_winEventQueue.push(WindowEvent(RESIZE, width, height));
-		return 0;
-	}
+		case WM_SYSCOMMAND: // look for screensavers and powersave mode
+			switch (wParam)
+			{
+				case SC_SCREENSAVE: // screensaver trying to start
+				case SC_MONITORPOWER: // monitor going to powersave mode
+					// returning 0 prevents either from happening
+					return 0;
+				default:
+					break;
+			}
+			break;
 
-	case WM_CHAR:
-	{
-		// DEBUG_OUT(TAG, "WM_CHAR");
+		case WM_CLOSE:
+			// DEBUG_OUT(TAG, "WM_CLOSE");
 
-		WindowInputSource* thiz = getUserData<WindowInputSource*>(hwnd);
-		thiz->keyboardInput(msg, wParam, lParam);
-		return 0;
-	}
-	case WM_INPUT:
-	{
-		WindowInputSource* thiz = getUserData<WindowInputSource*>(hwnd);
-		thiz->handleRawInput(wParam, lParam);
-		return 0;
-	}
-	default:
-		// DEBUG_OUT(TAG, "Unhandled message.");
-		break;
+			// TODO: show confirmation dialog?
+			PostQuitMessage(0);
+			return 0;
+
+		case WM_SIZE:
+		{
+			// DEBUG_OUT(TAG, "WM_SIZE");
+
+			//Window* thiz = getUserData<Window*>(hwnd);
+			//int width  = LOWORD(lParam);
+			//int height = HIWORD(lParam);
+			// thiz->_winEventQueue.push(WindowEvent(RESIZE, width, height));
+			return 0;
+		}
+
+		case WM_CHAR:
+		{
+			return 0;
+		}
+		case WM_INPUT:
+		{
+			WindowInputSource* thiz = getUserData<WindowInputSource*>(hwnd);
+			thiz->handleRawInput(wParam, lParam);
+			return 0;
+		}
+		default:
+			// DEBUG_OUT(TAG, "Unhandled message.");
+			break;
 	}
 
 	// allow the default event handler to process the message
@@ -169,13 +166,23 @@ WindowInputSource::WindowInputSource(HWND window)
 :	_window(window),
  	_mouseState()
 {
-	// get raw input data from the mouse/pointer device
-	RAWINPUTDEVICE rid;
-	rid.usUsagePage = 0x01;
-	rid.usUsage     = 0x02;
-	rid.dwFlags     = RIDEV_INPUTSINK;
-	rid.hwndTarget  = _window;
-	VERIFY(RegisterRawInputDevices(&rid, 1, sizeof(rid)));
+	// Get raw input data from the mouse/pointer and keyboard device.
+	
+	RAWINPUTDEVICE rid[2];
+	
+	// Mouse:
+	rid[0].usUsagePage = 0x01;
+	rid[0].usUsage     = 0x02;
+	rid[0].dwFlags     = 0x00;
+	rid[0].hwndTarget  = _window;
+
+	// Keyboard:
+	rid[1].usUsagePage = 0x01;
+	rid[1].usUsage     = 0x06;
+	rid[1].dwFlags     = 0x00;
+	rid[1].hwndTarget  = _window;
+
+	VERIFY(RegisterRawInputDevices(rid, 2, sizeof(rid[0])));
 }
 
 bool WindowInputSource::handleInput()
@@ -270,11 +277,25 @@ void WindowInputSource::mouseInput(const RAWMOUSE& mouse)
 	//
 }
 
-void WindowInputSource::keyboardInput(UINT unsignedInt,
-                                      WPARAM unsignedInt1,
-                                      LPARAM longInt)
+void WindowInputSource::keyboardInput(const RAWKEYBOARD& keyboard)
 {
-    // TODO Implement
+	switch (keyboard.Message)
+	{
+		case WM_KEYDOWN:
+			notifyKeyDown(key_type(keyboard.VKey));
+			break;
+		
+		case WM_KEYUP:
+			notifyKeyUp(key_type(keyboard.VKey));
+			break;
+		
+		default:
+			INFO_OUT(TAG,
+					 "Unrecognized keyboard message: VKey = 0x%X Msg = 0x%X",
+					 keyboard.VKey,
+					 keyboard.Message);
+			break;
+	}
 }
 
 void WindowInputSource::handleRawInput(WPARAM wParam, LPARAM lParam)
@@ -287,13 +308,19 @@ void WindowInputSource::handleRawInput(WPARAM wParam, LPARAM lParam)
 	UINT szData = sizeof(input), szHeader = sizeof(RAWINPUTHEADER);
 	HRAWINPUT handle = reinterpret_cast<HRAWINPUT>(lParam);
 
-	if (GetRawInputData(handle, RID_INPUT, &input, &szData, szHeader) != szData)
-		throw sys::WindowException(); //("Unable to get raw input data.");
+	UINT bytesWritten = 
+		GetRawInputData(handle, RID_INPUT, &input, &szData, szHeader);
+
+	ASSERT(bytesWritten <= szData, "Unexpected return value from GetRawInputData.");
+	ASSERT(bytesWritten != UINT(-1), "GetRawInputData returned error.");
 
 	switch (input.header.dwType)
 	{
 		case RIM_TYPEMOUSE:
 			mouseInput(input.data.mouse);
+			break;
+		case RIM_TYPEKEYBOARD:
+			keyboardInput(input.data.keyboard);
 			break;
 	}
 }

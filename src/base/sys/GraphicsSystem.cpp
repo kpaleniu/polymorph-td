@@ -18,7 +18,8 @@ namespace polymorph { namespace sys {
 namespace { const char* TAG_RUNNER = "GraphicsSystemRunner";
 			const char* TAG_SYSTEM = "GraphicsSystem"; }
 
-GraphicsSystemRunner::ConstructionArgs::ConstructionArgs(Window& win_, GraphicsSystem& grSys_)
+GraphicsSystemRunner::ConstructionArgs::ConstructionArgs(Window& win_, 
+														 GraphicsSystem& grSys_)
 :	win(win_), grSys(grSys_)
 {
 }
@@ -29,7 +30,8 @@ GraphicsSystemRunner::ConstructionArgs::ConstructionArgs(ConstructionArgs&& othe
 }
 
 
-GraphicsSystemRunner::GraphicsSystemRunner(ConstructionArgs args)
+GraphicsSystemRunner::GraphicsSystemRunner(ConstructionArgs args, 
+										   System<GraphicsSystemRunner>&)
 :	_surface(args.win.surface()), 
 	_renderer(_surface), 
 	_scene(args.grSys._sourceScene),
@@ -52,14 +54,19 @@ GraphicsSystemRunner::~GraphicsSystemRunner()
 	DEBUG_OUT(TAG_RUNNER, "Destroyed");
 }
 
-bool GraphicsSystemRunner::update()
+bool GraphicsSystemRunner::update(TimeDuration)
 {
+	gr::Camera<gr::Transform2> sceneCamera;
+
 	{
 		polymorph::concurrency::MutexLockGuard sceneLock(_system._sceneTransactionMutex);
 		_scene.render(_renderer);
+
+		sceneCamera = _scene.camera();
 	}
 
-	_renderer.render();
+	_renderer.render(sceneCamera.projection, 
+					 sceneCamera.transform.inverse().asAffineMatrix3());
 
 	return true;
 }
@@ -74,46 +81,56 @@ gr::Surface& GraphicsSystemRunner::surface()
 	return _surface;
 }
 
-const gr::Scene& GraphicsSystemRunner::scene() const
+const gr::Scene<gr::Transform2>& GraphicsSystemRunner::scene() const
 {
 	return _scene;
 }
 
 //
 
-GraphicsSystem::SceneMutateScope::SceneMutateScope(polymorph::concurrency::Mutex& mutex, 
-												   gr::Scene& scene_)
-:	_lockGuard(mutex), scene(scene_)
+GraphicsSystem::SceneMutateScope::SceneMutateScope(
+		polymorph::concurrency::Mutex& mutex, 
+		gr::Scene<gr::Transform2>& scene_,
+		gr::MeshManager& meshes_)
+:	_lockGuard(mutex), 
+	scene(scene_), 
+	meshes(meshes_)
 {
 }
 
 GraphicsSystem::SceneMutateScope::SceneMutateScope(
-	GraphicsSystem::SceneMutateScope&& other)
-:	_lockGuard(std::move(other._lockGuard)), scene(other.scene)
+		GraphicsSystem::SceneMutateScope&& other)
+:	_lockGuard(std::move(other._lockGuard)), 
+	scene(other.scene), 
+	meshes(other.meshes)
 {
 }
 
 
 GraphicsSystem::GraphicsSystem(Window& window)
-:	System(TimeDuration::millis( 33 /*settings::sys::grSystemSyncMillis*/), 
+:	System(TimeDuration::millis( 16 /*settings::sys::grSystemSyncMillis*/), 
 		   256, 
-		   GraphicsSystemRunner::ConstructionArgs(window, *this))
+		   GraphicsSystemRunner::ConstructionArgs(window, *this)),
+	_meshManager(),
+	_sourceScene()
 {
 	DEBUG_OUT(TAG_SYSTEM, "Constructed");
 }
 
 GraphicsSystem::GraphicsSystem(GraphicsSystem&& grSys)
-: System(std::move(grSys))
+:	System(std::move(grSys))
 {
 	VERBOSE_OUT(TAG_SYSTEM, "Moved");
 }
 
 GraphicsSystem::SceneMutateScope GraphicsSystem::sceneMutator()
 {
-	return SceneMutateScope(_sceneTransactionMutex, _sourceScene);
+	return SceneMutateScope(_sceneTransactionMutex, 
+							_sourceScene,
+							_meshManager);
 }
 
-const gr::Scene& GraphicsSystem::scene() const
+const gr::Scene<gr::Transform2>& GraphicsSystem::scene() const
 {
 	return _sourceScene;
 }

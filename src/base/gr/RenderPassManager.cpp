@@ -5,131 +5,169 @@
 
 namespace gr {
 
+// VertexRenderContext
+
+RenderPassManager::VertexRenderContext::VertexRenderContext(VertexFormat format)
+:	source(format), buffer(format, BufferUsage::DYNAMIC)
+{
+}
+
+RenderPassManager::VertexRenderContext::
+	VertexRenderContext(VertexRenderContext&& other)
+:	source(std::move(other.source)),
+	buffer(std::move(other.buffer))
+{
+}
+
+void RenderPassManager::VertexRenderContext::buildVertexBuffer()
+{
+	auto format = getVertexFormatData(source.format);
+
+	ASSERT(source.vertices.size() % format.vertDim == 0,
+		   "Vertex in incorrect format");
+
+	std::size_t newSize = source.vertices.size() / format.vertDim;
+
+#ifdef _DEBUG
+	if (format.colorDim > 0)
+		ASSERT(source.colors.size() / format.colorDim == newSize,
+			   "Color in incorrect format.");
+
+	if (format.normalDim > 0)
+		ASSERT(source.normals.size() / format.normalDim == newSize,
+			   "Normals in incorrect format.");
+
+	if (format.textDim > 0)
+		ASSERT(source.texCoords.size() / format.textDim == newSize,
+		"Texture coordinates in incorrect format.");
+#endif
+
+	std::size_t currentSize = buffer.getVertexCount();
+
+	// TODO Only re-create when newSize is larger?
+	if (newSize != currentSize)
+		buffer = VertexBuffer(source.format, BufferUsage::DYNAMIC, newSize);
+
+	if (newSize == 0)
+		return;
+
+	buffer.writeVertices(0, newSize, source.vertices.data());
+	
+	if (format.colorDim > 0)
+		buffer.writeColors(0, newSize, source.colors.data());
+	if (format.normalDim > 0)
+		buffer.writeNormals(0, newSize, source.normals.data());
+	if (format.textDim > 0)
+		buffer.writeTextureCoords(0, newSize, source.normals.data());
+}
+
+
+// RenderPassManager
+
 RenderPassManager::RenderPassManager()
-:	_projectionPool(),
-	_transformPool(),
-	_currentProjectionIndex(RandomAccessTreeEntry<Projection>::NULL_PARENT_INDEX),
-	_currentTransformIndex(RandomAccessTreeEntry<Transform>::NULL_PARENT_INDEX),
-	_renderPasses()
+:	_renderPasses(), 
+	_vertexContexts()
 {
 }
 
 RenderPassManager::RenderPassManager(RenderPassManager&& other)
-:	_projectionPool( std::move(other._projectionPool) ),
-	_transformPool( std::move(other._transformPool)) ,
-	_currentProjectionIndex( other._currentProjectionIndex ),
-	_currentTransformIndex( other._currentTransformIndex )
+:	_renderPasses(std::move(other._renderPasses)), 
+	_vertexContexts(std::move(other._vertexContexts))
 {
 }
 
-void RenderPassManager::pushProjection(const Projection& projection)
+VertexWriter RenderPassManager::vertexWriter(VertexFormat format)
 {
-	RandomAccessTreeEntry<Projection> entry = {_currentProjectionIndex, projection};
-	_projectionPool.push_back(entry);
-	_currentProjectionIndex = _projectionPool.size() - 1;
-}
+	VertexRenderContext* foundContext = nullptr;
 
-void RenderPassManager::popProjection()
-{
-	ASSERT(_currentProjectionIndex != RandomAccessTreeEntry<Projection>::NULL_PARENT_INDEX,
-		   "Projection stack underflow.");
-
-	_currentProjectionIndex = _projectionPool[_currentProjectionIndex].parentIndex;
-}
-
-
-void RenderPassManager::pushTransform(const Transform& transform)
-{
-	RandomAccessTreeEntry<Transform> entry = {_currentTransformIndex, transform};
-	_transformPool.push_back(entry);
-	_currentTransformIndex = _transformPool.size() - 1;
-}
-
-void RenderPassManager::popTransform()
-{
-	ASSERT(_currentTransformIndex != RandomAccessTreeEntry<Transform>::NULL_PARENT_INDEX,
-		   "Transform stack underflow.");
-
-	_currentTransformIndex = _transformPool[_currentTransformIndex].parentIndex;
-}
-
-VertexWriter& RenderPassManager::vertexWriter(VertexFormat format,
-											  Primitive shape,
-											  TextureManager::TextureHandle tex,
-											  const Shader* shader)
-{
-	WorldState currentState = {_currentProjectionIndex, _currentTransformIndex};
-
-	auto beginEndPair = _renderPasses.equal_range(currentState);
-
-
-	// Try to find render pass that matches current state and formats...
-
-	for (auto it = beginEndPair.first; it != beginEndPair.second; ++it)
+	// Find or create render context:
 	{
-		RenderPass& pass = it->second;
+		auto it = _vertexContexts.find(format);
 
-		if (pass.format() == format
-			&& pass.shape() == shape
-			&& pass.texture() == tex
-			&& pass.shader() == shader)
+		if (it == _vertexContexts.end())
 		{
-			return pass.vertexWriter();
+			VertexRenderContext newRenderContext(format);
+
+			auto rcIt = _vertexContexts.insert(
+				std::make_pair(format, std::move(newRenderContext)));
+
+			foundContext = &rcIt.first->second;
+		}
+		else
+		{
+			foundContext = &it->second;
 		}
 	}
 
 
-	// ... if not found, create it.
-
-	auto it = _renderPasses.insert( std::make_pair(currentState, 
-									RenderPass(format, shape, tex, shader)) );
-
-	return it->second.vertexWriter();
+	return VertexWriter(foundContext->source);
 }
 
-void RenderPassManager::render()
+IndexWriter RenderPassManager::indexWriter(VertexFormat format,
+										   Primitive shape,
+										   TextureManager::TextureHandle tex,
+										   const Shader* shader)
 {
-	projection_index lastProj = RandomAccessTreeEntry<Projection>::NULL_PARENT_INDEX;
-	transform_index lastTrans = RandomAccessTreeEntry<Transform>::NULL_PARENT_INDEX;
+	auto beginEndPair = _renderPasses.equal_range(format);
 
+	RenderPass* foundPass = nullptr;
+
+	// Find or create render pass:
+	{
+		for (auto it = beginEndPair.first; it != beginEndPair.second; ++it)
+		{
+			RenderPass& pass = it->second;
+
+			if (pass.shape == shape
+				&& pass.texture == tex
+				&& pass.shader == shader)
+			{
+				foundPass = &pass;
+				break;
+			}
+		}
+
+		if (foundPass == nullptr)
+		{
+			auto it = _renderPasses.insert(
+				std::make_pair(format,
+				RenderPass(shape, tex, shader)));
+			foundPass = &it->second;
+		}
+	}
+
+	return IndexWriter(foundPass->indices);
+}
+
+void RenderPassManager::render(const MapMatrix4x4_r& projection,
+							   const MapMatrix4x4_r& worldInverseTransform)
+{
 	gl::matrixMode(GL_PROJECTION);
-	gl::loadIdentity();
+	gl::loadMatrix(projection.data());
+
 	gl::matrixMode(GL_MODELVIEW);
-	gl::loadIdentity();
+	gl::loadMatrix(worldInverseTransform.data());
 
-	for (auto& statePassPair : _renderPasses)
+	for (auto& fmtContexPair : _vertexContexts)
 	{
-		auto& state = statePassPair.first;
-		auto& renderPass = statePassPair.second;
+		const VertexFormat& format = fmtContexPair.first;
+		VertexRenderContext& context = fmtContexPair.second;
 
-		if (state.projection != lastProj)
+		auto beginEndPair = _renderPasses.equal_range(format);
+
+		context.buildVertexBuffer();
+		context.source.clear();
+
+		for (auto it = beginEndPair.first; it != beginEndPair.second; ++it)
 		{
-			gl::matrixMode(GL_PROJECTION);
-			gl::loadMatrix(_projectionPool[state.projection].data.data());
+			RenderPass& pass = it->second;
 
-			lastProj = state.projection;
+			pass.buildIndices();
+			pass.indices.clear();
+
+			context.buffer.draw(pass.shape, pass.indexBuffer);
 		}
-		
-		if (state.transformation != lastTrans)
-		{
-			gl::matrixMode(GL_MODELVIEW);
-			gl::loadMatrix(_transformPool[state.transformation].data.asAffineMatrix().data());
-
-			lastTrans = state.transformation;
-		}
-
-		renderPass.flushVertices();
 	}
-}
-
-void RenderPassManager::clear()
-{
-	_currentProjectionIndex = RandomAccessTreeEntry<Projection>::NULL_PARENT_INDEX;
-	_currentTransformIndex = RandomAccessTreeEntry<Transform>::NULL_PARENT_INDEX;
-
-	_projectionPool.clear();
-	_transformPool.clear();
-	_renderPasses.clear();
 }
 
 }

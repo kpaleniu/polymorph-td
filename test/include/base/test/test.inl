@@ -1,6 +1,8 @@
 
 #include "test/test.hpp" // Just to keep error parser happy
 
+#include <cmath>
+
 namespace test {
 
 inline void fail(const std::string& msg)
@@ -39,5 +41,11 @@ inline void assertNotEqual(const T& a, const T& b, const std::string& msg)
 		fail(msg);
 }
 
+template <typename T>
+inline void assertAlmostEqual(const T& a, const T& b, const T& epsilon, const std::string& msg)
+{
+	if (std::abs(a - b) > epsilon)
+		fail(msg);
+}
 
 }
