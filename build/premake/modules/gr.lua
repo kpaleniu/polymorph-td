@@ -42,6 +42,24 @@ project "gr"
 		{ 
 			"glew32" 
 		}
+
+	configuration { "macosx", "opengl" }
+		pm.cppFiles(
+			sourcePath .. "cocoa/gr/",
+			includePath .. "cocoa/gr/"
+		)
+
+		pm.includedirs
+		{
+			includePath .. "cocoa/gr"
+		}
+		pm.links
+		{
+			"Cocoa.framework",
+			"OpenGL.framework",
+			"CoreVideo.framwork"
+		}
+
 		
 	configuration {"opengl"}
 		pm.cppFiles(

@@ -12,11 +12,9 @@ gr =
 
 		configuration {"macosx", "opengl" }
 			includedirs {
-				"/opt/local/include",
 				projPath .. "/include/cocoa"
 			}
-			libdirs { "/opt/local/libs" }
-			links { "Cocoa.framework", "OpenGL.framework" }
+			links { "Cocoa.framework", "OpenGL.framework", "CoreVideo.framework" }
 	
 		configuration "opengl"
 			includedirs { projPath .. "/include/opengl" }
@@ -86,6 +84,12 @@ gr =
 				files { projPath .. "/src/wgl/**.cpp" }
 				links { "glew32", "glu32", "opengl32" }
 			
+			configuration {"macosx", "opengl" }
+				includedirs {
+					projPath .. "/include/cocoa"
+				}
+				links { "Cocoa.framework", "OpenGL.framework", "CoreVideo.framework" }
+
 			configuration "opengl"
 				files { projPath .. "/src/opengl/**.cpp" }
 			

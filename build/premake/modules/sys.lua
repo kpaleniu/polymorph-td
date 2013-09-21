@@ -26,6 +26,22 @@ project "sys"
 		{
 			includePath .. "win32/sys"
 		}
+
+	configuration "macosx"
+		pm.cppFiles(
+			sourcePath .. "cocoa/sys/",
+			includePath .. "cocoa/sys/"
+		)
+
+		pm.includedirs
+		{
+			includePath .. "cocoa/sys/"
+		}
+
+		pm.links
+		{
+			"Cocoa.framwork"
+		}
 	
 	configuration {}
 	
