@@ -32,78 +32,78 @@ template <typename Product>
 ResourceLoader<Product>::ResourceHandle::ResourceHandle(id_res_pointer dataPointer)
 :	PrivateHandle<id_res_pointer>(dataPointer)
 {
-	ASSERT(_val != nullptr, "Product is null");
-	++_val->second.refs;
+	ASSERT(this->_val != nullptr, "Product is null");
+	++this->_val->second.refs;
 }
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::ResourceHandle(const ResourceHandle& other)
 :	PrivateHandle<id_res_pointer>(other)
 {
-	if (_val != nullptr)
-		++_val->second.refs;
+	if (this->_val != nullptr)
+		++this->_val->second.refs;
 }
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::~ResourceHandle()
 {
-	if (_val != nullptr)
-		--_val->second.refs;
+	if (this->_val != nullptr)
+		--this->_val->second.refs;
 }
 
 template <typename Product>
 Product& ResourceLoader<Product>::ResourceHandle::operator*()
 {
-	ASSERT(_val != nullptr, "Product is null");
-	return _val->second.data;
+	ASSERT(this->_val != nullptr, "Product is null");
+	return this->_val->second.data;
 }
 
 template <typename Product>
 const Product& ResourceLoader<Product>::ResourceHandle::operator*() const
 {
-	ASSERT(_val != nullptr, "Product is null");
-	return _val->second.data;
+	ASSERT(this->_val != nullptr, "Product is null");
+	return this->_val->second.data;
 }
 
 template <typename Product>
 Product* ResourceLoader<Product>::ResourceHandle::operator->()
 {
-	ASSERT(_val != nullptr, "Product is null");
-	return &_val->second.data;
+	ASSERT(this->_val != nullptr, "Product is null");
+	return &this->_val->second.data;
 }
 
 template <typename Product>
 const Product* ResourceLoader<Product>::ResourceHandle::operator->() const
 {
-	ASSERT(_val != nullptr, "Product is null");
-	return &_val->second.data;
+	ASSERT(this->_val != nullptr, "Product is null");
+	return &this->_val->second.data;
 }
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::operator Product*()
 {
-	ASSERT(_val != nullptr, "Product is null");
-	return &_val->second.data;
+	ASSERT(this->_val != nullptr, "Product is null");
+	return &this->_val->second.data;
 }
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::operator const Product*()
 {
-	ASSERT(_val != nullptr, "Product is null");
-	return &_val->second.data;
+	ASSERT(this->_val != nullptr, "Product is null");
+	return &this->_val->second.data;
 }
 
 template <typename Product>
 ResourceLoader<Product>::ResourceHandle::operator bool()
 {
-	return _val != nullptr;
+	return this->_val != nullptr;
 }
 
 template <typename Product>
 text::string_hash ResourceLoader<Product>::ResourceHandle::id() const
 {
-	if (_val != nullptr)
-		return _val->first;
+	if (this->_val != nullptr)
+		return this->_val->first;
 	else
 		return 0;
 }
@@ -111,7 +111,7 @@ text::string_hash ResourceLoader<Product>::ResourceHandle::id() const
 template <typename Product>
 bool ResourceLoader<Product>::ResourceHandle::operator==(const ResourceHandle& other) const
 {
-	return _val->first == other._val->first;
+	return this->_val->first == other._val->first;
 }
 
 // ResourceLoader
@@ -161,7 +161,7 @@ template <typename Product>
 inline typename ResourceLoader<Product>::ResourceHandle 
 	ResourceLoader<Product>::addProduct(text::string_hash id, Product&& data)
 {
-	std::pair<std::map<text::string_hash, Res>::iterator, bool> itNewPair = 
+	std::pair<typename std::map<text::string_hash, Res>::iterator, bool> itNewPair =
 		_loaded.insert
 		(
 			std::make_pair
