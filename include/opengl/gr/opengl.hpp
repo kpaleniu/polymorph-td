@@ -13,4 +13,8 @@
 #	include <gl/glew.h>
 #endif
 
+#ifdef __APPLE__
+#include <GL/glew.h>
+#endif
+
 #endif /* OPENGL_HPP_ */
