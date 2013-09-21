@@ -13,26 +13,17 @@
 
 #include <memory>
 
-namespace sys {
-class Window;
-}
-
-class SurfaceImpl;
-
-
 namespace gr {
 
-/**
- *
- * TODO: Append GetLastError() information to thrown exceptions.
- */
 class Surface : NonCopyable
 {
 public:
-	Surface(sys::Window::Rect& rect);
+	Surface(Rect<int>& rect);
 	Surface(Surface&& surface);
 
 	~Surface();
+    
+    void* nativeHandle() const;
 
 	/**
 	 * @return true if the underlying rendering context is active in the calling thread.
@@ -55,7 +46,9 @@ public:
 	SurfaceVector unPick(const ClipVector& clipVec) const;
 
 private:
-	SurfaceImpl* _impl;
+    
+    class Impl;
+    std::unique_ptr<SurfaceImpl> _impl;
 };
 
 }
