@@ -33,7 +33,7 @@ template <typename Product>
 ResourceLoader<Product>::ResourceHandle::ResourceHandle(id_res_pointer dataPointer)
 :	PrivateHandle<id_res_pointer>(dataPointer)
 {
-	if (_val != nullptr)
+	if (this->_val != nullptr)
 		++this->_val->second.refs;
 }
 
@@ -112,7 +112,7 @@ text::string_hash ResourceLoader<Product>::ResourceHandle::id() const
 template <typename Product>
 bool ResourceLoader<Product>::ResourceHandle::operator==(const ResourceHandle& other) const
 {
-	if (_val == nullptr || other._val == nullptr)
+	if (this->_val == nullptr || other._val == nullptr)
 		return this->_val == other._val;
 
 	return this->_val->first == other._val->first;

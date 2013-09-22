@@ -51,7 +51,7 @@ template <MATRIX_TEMPLATES_DECLARATION>
 Matrix<MATRIX_TEMPLATES>::Matrix()
 :	MatrixMap<MATRIX_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = Arithmetic(0);
 
 	this->_mappedData = _data;
@@ -60,7 +60,7 @@ template <MATRIX_SQUARE_TEMPLATES_DECLARATION>
 Matrix<MATRIX_SQUARE_TEMPLATES>::Matrix()
 	: MatrixMap<MATRIX_SQUARE_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = Arithmetic(0);
 
 	this->_mappedData = _data;
@@ -69,7 +69,7 @@ template <MATRIX_COLUMN_TEMPLATES_DECLARATION>
 Matrix<MATRIX_COLUMN_TEMPLATES>::Matrix()
 	: MatrixMap<MATRIX_COLUMN_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = Arithmetic(0);
 
 	this->_mappedData = _data;
@@ -82,7 +82,7 @@ template <MATRIX_TEMPLATES_DECLARATION>
 Matrix<MATRIX_TEMPLATES>::Matrix(const Matrix<MATRIX_TEMPLATES>& other)
 :	 MatrixMap<MATRIX_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = other._data[i];
 
 	this->_mappedData = _data;
@@ -91,7 +91,7 @@ template <MATRIX_SQUARE_TEMPLATES_DECLARATION>
 Matrix<MATRIX_SQUARE_TEMPLATES>::Matrix(const Matrix<MATRIX_SQUARE_TEMPLATES>& other)
 :	 MatrixMap<MATRIX_SQUARE_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = other._data[i];
 
 	this->_mappedData = _data;
@@ -100,7 +100,7 @@ template <MATRIX_COLUMN_TEMPLATES_DECLARATION>
 Matrix<MATRIX_COLUMN_TEMPLATES>::Matrix(const Matrix<MATRIX_COLUMN_TEMPLATES>& other)
 :	 MatrixMap<MATRIX_COLUMN_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = other._data[i];
 
 	this->_mappedData = _data;
@@ -139,28 +139,28 @@ template <MATRIX_TEMPLATES_DECLARATION>
 Matrix<MATRIX_TEMPLATES>::Matrix(const MatrixMap<MATRIX_TEMPLATES>& other)
 	: MatrixMap<MATRIX_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = other._mappedData[i];
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 template <MATRIX_SQUARE_TEMPLATES_DECLARATION>
 Matrix<MATRIX_SQUARE_TEMPLATES>::Matrix(const MatrixMap<MATRIX_SQUARE_TEMPLATES>& other)
 	: MatrixMap<MATRIX_SQUARE_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = other._mappedData[i];
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 template <MATRIX_COLUMN_TEMPLATES_DECLARATION>
 Matrix<MATRIX_COLUMN_TEMPLATES>::Matrix(const MatrixMap<MATRIX_COLUMN_TEMPLATES>& other)
 	: MatrixMap<MATRIX_COLUMN_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = other._mappedData[i];
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 
 
@@ -170,28 +170,28 @@ template <MATRIX_TEMPLATES_DECLARATION>
 Matrix<MATRIX_TEMPLATES>::Matrix(const Arithmetic* data)
 	: MatrixMap<MATRIX_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = data[i];
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 template <MATRIX_SQUARE_TEMPLATES_DECLARATION>
 Matrix<MATRIX_SQUARE_TEMPLATES>::Matrix(const Arithmetic* data)
 	: MatrixMap<MATRIX_SQUARE_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = data[i];
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 template <MATRIX_COLUMN_TEMPLATES_DECLARATION>
 Matrix<MATRIX_COLUMN_TEMPLATES>::Matrix(const Arithmetic* data)
 	: MatrixMap<MATRIX_COLUMN_TEMPLATES>()
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
 		_data[i] = data[i];
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 
 
@@ -200,18 +200,18 @@ Matrix<MATRIX_COLUMN_TEMPLATES>::Matrix(const Arithmetic* data)
 template <MATRIX_SQUARE_TEMPLATES_DECLARATION>
 Matrix<MATRIX_SQUARE_TEMPLATES>::Matrix(Arithmetic s)
 {
-	for (index_t j = 0; j < rows(); ++j)
+	for (index_t j = 0; j < this->rows(); ++j)
 	{
-		for (index_t i = 0; i < cols(); ++i)
+		for (index_t i = 0; i < this->cols(); ++i)
 		{
 			if (i == j)
-				_data[j * rows() + i] = s;
+				_data[j * this->rows() + i] = s;
 			else
-				_data[j * rows() + i] = 0;
+				_data[j * this->rows() + i] = 0;
 		}
 	}
 	
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 
 
@@ -224,10 +224,10 @@ Matrix<MATRIX_COLUMN_TEMPLATES>::Matrix(const std::initializer_list<Arithmetic>&
 	ASSERT(data.size() == Rows, "Initializer list size is bad.");
 
 	auto it = data.begin();
-	for (index_t i = 0; i < rows(); ++i)
+	for (index_t i = 0; i < this->rows(); ++i)
 		_data[i] = *it++;
 
-	_mappedData = _data;
+	this->_mappedData = _data;
 }
 
 

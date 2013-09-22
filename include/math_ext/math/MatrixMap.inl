@@ -81,8 +81,8 @@ template <MATRIX_TEMPLATES_DECLARATION>
 MatrixMap<MATRIX_TEMPLATES>& MatrixMap<MATRIX_TEMPLATES>::operator=(
 	const MatrixMap<MATRIX_TEMPLATES>& other)
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
-		_mappedData[i] = other._mappedData[i];
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
+		this->_mappedData[i] = other._mappedData[i];
 
 	return *this;
 }
@@ -98,15 +98,15 @@ template <MATRIX_COLUMN_DYNAMIC_TEMPLATES_DECLARATION>
 MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>::MatrixMap(Arithmetic* data, unsigned int rows)
 	: detail::BaseMatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>(data)
 {
-	_rows = rows;
+	this->_rows = rows;
 }
 
 template <MATRIX_COLUMN_TEMPLATES_DECLARATION>
 MatrixMap<MATRIX_COLUMN_TEMPLATES>& MatrixMap<MATRIX_COLUMN_TEMPLATES>::operator=(
 	const MatrixMap<MATRIX_COLUMN_TEMPLATES>& other)
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
-		_mappedData[i] = other._mappedData[i];
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
+		this->_mappedData[i] = other._mappedData[i];
 
 	return *this;
 }
@@ -114,8 +114,8 @@ template <MATRIX_COLUMN_DYNAMIC_TEMPLATES_DECLARATION>
 MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>& MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>::operator=(
 	const MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>& other)
 {
-	for (index_t i = 0; i < rows() * cols(); ++i)
-		_mappedData[i] = other._mappedData[i];
+	for (index_t i = 0; i < this->rows() * this->cols(); ++i)
+		this->_mappedData[i] = other._mappedData[i];
 
 	return *this;
 }
@@ -123,27 +123,27 @@ MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>& MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMP
 template <MATRIX_COLUMN_TEMPLATES_DECLARATION>
 Arithmetic& MatrixMap<MATRIX_COLUMN_TEMPLATES>::operator[](index_t row)
 {
-	ASSERT(row < rows(), "Index out of bounds.");
-	return _mappedData[row];
+	ASSERT(row < this->rows(), "Index out of bounds.");
+	return this->_mappedData[row];
 }
 template <MATRIX_COLUMN_DYNAMIC_TEMPLATES_DECLARATION>
 Arithmetic& MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>::operator[](index_t row)
 {
-	ASSERT(row < rows(), "Index out of bounds.");
-	return _mappedData[row];
+	ASSERT(row < this->rows(), "Index out of bounds.");
+	return this->_mappedData[row];
 }
 
 template <MATRIX_COLUMN_TEMPLATES_DECLARATION>
 const Arithmetic& MatrixMap<MATRIX_COLUMN_TEMPLATES>::operator[](index_t row) const
 {
-	ASSERT(row < rows(), "Index out of bounds.");
-	return _mappedData[row];
+	ASSERT(row < this->rows(), "Index out of bounds.");
+	return this->_mappedData[row];
 }
 template <MATRIX_COLUMN_DYNAMIC_TEMPLATES_DECLARATION>
 const Arithmetic& MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>::operator[](index_t row) const
 {
-	ASSERT(row < rows(), "Index out of bounds.");
-	return _mappedData[row];
+	ASSERT(row < this->rows(), "Index out of bounds.");
+	return this->_mappedData[row];
 }
 
 template <MATRIX_COLUMN_TEMPLATES_DECLARATION>
@@ -151,8 +151,8 @@ Arithmetic MatrixMap<MATRIX_COLUMN_TEMPLATES>::length() const
 {
 	Arithmetic rVal = Arithmetic(0);
 
-	for (index_t row = 0; row < rows(); ++row)
-		rVal += square(_mappedData[row]);
+	for (index_t row = 0; row < this->rows(); ++row)
+		rVal += square(this->_mappedData[row]);
 
 	return std::sqrt(rVal);
 }
@@ -161,8 +161,8 @@ Arithmetic MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>::length() const
 {
 	Arithmetic rVal = Arithmetic(0);
 
-	for (index_t row = 0; row < rows(); ++row)
-		rVal += square(_mappedData[row]);
+	for (index_t row = 0; row < this->rows(); ++row)
+		rVal += square(this->_mappedData[row]);
 
 	return std::sqrt(rVal);
 }
@@ -172,8 +172,8 @@ Arithmetic MatrixMap<MATRIX_COLUMN_TEMPLATES>::lengthSquared() const
 {
 	Arithmetic rVal = Arithmetic(0);
 
-	for (index_t row = 0; row < rows(); ++row)
-		rVal += square(_mappedData[row]);
+	for (index_t row = 0; row < this->rows(); ++row)
+		rVal += square(this->_mappedData[row]);
 
 	return rVal;
 }
@@ -182,8 +182,8 @@ Arithmetic MatrixMap<MATRIX_COLUMN_DYNAMIC_TEMPLATES>::lengthSquared() const
 {
 	Arithmetic rVal = Arithmetic(0);
 
-	for (index_t row = 0; row < rows(); ++row)
-		rVal += square(_mappedData[row]);
+	for (index_t row = 0; row < this->rows(); ++row)
+		rVal += square(this->_mappedData[row]);
 
 	return rVal;
 }
