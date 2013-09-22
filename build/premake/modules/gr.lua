@@ -51,7 +51,7 @@ project "gr"
 
 		pm.includedirs
 		{
-			includePath .. "cocoa/gr"
+			includePath .. "cocoa"
 		}
 		pm.links
 		{
