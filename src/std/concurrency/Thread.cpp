@@ -110,6 +110,8 @@ const Thread::ID Thread::getCurrentID()
 
 void Thread::threadRunner(Thread *thiz)
 {
+    ASSERT(thiz, "Thread pointer is null");
+    
 	currentThread(thiz);
 
 	VERBOSE_OUT(TAG, "Thread starting");
