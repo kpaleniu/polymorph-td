@@ -1,24 +1,20 @@
-#include <Surface.hpp>
-#include <Cocoa/Cocoa.h>
+#include <gr/opengl.hpp>
 
-namespace gr {
+#import <Cocoa/Cocoa.h>
+#import <QuartzCore/QuartzCore.h>
+
+#include <gr/Surface.hpp>
     
 @interface OpenGLSurface : NSOpenGLView
 {
     CVDisplayLinkRef displayLink;
-    IRenderer* renderer;
 }
 
-- (void) setRenderer: (IRenderer*) gr;
+- (CVReturn)getFrameForTime:(const CVTimeStamp*)outputTime;
 
 @end
     
 @implementation OpenGLSurface
-
-- (void) setRenderer: (IRenderer*) gr
-{
-    renderer = gr;
-}
 
 - (CVReturn)getFrameForTime:(const CVTimeStamp*)outputTime
 {
@@ -39,7 +35,7 @@ static CVReturn DLCallback(CVDisplayLinkRef displayLink,
                                       void *displayLinkContext)
 {
     @autoreleasepool {
-        GraphicsOpenGLView *view = (__bridge GraphicsOpenGLView*)displayLinkContext;
+        OpenGLSurface *view = (OpenGLSurface*)displayLinkContext;
         CGLContextObj context = (CGLContextObj)[[view openGLContext] CGLContextObj];
         
         [[view openGLContext] makeCurrentContext];
@@ -67,7 +63,7 @@ static CVReturn DLCallback(CVDisplayLinkRef displayLink,
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
     
     // Set the renderer output callback function
-    CVDisplayLinkSetOutputCallback(displayLink, &CLCallback, (__bridge void*)self);
+    CVDisplayLinkSetOutputCallback(displayLink, &DLCallback, (void*)self);
     
     // Set the display link for the current renderer
     CGLContextObj cglContext = (CGLContextObj)[[self openGLContext] CGLContextObj];
@@ -87,6 +83,8 @@ static CVReturn DLCallback(CVDisplayLinkRef displayLink,
 }
 
 @end
+
+namespace gr {
     
 class Surface::Impl
 {
@@ -95,9 +93,6 @@ class Surface::Impl
 public:
     Impl(void* windowHandle)
     {
-        NSRect contentSize = NSMakeRect(rect.getTop(), rect.getLeft(),
-                                        rect.getWidth(), rect.getHeight());
-        
         GLuint pixelFormatAttributes[] =
         {
             NSOpenGLPFAWindow,         // choose among pixelformats capable of rendering to windows
@@ -110,15 +105,12 @@ public:
             0
         };
         
-        _surface = [[OpenGLSurface alloc]
-                            initWithFrame: contentSize];
-        
         NSWindow* window = (NSWindow*)windowHandle;
-        _view = [[GraphicsOpenGLView alloc]
+        _surface = [[OpenGLSurface alloc]
                     initWithFrame: [[window contentView] frame]
-                    pixelFormat: [[NSOpenGLPixelFormat alloc] initWithAttributes: pixelFormatAttributes] autorelease];
+                    pixelFormat: [[NSOpenGLPixelFormat alloc] initWithAttributes: pixelFormatAttributes]];
         
-        [_view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable ];
+        [_surface setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable ];
     }
     
     ~Impl()
@@ -133,7 +125,7 @@ public:
 };
     
 Surface::Surface(void* windowHandle) :
-    _impl(new SurfaceImpl())
+    _impl(new Impl(windowHandle))
 {
 }
 

@@ -40,6 +40,8 @@ project "gr"
 		
 		pm.links 
 		{ 
+			"glu32", 
+			"opengl32",
 			"glew32" 
 		}
 
@@ -57,7 +59,7 @@ project "gr"
 		{
 			"Cocoa.framework",
 			"OpenGL.framework",
-			"CoreVideo.framwork"
+			"CoreVideo.framework"
 		}
 
 		
@@ -70,12 +72,6 @@ project "gr"
 		pm.includedirs 
 		{ 
 			includePath .. "opengl" 
-		}
-		
-		pm.links 
-		{ 
-			"glu32", 
-			"opengl32" 
 		}
 	
 	configuration {}

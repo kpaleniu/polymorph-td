@@ -1,6 +1,8 @@
 #ifndef RECT_HPP_
 #define RECT_HPP_
 
+namespace gr {
+
 template <typename S>
 class Rect
 {
@@ -59,5 +61,7 @@ inline S Rect<S>::getWidth() const
 template <typename S>
 inline void Rect<S>::move(S x, S y)
 { _left += x; _bottom += y; }
+    
+} /* namespace gr */
 
 #endif /* RECT_HPP_ */

@@ -18,7 +18,7 @@ namespace gr {
 class Surface : NonCopyable
 {
 public:
-	Surface(Rect<int>& rect);
+	Surface(void* windowHandle);
 	Surface(Surface&& surface);
 
 	~Surface();
@@ -30,10 +30,13 @@ public:
 	 */
 	bool isActive() const;
 
+	
 	/**
 	 * Activate/deactivate the underlying rendering context for the calling thread.
 	 */
-	void activate(bool activate = true);
+	void setActive(bool activate = true);
+    
+	void setVSync(bool enable = true);
 
 	void flipBuffers();
 
@@ -48,7 +51,7 @@ public:
 private:
     
     class Impl;
-    std::unique_ptr<SurfaceImpl> _impl;
+    std::unique_ptr<Impl> _impl;
 };
 
 }
