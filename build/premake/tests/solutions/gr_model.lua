@@ -22,9 +22,25 @@ solution "gr_model_tester"
 				testIncludePath .. "wgl"
 			}
 		
+		configuration {"windows", "opengl"}
+			pm.cppFiles(
+				testSourcePath .. "cocoa/gr/",
+				testIncludePath .. "cocoa/gr/"
+			)
+			
+			pm.includedirs 
+			{
+				testIncludePath .. "cocoa"
+			}
+
 		configuration "windows"
 			pm.cppFiles(
 				testSourcePath .. "win32/test_gr_model/"
+			)
+
+		configuration "macosx"
+			pm.cppFiles(
+				testSourcePath .. "cocoa/test_gr_model/"
 			)
 			
 		configuration {}
