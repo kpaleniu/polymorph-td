@@ -58,6 +58,16 @@ VertexWriter::VertexWriter(VertexSource& writeTarget)
 {
 }
 
+VertexWriter::VertexWriter(VertexWriter&& other)
+:	_vertexWriter(std::move(other._vertexWriter)),
+ 	_colorWriter(std::move(other._colorWriter)),
+ 	_texCoordWriter(std::move(other._texCoordWriter)),
+ 	_normalWriter(std::move(other._normalWriter)),
+	_startIndex(other._startIndex)
+{
+}
+
+    
 VertexWriter::DataWriter& VertexWriter::vertices()
 {
 	return _vertexWriter;
@@ -103,6 +113,11 @@ VertexWriter::DataWriter::DataWriter(std::vector<real_t>& dataSource)
 :	_dataSource(dataSource)
 {
 }
+    
+VertexWriter::DataWriter::DataWriter(DataWriter&& other)
+:	_dataSource(other._dataSource)
+{
+}
 
 VertexWriter::DataWriter& VertexWriter::DataWriter::operator<<(real_t data)
 {
@@ -124,6 +139,11 @@ VertexWriter::DataWriter& VertexWriter::DataWriter::write(const real_t* data,
 
 IndexWriter::IndexWriter(std::vector<index_t>& indexSource)
 :	_indexSource(indexSource)
+{
+}
+    
+IndexWriter::IndexWriter(IndexWriter&& other)
+:	_indexSource(other._indexSource)
 {
 }
 

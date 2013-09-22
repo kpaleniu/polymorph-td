@@ -38,6 +38,7 @@ public:
 	{
 	public:
 		DataWriter(std::vector<real_t>& dataSource);
+        DataWriter(DataWriter&& other);
 
 		DataWriter& operator<<(real_t data);
 		DataWriter& write(const real_t* data, 
@@ -50,6 +51,7 @@ public:
 
 public:
 	VertexWriter(VertexSource& writeTarget);
+    VertexWriter(VertexWriter&& other);
 
 	DataWriter& vertices();
 	DataWriter& colors();
@@ -73,6 +75,7 @@ class IndexWriter : NonCopyable
 {
 public:
 	IndexWriter(std::vector<index_t>& indexSource);
+    IndexWriter(IndexWriter&& other);
 
 	IndexWriter& operator<<(index_t data);
 	IndexWriter& write(const index_t* data,
