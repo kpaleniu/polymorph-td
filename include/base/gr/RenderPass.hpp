@@ -30,10 +30,10 @@ public:
 
 	RenderPass(RenderPass&& other);
 
+    const Primitive						shape;
 	std::vector<index_t>				indices;
 	const TextureManager::TextureHandle texture;
 	const Shader*						shader;
-	const Primitive						shape;
 
 	IndexBuffer indexBuffer;
 
