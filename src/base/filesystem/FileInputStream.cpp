@@ -2,7 +2,7 @@
 
 #include "filesystem/FileException.hpp"
 
-namespace filesystem {
+namespace polymorph { namespace filesystem {
 
 FileInputStream::FileInputStream(const std::string& path)
 {
@@ -65,4 +65,4 @@ void FileInputStream::read(void* data, std::size_t /*typeAlignment*/, std::size_
 	}
 }
 
-}
+} }

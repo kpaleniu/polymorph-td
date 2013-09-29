@@ -1,8 +1,7 @@
 #include "filesystem/FileOutputStream.hpp"
 
 
-namespace filesystem {
-
+namespace polymorph { namespace filesystem {
 
 FileOutputStream::FileOutputStream(const std::string& path)
 {
@@ -33,6 +32,4 @@ void FileOutputStream::write(const void* data,
 	}
 }
 
-
-
-}
+} }

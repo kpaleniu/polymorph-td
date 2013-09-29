@@ -1,6 +1,4 @@
-
-#ifndef FILESYSTEM_FILE_OUTPUT_STREAM_HPP_
-#define FILESYSTEM_FILE_OUTPUT_STREAM_HPP_
+#pragma once
 
 #include "filesystem/FileException.hpp"
 
@@ -8,7 +6,7 @@
 
 #include <string>
 
-namespace filesystem {
+namespace polymorph { namespace filesystem {
 
 class FileOutputStream : public io::OutputStream
 {
@@ -25,6 +23,4 @@ private:
 	std::FILE* _fp;
 };
 
-}
-
-#endif
+} }

@@ -1,13 +1,11 @@
-
-#ifndef FILESYSTEM_FILESYSTEM_HPP_
-#define FILESYSTEM_FILESYSTEM_HPP_
+#pragma once
 
 #include "filesystem/FileInputStream.hpp"
 #include "filesystem/FileOutputStream.hpp"
 
 #include <string>
 
-namespace filesystem {
+namespace polymorph { namespace filesystem {
 
 class FileSystem
 {
@@ -19,6 +17,4 @@ public:
 	static void removeTempFiles();
 };
 
-}
-
-#endif /* ANY_HPP_ */
+} }

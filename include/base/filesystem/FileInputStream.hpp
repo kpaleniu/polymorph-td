@@ -1,13 +1,11 @@
-
-#ifndef FILESYSTEM_FILE_INPUT_STREAM_HPP_
-#define FILESYSTEM_FILE_INPUT_STREAM_HPP_
+#pragma once
 
 #include <io/IOStream.hpp>
 
 #include <string>
 #include <cstdio>
 
-namespace filesystem {
+namespace polymorph { namespace filesystem {
 
 class FileInputStream : public io::InputStream
 {
@@ -27,6 +25,4 @@ private:
 	std::size_t _fileSize;
 };
 
-}
-
-#endif
+} }
