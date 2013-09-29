@@ -3,7 +3,7 @@
 #include <Alignment.hpp>
 #include <Assert.hpp>
 
-namespace io {
+namespace polymorph { namespace io {
 
 DataStorageInputStream::DataStorageInputStream(const void* data, std::size_t size)
 :	_readPos(std::uintptr_t(data)), 
@@ -37,4 +37,4 @@ std::size_t DataStorageInputStream::available() const
 	return std::size_t(_readEnd - _readPos);
 }
 
-}
+} }

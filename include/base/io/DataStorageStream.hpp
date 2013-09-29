@@ -1,12 +1,11 @@
-#ifndef IO_DATA_STORAGE_STREAM_HPP_
-#define IO_DATA_STORAGE_STREAM_HPP_
+#pragma once
 
 #include "io/IOStream.hpp"
 
 #include <cstdint>
 #include <memory>
 
-namespace io {
+namespace polymorph { namespace io {
 
 class DataStorageInputStream : public InputStream
 {
@@ -27,6 +26,4 @@ protected:
 };
 
 
-}
-
-#endif
+} }

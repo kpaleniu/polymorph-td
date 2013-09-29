@@ -1,12 +1,11 @@
-#ifndef IO_STREAM_HPP_
-#define IO_STREAM_HPP_
+#pragma once
 
 #include "io/IOException.hpp"
 
 #include <NonCopyable.hpp>
 #include <memory>
 
-namespace io {
+namespace polymorph { namespace io {
 
 class InputStream : NonCopyable
 {
@@ -71,9 +70,7 @@ public:
 };
 
 
-}
+} }
 
 
 #include "io/IOStream.inl"
-
-#endif

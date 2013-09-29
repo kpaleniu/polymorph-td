@@ -1,7 +1,7 @@
 
 #include <type_traits>
 
-namespace io {
+namespace polymorph { namespace io {
 
 template <typename TriviallyCopyable>
 InputStream& InputStream::operator>>(TriviallyCopyable& data)
@@ -47,4 +47,4 @@ OutputStream& OutputStream::writeBlock(const TriviallyCopyable* data, std::size_
 	return *this;
 }
 
-}
+} }
