@@ -6,7 +6,7 @@
 #ifndef WINDOWEXCEPTION_HPP_
 #define WINDOWEXCEPTION_HPP_
 
-#include "Exception.hpp"
+#include <Exception.hpp>
 
 namespace polymorph { namespace sys {
 

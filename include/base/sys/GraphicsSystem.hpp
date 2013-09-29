@@ -48,6 +48,9 @@ private:
 	gr::Surface& _surface;
 
 	gr::Renderer _renderer;
+	
+	// NOTE: It is very important this is read-only as that enables
+	//       concurrent reads from other threads.
 	const gr::Scene<gr::Transform2>& _scene;
 
 	GraphicsSystem& _system;
@@ -79,6 +82,11 @@ public:
 
 	SceneMutateScope sceneMutator();
 	const gr::Scene<gr::Transform2>& scene() const;
+
+	gr::MeshManager& meshes()
+	{
+		return _meshManager;
+	}
 
 private:
 	gr::MeshManager			  _meshManager;

@@ -51,6 +51,8 @@ public:
 
 	SystemActionQueue<Runner>& actionQueue();
 
+	typedef Runner Runner;
+
 protected:
 	// May be invalidated after runner is constructed.
 	typename Runner::ConstructionArgs _runnerConstructionArgs;
