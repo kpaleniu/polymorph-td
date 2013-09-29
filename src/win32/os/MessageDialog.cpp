@@ -1,6 +1,5 @@
 #include "os/MessageDialog.hpp"
 
-#include <text/util.hpp>
 #include <Assert.hpp>
 
 namespace polymorph { namespace os {
