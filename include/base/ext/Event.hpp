@@ -3,14 +3,12 @@
 #ifndef EVENT_HPP_
 #define EVENT_HPP_
 
-#include <text/util.hpp>
-
 #include <type_traits>
 #include <functional>
 #include <map>
 
 
-typedef text::string_hash event_action_id;
+typedef std::size_t event_action_id;
 
 namespace detail {
 
