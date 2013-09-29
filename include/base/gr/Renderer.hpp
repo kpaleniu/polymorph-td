@@ -1,5 +1,4 @@
-#ifndef RENDERER_HPP_
-#define RENDERER_HPP_
+#pragma once
 
 #include "gr/DebugDraw.hpp"
 #include "gr/RenderPassManager.hpp"
@@ -11,7 +10,7 @@
 #include <functional>
 #include <map>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 class Surface;
 
@@ -43,6 +42,4 @@ private:
 	RenderPassManager	_renderPassManager;
 };
 
-}
-
-#endif
+} }

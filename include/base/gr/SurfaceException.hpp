@@ -1,16 +1,9 @@
-/**
- * @file SurfaceException.hpp
- *
- */
-
-#ifndef SURFACEEXCEPTION_HPP_
-#define SURFACEEXCEPTION_HPP_
+#pragma once
 
 #include <Exception.hpp>
 
-namespace gr 
-{
-	PM_MAKE_EXCEPTION_CLASS(SurfaceException, Exception);
-}
+namespace polymorph { namespace gr {
 
-#endif /* SURFACEEXCEPTION_HPP_ */
+PM_MAKE_EXCEPTION_CLASS(SurfaceException, Exception);
+
+} }

@@ -5,7 +5,7 @@
 #include <limits>
 #include <algorithm>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 namespace detail {
 
@@ -59,8 +59,11 @@ AABox createBoundingBox(const std::vector<typename Model<TransformType>::ModelMe
 }
 
 template <typename TransformType>
-Model<TransformType>::Model(std::vector<ModelMesh> && modelMeshes, const TransformType& transform)
+Model<TransformType>::Model(std::vector<ModelMesh>&& modelMeshes, 
+							unsigned int mask,
+							const TransformType& transform)
 :	 _modelMeshes(std::move(modelMeshes)),
+	_mask(mask),
 	_transform(transform),
 	_localBounds(detail::createBoundingBox<TransformType>(_modelMeshes))
 {
@@ -69,6 +72,7 @@ Model<TransformType>::Model(std::vector<ModelMesh> && modelMeshes, const Transfo
 template <typename TransformType>
 Model<TransformType>::Model(Model<TransformType>&& other)
 :	_modelMeshes(std::move(other._modelMeshes)),
+	_mask(other._mask),
 	_transform(other._transform),
 	_localBounds(other._localBounds)
 {
@@ -89,6 +93,12 @@ void Model<TransformType>::render(Renderer& renderer,
 
 	for (const auto& modelMesh : _modelMeshes)
 		modelMesh.mesh->render(renderer, modelTransform * modelMesh.transform);
+}
+
+template <typename TransformType>
+unsigned int Model<TransformType>::mask() const
+{
+	return _mask;
 }
 
 template <typename TransformType>
@@ -138,4 +148,4 @@ bool Model<TransformType>::insideBoundBox(const MapVector_r& p) const
 }
 
 
-}
+} }

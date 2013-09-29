@@ -1,10 +1,4 @@
-/**
- * @file opengl.hpp
- *
- */
-
-#ifndef OPENGL_HPP_
-#define OPENGL_HPP_
+#pragma once
 
 // OpenGL includes here
 
@@ -12,5 +6,3 @@
 #	include <windows.h>
 #	include <gl/glew.h>
 #endif
-
-#endif /* OPENGL_HPP_ */

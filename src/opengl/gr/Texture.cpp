@@ -3,7 +3,7 @@
 
 #include <Assert.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 Texture::Texture(const Image& source,
                  const Params& texParams)
@@ -58,4 +58,4 @@ void Texture::unbind() const
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-}
+} }

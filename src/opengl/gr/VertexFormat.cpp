@@ -1,13 +1,8 @@
-/**
- * @file VertexFormat.cpp
- *
- */
-
 #include "gr/VertexFormat.hpp"
 
 #include "Assert.hpp"
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 namespace {
 
@@ -80,4 +75,4 @@ const VertexFormatData& getVertexFormatData(VertexFormat fmt)
 	return vertexFormatData[size_t(fmt)];
 }
 
-}
+} }

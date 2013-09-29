@@ -1,10 +1,4 @@
-/**
- * @file types.hpp
- *
- */
-
-#ifndef GR_TYPES_HPP_
-#define GR_TYPES_HPP_
+#pragma once
 
 #include "gr/opengl.hpp"
 
@@ -15,7 +9,7 @@
 
 #include <array>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 typedef GLfloat real_t;
 typedef GLuint  index_t;
@@ -147,8 +141,6 @@ void multMatrix(const float* mat);
 void clear(GLbitfield mask);
 //
 
-}
+} }
 
 #include "gr/types.inl"
-
-#endif /* TYPES_HPP_ */

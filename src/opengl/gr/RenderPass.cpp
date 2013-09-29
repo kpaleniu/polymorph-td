@@ -1,18 +1,13 @@
-/**
- * @file Renderer_GL.cpp
- *
- */
-
 #include "gr/RenderPass.hpp"
 #include "gr/opengl.hpp"
 #include "gr/Texture.hpp"
 
 #include <Debug.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 RenderPass::RenderPass(Primitive shape_,
-                       TextureManager::TextureHandle texture_,
+                       TextureManager::Handle texture_,
 					   const Shader* shader_)
 :	shape(shape_),
  	indices(),
@@ -40,5 +35,4 @@ void RenderPass::buildIndices()
 		indexBuffer.writeIndices(0, indices.size(), indices.data());
 }
 
-}
-
+} }

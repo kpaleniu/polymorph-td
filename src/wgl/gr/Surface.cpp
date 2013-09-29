@@ -1,9 +1,3 @@
-/**
- * @file Surface_WGL.cpp
- *
- * Windows GL implementation of surface.
- */
-
 #include "gr/Surface.hpp"
 
 #include "gr/SurfaceException.hpp"
@@ -14,7 +8,8 @@
 
 #include <windows.h>
 
-namespace gr {
+namespace polymorph { namespace gr {
+
 namespace { const char* TAG = "Surface"; }
 namespace detail {
 
@@ -232,5 +227,4 @@ SurfaceVector Surface::unPick(const ClipVector& clipVec) const
 	return SurfaceVector(surfV);
 }
 
-}
-
+} }

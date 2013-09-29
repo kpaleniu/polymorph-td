@@ -1,12 +1,6 @@
-/**
- * @file Shader.hpp
- *
- */
+#pragma once
 
-#ifndef SHADER_HPP_
-#define SHADER_HPP_
-
-namespace gr {
+namespace polymorph { namespace gr {
 
 // TODO Implement
 
@@ -16,7 +10,4 @@ public:
 
 };
 
-}
-
-
-#endif /* SHADER_HPP_ */
+} }

@@ -3,7 +3,7 @@
 #include <Scoped.hpp>
 #include <Assert.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 // VertexRenderContext
 
@@ -105,7 +105,7 @@ VertexWriter RenderPassManager::vertexWriter(VertexFormat format)
 
 IndexWriter RenderPassManager::indexWriter(VertexFormat format,
 										   Primitive shape,
-										   TextureManager::TextureHandle tex,
+										   TextureManager::Handle tex,
 										   const Shader* shader)
 {
 	auto beginEndPair = _renderPasses.equal_range(format);
@@ -170,4 +170,4 @@ void RenderPassManager::render(const MapMatrix4x4_r& projection,
 	}
 }
 
-}
+} }

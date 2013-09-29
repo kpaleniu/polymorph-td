@@ -1,5 +1,4 @@
-#ifndef GR_MODEL_HPP_
-#define GR_MODEL_HPP_
+#pragma once
 
 #include "gr/Mesh.hpp"
 #include "gr/MeshManager.hpp"
@@ -10,7 +9,7 @@
 
 #include <vector>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 /**
  * Mesh composition class.
@@ -24,7 +23,7 @@ namespace gr {
  * generated with every render call.
  */
 template <typename TransformType = Transform3>
-class Model : NonCopyable
+class Model
 {
 public:
 
@@ -34,17 +33,20 @@ public:
 	struct ModelMesh
 	{
 		TransformType transform;
-		MeshManager::MeshHandle mesh;
+		MeshManager::Handle mesh;
 	};
 
 
 	Model(std::vector<ModelMesh>&& modelMeshes,
+		  unsigned int mask = 0,
 		  const TransformType& transform = TransformType());
 
 	Model(Model&& other);
 
 	void render(Renderer& renderer) const;
 	void render(Renderer& renderer, const TransformType& parentTransform) const;
+
+	unsigned int mask() const;
 
 	TransformType& transform();
 	const TransformType& transform() const;
@@ -55,13 +57,12 @@ public:
 
 private:
 	std::vector<ModelMesh>	_modelMeshes;
+	unsigned int			_mask;
 	TransformType			_transform;
-	const AABox				_localBounds; // Must be initialized after _modelMeshes.
+	AABox				_localBounds; // Must be initialized after _modelMeshes.
 };
 
 
-}
+} }
 
 #include "gr/Model.inl"
-
-#endif

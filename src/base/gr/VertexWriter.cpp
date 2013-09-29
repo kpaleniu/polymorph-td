@@ -1,10 +1,8 @@
-
-
 #include "gr/VertexWriter.hpp"
 
-# include <Assert.hpp>
+#include <Assert.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 namespace {
 
@@ -143,5 +141,4 @@ IndexWriter& IndexWriter::write(const index_t* data,
 	return *this;
 }
 
-}
-
+} }

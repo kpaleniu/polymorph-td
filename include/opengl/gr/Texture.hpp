@@ -1,10 +1,4 @@
-/**
- * @file Texture.hpp
- *
- */
-
-#ifndef TEXTURE_HPP_
-#define TEXTURE_HPP_
+#pragma once
 
 #include "gr/opengl.hpp"
 #include "gr/Image.hpp"
@@ -12,7 +6,7 @@
 #include <Scoped.hpp>
 #include <NonCopyable.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 class Texture : NonCopyable
 {
@@ -58,6 +52,4 @@ private:
 	GLuint _texID;
 };
 
-}
-
-#endif /* TEXTURE_HPP_ */
+} }

@@ -1,5 +1,4 @@
-#ifndef VERTEXWRITER_HPP
-#define VERTEXWRITER_HPP
+#pragma once
 
 #include "gr/VertexBuffer.hpp"
 #include "gr/IndexBuffer.hpp"
@@ -9,7 +8,7 @@
 
 #include <vector>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 class VertexSource : NonCopyable
 {
@@ -82,7 +81,4 @@ private:
 	std::vector<index_t>& _indexSource;
 };
 
-}
-
-
-#endif
+} }

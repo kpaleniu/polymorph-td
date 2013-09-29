@@ -1,28 +1,11 @@
-#ifndef GR_MESH_MANAGER_HPP_
-#define GR_MESH_MANAGER_HPP_
+#pragma once
 
 #include "gr/Mesh.hpp"
 
-#include <resource/ResourceLoader.hpp>
+#include <resource/ResourceManager.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
-class MeshManager : public resource::ResourceLoader<Mesh>
-{
-public:
-	typedef resource::ResourceLoader<Mesh>::ResourceHandle MeshHandle;
+typedef resource::ResourceManager<Mesh> MeshManager;
 
-	MeshManager();
-	MeshManager(MeshManager&& other);
-
-	MeshHandle addMesh(text::string_hash id, Mesh&& mesh);
-	MeshHandle getMesh(text::string_hash id) const;
-	bool hasMesh(text::string_hash id) const;
-
-	static const MeshHandle NULL_MESH;
-};
-
-}
-
-
-#endif
+} }

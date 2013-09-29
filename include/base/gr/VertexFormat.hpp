@@ -1,14 +1,8 @@
-/**
- * @file VertexFormat.hpp
- *
- */
-
-#ifndef VERTEXFORMAT_HPP_
-#define VERTEXFORMAT_HPP_
+#pragma once
 
 #include <cstring>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 enum class VertexFormat : size_t
 {
@@ -52,7 +46,4 @@ struct VertexFormatData
 
 const VertexFormatData& getVertexFormatData(VertexFormat fmt);
 
-}
-
-
-#endif /* VERTEXFORMAT_HPP_ */
+} }

@@ -10,7 +10,7 @@
 #include <Assert.hpp>
 #include <Debug.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 namespace {
 const char* TAG = "IndexBuffer";
@@ -106,4 +106,4 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other)
 	return *this;
 }
 
-}
+} }

@@ -1,14 +1,8 @@
-/**
- * @file VertexList.hpp
- *
- */
-
-#ifndef PIXELFORMAT_HPP_
-#define PIXELFORMAT_HPP_
+#pragma once
 
 #include "gr/opengl.hpp"
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 enum class PixelFormat : GLint
 {
@@ -18,7 +12,4 @@ enum class PixelFormat : GLint
 
 // PixelFormat getFormat(char rbits, char gbits, char bbits, char abits);
 
-}
-
-
-#endif /* PIXELFORMAT_HPP_ */
+} }

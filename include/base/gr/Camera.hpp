@@ -1,10 +1,9 @@
-#ifndef GR_CAMERA_HPP_
-#define GR_CAMERA_HPP_
+#pragma once
 
 #include "gr/types.hpp"
 
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 template <typename TransformType>
 struct Camera
@@ -14,6 +13,4 @@ struct Camera
 };
 
 
-}
-
-#endif
+} }

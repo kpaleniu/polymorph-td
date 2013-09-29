@@ -1,10 +1,4 @@
-/**
- * @file Surface.hpp
- *
- */
-
-#ifndef SURFACE_HPP_
-#define SURFACE_HPP_
+#pragma once
 
 #include "gr/types.hpp"
 
@@ -20,7 +14,7 @@ namespace sys {
 class Window;
 }
 
-namespace gr {
+namespace polymorph { namespace gr {
 namespace detail {
 
 /**
@@ -98,6 +92,4 @@ private:
 	} _wglExtensions;
 };
 
-}
-
-#endif /* SURFACE_HPP_ */
+} }

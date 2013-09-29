@@ -1,17 +1,17 @@
 #include "gr/MeshManager.hpp"
 
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 const MeshManager::MeshHandle MeshManager::NULL_MESH = MeshManager::MeshHandle();
 
 MeshManager::MeshManager()
-:	ResourceLoader()
+:	ResourceManager()
 {
 }
 
 MeshManager::MeshManager(MeshManager&& other)
-:	ResourceLoader(std::forward<MeshManager>(other))
+:	ResourceManager(std::forward<MeshManager>(other))
 {
 }
 
@@ -31,4 +31,4 @@ bool MeshManager::hasMesh(text::string_hash id) const
 }
 
 
-}
+} }

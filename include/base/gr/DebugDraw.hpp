@@ -1,12 +1,6 @@
-/**
- * @file DebugDraw.hpp
- *
- */
+#pragma once
 
-#ifndef DEBUGDRAW_HPP_
-#define DEBUGDRAW_HPP_
-
-namespace gr {
+namespace polymorph { namespace gr {
 
 class DebugDraw
 {
@@ -17,7 +11,4 @@ private:
 
 };
 
-}
-
-
-#endif /* DEBUGDRAW_HPP_ */
+} }

@@ -1,25 +1,16 @@
-
-
-
-#ifndef TEX_LOADER_HPP
-#define TEX_LOADER_HPP
+#pragma once
 
 #include "gr/Texture.hpp"
-#include <resource/ResourceLoader.hpp>
+#include <resource/ResourceManager.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
-class TextureManager : public resource::ResourceLoader<Texture>
-{
-public:
-	typedef resource::ResourceLoader<Texture>::ResourceHandle TextureHandle;
+/**
+ * Texture manager type.
+ *
+ * NOTE: Textures should only be constructed on the 
+ *       graphics thread (i.e. in GraphicsSystemRunner).
+ */
+typedef resource::ResourceManager<Texture> TextureManager;
 
-	TextureHandle addTexture(text::string_hash id, Texture&& texture);
-	TextureHandle getTexture(text::string_hash id) const;
-
-	static TextureHandle getNullTexture();
-};
-
-}
-
-#endif
+} }

@@ -2,13 +2,12 @@
 
 #include <algorithm>
 
-namespace gr {
-
+namespace polymorph { namespace gr {
 
 // Mesh::SubMesh
 
 Mesh::SubMesh::SubMesh(Mesh& parent, 
-					   TextureManager::TextureHandle texHandle,
+					   TextureManager::Handle texHandle,
 					   std::vector<index_t>&& indices)
 :	_parent(parent),
 	_texHandle(texHandle),
@@ -67,7 +66,7 @@ Mesh::Mesh(Mesh&& other)
 	other._subMeshes.clear();
 }
 
-void Mesh::addSubMesh(TextureManager::TextureHandle texture,
+void Mesh::addSubMesh(TextureManager::Handle texture,
 					  std::vector<index_t>&& indices)
 {
 	_subMeshes.push_back(SubMesh(*this, texture, std::move(indices)));
@@ -172,4 +171,4 @@ const VertexList& Mesh::vertices() const
 	return _vertexList;
 }
 
-}
+} }

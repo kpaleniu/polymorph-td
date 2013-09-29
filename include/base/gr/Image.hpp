@@ -1,14 +1,11 @@
-
-
-#ifndef IMAGE_HPP_
-#define IMAGE_HPP_
+#pragma once
 
 #include "gr/PixelFormat.hpp"
 #include "gr/opengl.hpp"
 
 #include <NonCopyable.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 class Image : NonCopyable
 {
@@ -37,7 +34,4 @@ private:
 	unsigned char* _pixels;
 };
 
-}
-
-
-#endif /* IMAGE_HPP_ */
+} }

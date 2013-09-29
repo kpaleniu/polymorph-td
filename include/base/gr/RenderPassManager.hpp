@@ -1,10 +1,4 @@
-/**
- * @file RenderPassManager.hpp
- *
- */
-
-#ifndef RENDERPASSMANAGER_HPP_
-#define RENDERPASSMANAGER_HPP_
+#pragma once
 
 #include "gr/RenderPass.hpp"
 #include "gr/TextureManager.hpp"
@@ -14,7 +8,7 @@
 
 #include <map>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 /**
  * Render pass composition.
@@ -29,7 +23,7 @@ public:
 
 	IndexWriter  indexWriter(VertexFormat format,
 							 Primitive shape,
-							 TextureManager::TextureHandle tex,
+							 TextureManager::Handle tex,
 							 const Shader* shader);
 
 	void render(const MapMatrix4x4_r& projection,
@@ -55,7 +49,4 @@ private:
 
 };
 
-}
-
-
-#endif /* RENDERPASSMANAGER_HPP_ */
+} }

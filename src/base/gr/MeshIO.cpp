@@ -26,9 +26,9 @@ float32[vertexCount * format.colorDim]	colors
 float32[vertexCount * format.textDim]	textureCoords
 
 {
-	uint64 (text::string_hash)	textureId
-	uint64						indexCount
-	uint64[indexCount]			indices
+	uint64 (std::size_t)	textureId
+	uint64					indexCount
+	uint64[indexCount]		indices
 }[subMeshCount]							subMeshes
 
 ------------
@@ -38,7 +38,7 @@ float32[vertexCount * format.textDim]	textureCoords
 
 #define MESH_FILE_VERSION static_cast<unsigned char>(1)
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 
 void MeshIO::writeMesh(io::OutputStream& ostream,
@@ -231,7 +231,7 @@ Mesh MeshIO::readMesh(io::InputStream& istream, const TextureManager& textureMan
 
 	for (std::size_t i = 0; i < subMeshCount; ++i)
 	{
-		text::string_hash texId;
+		std::size_t texId;
 
 		{
 			std::uint64_t texId64u;
@@ -240,7 +240,7 @@ Mesh MeshIO::readMesh(io::InputStream& istream, const TextureManager& textureMan
 			if (needEndianFlip)
 				flipEndianess(texId64u);
 
-			texId = static_cast<text::string_hash>(texId64u);
+			texId = static_cast<std::size_t>(texId64u);
 		}
 
 
@@ -276,11 +276,11 @@ Mesh MeshIO::readMesh(io::InputStream& istream, const TextureManager& textureMan
 			indices.push_back(index);
 		}
 
-		rMesh.addSubMesh(textureManager.getTexture(texId), std::move(indices));
+		rMesh.addSubMesh(textureManager.get(texId), std::move(indices));
 	}
 
 	return rMesh;
 }
 
 
-}
+} }

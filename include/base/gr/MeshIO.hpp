@@ -1,19 +1,18 @@
-#ifndef GR_MESH_IO_HPP_
-#define GR_MESH_IO_HPP_
+#pragma once
 
 #include <io/IOException.hpp>
+#include <gr/TextureManager.hpp>
 
-namespace io {
+namespace polymorph { namespace io {
 
 class OutputStream;
 class InputStream;
 
-}
+} }
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 class Mesh;
-class TextureManager;
 
 PM_MAKE_EXCEPTION_CLASS(MeshFileFormatException, io::IOException);
 
@@ -32,6 +31,4 @@ private:
 	MeshIO() {} // Class for static use only.
 };
 
-}
-
-#endif
+} }

@@ -4,7 +4,7 @@
 #	include <Debug.hpp>
 #endif
 
-namespace gl {
+namespace polymorph { namespace gl {
 
 #define LOG_TAG "OpenGL"
 
@@ -384,7 +384,7 @@ inline void clear(GLbitfield mask)
 #endif
 }
 
-}
+} }
 
 #undef LOG_TAG
 #undef ASSERT_NO_ERRORS

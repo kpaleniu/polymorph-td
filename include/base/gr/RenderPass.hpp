@@ -1,10 +1,4 @@
-/**
- * @file RenderPass.hpp
- *
- */
-
-#ifndef RENDERPASS_HPP_
-#define RENDERPASS_HPP_
+#pragma once
 
 #include "gr/types.hpp"
 #include "gr/Texture.hpp"
@@ -19,21 +13,21 @@
 
 // TODO Needs refactoring
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 class RenderPass : NonCopyable
 {
 public:
 	RenderPass( Primitive shape,
-				TextureManager::TextureHandle texture,
+				TextureManager::Handle texture,
 				const Shader* shader );
 
 	RenderPass(RenderPass&& other);
 
-	std::vector<index_t>				indices;
-	const TextureManager::TextureHandle texture;
-	const Shader*						shader;
-	const Primitive						shape;
+	std::vector<index_t>			indices;
+	const TextureManager::Handle	texture;
+	const Shader*					shader;
+	const Primitive					shape;
 
 	IndexBuffer indexBuffer;
 
@@ -41,7 +35,4 @@ public:
 
 };
 
-}
-
-
-#endif /* RENDERPASS_HPP_ */
+} }

@@ -1,7 +1,7 @@
 
 #include "gr/Image.hpp"
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 Image::Image(unsigned int w,
              unsigned int h,
@@ -57,4 +57,4 @@ const unsigned char* Image::data() const
 	return _pixels;
 }
 
-}
+} }

@@ -1,35 +1,35 @@
-#ifndef GR_SCENE_HPP
-#define GR_SCENE_HPP
+#pragma once
 
 #include "gr/types.hpp"
 #include "gr/Model.hpp"
 #include "gr/Camera.hpp"
 
-#include <text/util.hpp>
-
 #include <map>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 template <typename TransformType = Transform3>
 class Scene
 {
 public:
-	typedef text::string_hash model_id;
+	typedef std::size_t model_id;
 	
 	Scene(const Camera<TransformType>& camera = Camera<TransformType>());
-	Scene(Scene&& other);
-	
+	Scene(Scene<TransformType>&& other);
+	Scene(const Scene<TransformType>& other);
+
 	void addModel(model_id id, Model<TransformType>&& model);
 	void removeModel(model_id id);
 
 	Model<TransformType>& model(model_id id);
 	const Model<TransformType>& model(model_id id) const;
-	
-	void render(Renderer& renderer) const;
 
 	const Camera<TransformType>& camera() const;
 	Camera<TransformType>& camera();
+
+	void render(Renderer& renderer) const;
+
+	Scene<TransformType>& operator=(const Scene<TransformType>& other);
 
 private:
 	std::map<model_id, Model<TransformType>> _modelRegister;
@@ -37,8 +37,6 @@ private:
 	Camera<TransformType> _camera;
 };
 
-}
+} }
 
 #include "gr/Scene.inl"
-
-#endif

@@ -1,8 +1,3 @@
-/**
- * @file Renderer_GL.cpp
- *
- */
-
 #include "gr/Renderer.hpp"
 #include "gr/Surface.hpp"
 #include "gr/SurfaceException.hpp"
@@ -13,7 +8,7 @@
 #include <Assert.hpp>
 #include <Debug.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 namespace {
 
@@ -94,4 +89,4 @@ RenderPassManager& Renderer::renderPassManager()
 }
 
 
-}
+} }

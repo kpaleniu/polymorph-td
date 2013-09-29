@@ -2,7 +2,7 @@
 
 #include <Assert.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 VertexList::VertexList(VertexFormat format_,
 					   std::vector<real_t>&& vertices_,
@@ -110,4 +110,4 @@ std::size_t VertexList::vertexCount() const
 	return vertices.size() / fmtData.vertDim;
 }
 
-}
+} }

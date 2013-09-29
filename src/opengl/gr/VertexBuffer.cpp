@@ -1,15 +1,10 @@
-/**
- * @file VertexBuffer.cpp
- *
- */
-
 #include "gr/VertexBuffer.hpp"
 #include "gr/GraphicsException.hpp"
 
 #include <Assert.hpp>
 #include <Debug.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 namespace {
 
@@ -353,4 +348,4 @@ bool VertexBuffer::isEmpty() const
 	return _vertexCount == 0;
 }
 
-}
+} }

@@ -1,5 +1,4 @@
-#ifndef GR_MESH_HPP_
-#define GR_MESH_HPP_
+#pragma once
 
 #include "gr/VertexList.hpp"
 #include "gr/TextureManager.hpp"
@@ -11,8 +10,7 @@
 
 #include <vector>
 
-namespace gr {
-
+namespace polymorph { namespace gr {
 
 class Mesh : NonCopyable
 {
@@ -26,7 +24,7 @@ public:
 		friend class Mesh;
 
 		SubMesh(Mesh& parent,
-				TextureManager::TextureHandle texHandle,
+				TextureManager::Handle texHandle,
 				std::vector<index_t>&& indices);
 
 		// Note, should only be used when parent doesn't change.
@@ -38,7 +36,7 @@ public:
 	private:
 		Mesh& _parent;
 
-		TextureManager::TextureHandle _texHandle;
+		TextureManager::Handle _texHandle;
 
 		std::vector<index_t> _indices;
 	};
@@ -57,7 +55,7 @@ public:
 	const sub_mesh_it end() const;
 	*/
 
-	void addSubMesh(TextureManager::TextureHandle texture,
+	void addSubMesh(TextureManager::Handle texture,
 					std::vector<index_t>&& indices);
 
 	void render(Renderer& renderer) const;
@@ -74,7 +72,4 @@ private:
 	Primitive _shape;
 };
 
-
-}
-
-#endif
+} }

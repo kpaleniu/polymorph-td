@@ -1,17 +1,11 @@
-/**
- * @file IndexBuffer.hpp
- *
- */
-
-#ifndef INDEXBUFFER_HPP_
-#define INDEXBUFFER_HPP_
+#pragma once
 
 #include "gr/opengl.hpp"
 #include "gr/types.hpp"
 
 #include "NonCopyable.hpp"
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 class IndexBuffer : NonCopyable
 {
@@ -38,7 +32,4 @@ private:
 	size_t _indexCount;
 };
 
-}
-
-
-#endif /* INDEXBUFFER_HPP_ */
+} }

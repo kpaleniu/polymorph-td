@@ -1,10 +1,4 @@
-/**
- * @file VertexList.hpp
- *
- */
-
-#ifndef VERTEXBUFFER_HPP_
-#define VERTEXBUFFER_HPP_
+#pragma once
 
 #include "gr/opengl.hpp"
 #include "gr/types.hpp"
@@ -13,7 +7,7 @@
 
 #include <NonCopyable.hpp>
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 class BufferManager;
 
@@ -79,7 +73,4 @@ private:
 	VertexFormat _vertexFormat;
 };
 
-}
-
-
-#endif /* VERTEXLIST_HPP_ */
+} }

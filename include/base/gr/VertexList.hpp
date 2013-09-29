@@ -1,6 +1,4 @@
-#ifndef GR_VERTEX_LIST_HPP_
-#define GR_VERTEX_LIST_HPP_
-
+#pragma once
 
 #include "gr/types.hpp"
 #include "gr/VertexFormat.hpp"
@@ -10,7 +8,7 @@
 #include <vector>
 
 
-namespace gr {
+namespace polymorph { namespace gr {
 
 struct VertexList : NonCopyable
 {
@@ -44,7 +42,4 @@ struct VertexList : NonCopyable
 	// std::vector<real_t> normals; // Variation not implemented in VertexFormat.
 };
 
-}
-
-
-#endif
+} }
