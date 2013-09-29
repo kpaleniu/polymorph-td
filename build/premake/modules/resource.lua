@@ -16,34 +16,9 @@ project "resource"
 		includePath .. "base/resource/"
 	)
 	
-	configuration "libpng"
-		pm.cppFiles(
-			sourcePath .. "libpng/resource/",
-			includePath .. "libpng/resource/"
-		)
-		
-		pm.includedirs
-		{ 
-			externalPath .. "include/libpng",
-			 includePath .. "libpng" 
-		}
-		
-		pm.libdirs
-		{ 
-			externalPath .. "lib/libpng",
-			externalPath .. "lib/zlib" 
-		}
-		
-		pm.links 
-		{ 
-			"png", 
-			"z" 
-		}
-	
 	configuration {}
 	
 	pm.moduleDependencies
 	{
 		"ext",
-		"gr",
 	}

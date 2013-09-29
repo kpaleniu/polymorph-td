@@ -68,5 +68,6 @@ project "gr"
 		"concurrency",
 		"math",
 		"io",
+		"resource"
 	}
 	
