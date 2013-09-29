@@ -1,8 +1,3 @@
-/**
- * @file InputSource.cpp
- *
- */
-
 #include "input/InputSource.hpp"
 
 #include <Assert.hpp>

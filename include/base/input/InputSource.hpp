@@ -1,10 +1,4 @@
-/**
- * @file InputSource.hpp
- *
- */
-
-#ifndef INPUTSOURCE_HPP_
-#define INPUTSOURCE_HPP_
+#pragma once
 
 #include "input/SurfaceListener.hpp"
 #include "input/KeyListener.hpp"
@@ -54,6 +48,3 @@ protected:
 };
 
 } }
-
-
-#endif /* INPUTSOURCE_HPP_ */
