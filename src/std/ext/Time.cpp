@@ -30,6 +30,11 @@ TimeDuration::tick_type TimeDuration::toMillis() const
 	return _std__timeDuration.count();
 }
 
+float TimeDuration::toSecs() const
+{
+	return float(_std__timeDuration.count()) / 1000.0f;
+}
+
 TimeDuration TimeDuration::between(const TimeStamp &t1,
                                    const TimeStamp &t2)
 {

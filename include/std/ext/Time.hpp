@@ -28,6 +28,7 @@ public:
 	typedef int64_t tick_type;
 
 	tick_type toMillis() const;
+	float toSecs() const;
 
 public:
 
