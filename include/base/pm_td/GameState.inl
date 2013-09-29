@@ -1,7 +1,7 @@
 
 #include "pm_td/GameState.hpp"
 
-namespace pm_td {
+namespace polymorph { namespace pm_td {
 
 inline GameState::GameState()
 :	_impl(nullptr)
@@ -71,4 +71,4 @@ void GameState::StateDerived<StateImpl>::exitState()
 	impl.exitState();
 }
 
-}
+} }

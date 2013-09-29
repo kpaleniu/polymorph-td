@@ -1,11 +1,10 @@
-#ifndef PMTD_BEGIN_STATE_HPP_
-#define PMTD_BEGIN_STATE_HPP_
+#pragma once
 
 #include "pm_td/GameState.hpp"
 
 #include <NonCopyable.hpp>
 
-namespace pm_td {
+namespace polymorph { namespace pm_td {
 
 class GameRunner;
 
@@ -23,6 +22,4 @@ private:
 	GameRunner& _runner;
 };
 
-}
-
-#endif
+} }

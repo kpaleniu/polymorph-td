@@ -1,5 +1,4 @@
-#ifndef PMTD_LEVEL_HPP_
-#define PMTD_LEVEL_HPP_
+#pragma once
 
 #include "pm_td/Enemy.hpp"
 #include "pm_td/Path.hpp"
@@ -8,7 +7,7 @@
 
 #include <vector>
 
-namespace pm_td {
+namespace polymorph { namespace pm_td {
 
 class Level : NonCopyable
 {
@@ -42,6 +41,4 @@ private:
 	Director* _director;
 };
 
-}
-
-#endif
+} }

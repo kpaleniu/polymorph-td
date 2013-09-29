@@ -1,6 +1,6 @@
 #include "pm_td/Level.hpp"
 
-namespace pm_td {
+namespace polymorph { namespace pm_td {
 
 namespace {
 
@@ -52,7 +52,7 @@ void Level::update(TimeDuration)
 	if (firstCall)
 	{
 		if (_director)
-			_director->spawnEnemy(_enemyPath, { { {7, EnemyType::BLUE}, {5, EnemyType::RED } } });
+			_director->spawnEnemy(_enemyPath, { { {7, ColorType::BLUE}, {5, ColorType::RED } } });
 	}
 
 	firstCall = false;
@@ -60,8 +60,8 @@ void Level::update(TimeDuration)
 
 std::vector<Enemy::LayerData> Level::indexLayerData() const
 {
-	return { {12, EnemyType::BLUE}, { 12, EnemyType::RED } };
+	return { {12, ColorType::BLUE}, { 12, ColorType::RED } };
 }
 
 
-}
+} }

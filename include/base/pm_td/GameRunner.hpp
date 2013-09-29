@@ -1,7 +1,8 @@
-#ifndef PMTD_GAMERUNNER_HPP_
-#define PMTD_GAMERUNNER_HPP_
+#pragma once
 
 #include "pm_td/GameState.hpp"
+
+#include "pm_td/GameScene.hpp"
 
 #include <sys/NTSystem.hpp>
 #include <sys/UISystem.hpp>
@@ -11,25 +12,14 @@
 
 #include <memory>
 
-namespace pm_td {
+namespace polymorph { namespace pm_td {
 
 class GameRunner : NonCopyable
 {
 public:
-	struct ConstructionArgs : ::NonCopyable
-	{
-		ConstructionArgs(polymorph::sys::UISystem& uiSys_,
-						 polymorph::sys::GraphicsSystem& grSys_);
+	struct ConstructionArgs {};
 
-		ConstructionArgs(ConstructionArgs&& other);
-
-		polymorph::sys::UISystem&		uiSys;
-		polymorph::sys::GraphicsSystem& grSys;
-	};
-
-
-	GameRunner(ConstructionArgs&& args,
-			   polymorph::sys::NTSystem<GameRunner>& system);
+	GameRunner(ConstructionArgs&&, sys::NTSystem<GameRunner>& system);
 
 	~GameRunner();
 
@@ -39,21 +29,19 @@ public:
 
 	void quit();
 
-	polymorph::sys::UISystem& uiSystem() { return _uiSys; }
-	polymorph::sys::GraphicsSystem& graphicsSystem() { return _grSys; }
-	polymorph::sys::NTSystem<GameRunner>& system() { return _parentSystem; }
+	sys::NTSystem<GameRunner>& system() { return _parentSystem; }
+
+	GameScene& gameScene() { return _gameScene; }
 
 private:
-	polymorph::sys::UISystem&				_uiSys;
-	polymorph::sys::GraphicsSystem&			_grSys;
-	polymorph::sys::NTSystem<GameRunner>&	_parentSystem;
+	sys::NTSystem<GameRunner>&	_parentSystem;
 
 	bool _quitting;
+
+	GameScene _gameScene;
 
 	GameState _state;
 	GameState _nextState;
 };
 
-}
-
-#endif
+} }

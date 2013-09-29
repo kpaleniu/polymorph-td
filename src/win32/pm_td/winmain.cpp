@@ -1,8 +1,7 @@
 
 #include "pm_td/GameRunner.hpp"
 
-#include <sys/UISystem.hpp>
-#include <sys/NTSystem.hpp>
+#include <sys/Systems.hpp>
 
 #include <windows.h>
 
@@ -10,7 +9,9 @@
 int APIENTRY WinMain(HINSTANCE hInstance,
 	HINSTANCE, LPSTR, int)
 {
-	polymorph::sys::Window::ConstructionData winCtorData;
+	using namespace polymorph::sys;
+
+	Window::ConstructionData winCtorData;
 
 	winCtorData.hInstance = hInstance;
 	winCtorData.winRect.left = 256;
@@ -18,22 +19,16 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	winCtorData.winRect.w = 800;
 	winCtorData.winRect.h = 600;
 
-	polymorph::sys::UISystem uiSys(std::move(winCtorData));
-	uiSys.start();
-
-	auto& grSys = uiSys.waitForGraphicsSystem();
-
-	pm_td::GameRunner::ConstructionArgs ctorArgs = { uiSys, grSys };
+	Systems::startUp(std::move(winCtorData));
 
 	{
-		polymorph::sys::NTSystem<pm_td::GameRunner>
-			mainSystem(TimeDuration::millis(10), 256, std::move(ctorArgs));
+		polymorph::sys::NTSystem<polymorph::pm_td::GameRunner>
+			mainSystem(TimeDuration::millis(10), 256, {});
 
 		mainSystem.enter();
 	}
 
-	uiSys.interrupt();
-	uiSys.join();
+	Systems::tearDown();
 
 	return 0;
 }

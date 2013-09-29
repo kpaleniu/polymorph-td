@@ -1,9 +1,8 @@
-#ifndef PMTD_MAIN_MENU_STATE_HPP_
-#define PMTD_MAIN_MENU_STATE_HPP_
+#pragma once
 
 #include "pm_td/GameState.hpp"
 
-namespace pm_td {
+namespace polymorph { namespace pm_td {
 
 class GameRunner;
 
@@ -22,6 +21,4 @@ private:
 };
 
 
-}
-
-#endif
+} }

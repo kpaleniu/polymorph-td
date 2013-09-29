@@ -4,10 +4,15 @@
 #include "pm_td/GameRunner.hpp"
 #include "pm_td/PlayState.hpp"
 
+#include <sys/Systems.hpp>
+
 #include <gr/Mesh.hpp>
-#include <text/util.hpp>
+
+#include <Hasher.hpp>
 
 #include <memory>
+
+namespace polymorph { namespace pm_td {
 
 namespace {
 
@@ -15,7 +20,7 @@ gr::Mesh createRect(gr::real_t left,
 					gr::real_t bottom, 
 					gr::real_t width, 
 					gr::real_t height,
-					gr::TextureManager::TextureHandle texture)
+					gr::TextureManager::Handle texture)
 {
 	gr::VertexList vl
 	(
@@ -36,14 +41,13 @@ gr::Mesh createRect(gr::real_t left,
 	return rMesh;
 }
 
-const text::string_hash RECT_MESH_HASH = text::hash("RECT_MESH_HASH");
-const gr::Scene<gr::Transform2>::model_id PLAY_MODEL_ID = text::hash("PLAY_MODEL_ID");
-const event_action_id UI_CLICK_ID = text::hash("UI_CLICK_ID");
+const std::size_t RECT_MESH_HASH = hash("RECT_MESH_HASH");
+const gr::Scene<gr::Transform2>::model_id PLAY_MODEL_ID = hash("PLAY_MODEL_ID");
+const event_action_id UI_CLICK_ID = hash("UI_CLICK_ID");
 
 }
 
 
-namespace pm_td {
 
 MainMenuState::MainMenuState(GameRunner& runner)
 :	_runner(runner)
@@ -57,31 +61,34 @@ MainMenuState::MainMenuState(MainMenuState&& other)
 
 void MainMenuState::enterState()
 {
+	auto& gameScene = _runner.gameScene();
+	auto& uiSys = sys::Systems::system<sys::UISystem>();
+
 	{
 		gr::Mesh rect = createRect(-0.5f, -0.5f, 1.0f, 1.0f, nullptr);
 
-		auto sceneMutator = _runner.graphicsSystem().sceneMutator();
-
-		auto meshHandle = sceneMutator.meshes.addMesh(RECT_MESH_HASH,
+		auto meshHandle = gameScene.addMesh(RECT_MESH_HASH,
 													  std::move(rect));
 
 		gr::Model<gr::Transform2> playButtonModel(
 			std::vector<gr::Model<gr::Transform2>::ModelMesh>
 			{ { gr::Transform2::IDENTITY, meshHandle } });
 
-		sceneMutator.scene.addModel(PLAY_MODEL_ID, std::move(playButtonModel));
+		gameScene.addModel(PLAY_MODEL_ID, std::move(playButtonModel));
 	}
 
-	_runner.uiSystem().addEventAction<polymorph::sys::event::PointerDown>
+	uiSys.addEventAction<sys::event::PointerDown>
 	(
 		UI_CLICK_ID,
-		[&](const polymorph::sys::event::PointerDown& arg)
+		[&](const sys::event::PointerDown& arg)
 		{
 			auto pointPos = arg.pointerPos;
 
-			_runner.graphicsSystem().actionQueue().pushAction
+			auto& grSys = sys::Systems::system<sys::GraphicsSystem>();
+
+			grSys.actionQueue().pushAction
 			(
-				[this, pointPos](polymorph::sys::GraphicsSystemRunner& grRunner)
+				[this, pointPos](sys::GraphicsSystemRunner& grRunner)
 				{
 					auto clipPointPos = grRunner.surface().pick(pointPos, 1.0f);
 					auto& model = grRunner.scene().model(PLAY_MODEL_ID);
@@ -108,12 +115,10 @@ void MainMenuState::enterState()
 
 void MainMenuState::exitState()
 {
-	{
-		auto sceneMutator = _runner.graphicsSystem().sceneMutator();
-		sceneMutator.scene.removeModel(PLAY_MODEL_ID);
-	}
+	_runner.gameScene().removeModel(PLAY_MODEL_ID);
 
-	_runner.uiSystem().removeEventAction<polymorph::sys::event::PointerDown>(UI_CLICK_ID);
+	auto& uiSys = sys::Systems::system<sys::UISystem>();
+	uiSys.removeEventAction<sys::event::PointerDown>(UI_CLICK_ID);
 }
 
 void MainMenuState::update(TimeDuration)
@@ -123,4 +128,4 @@ void MainMenuState::update(TimeDuration)
 
 
 
-}
+} }

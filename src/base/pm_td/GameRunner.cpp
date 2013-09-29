@@ -2,14 +2,18 @@
 
 #include "pm_td/BeginState.hpp"
 
-#include <text/util.hpp>
-#include <Assert.hpp>
+#include <sys/Systems.hpp>
 
-namespace pm_td {
+#include <Assert.hpp>
+#include <Hasher.hpp>
+
+#include <string>
+
+namespace polymorph { namespace pm_td {
 
 namespace runner_action_id
 {
-	event_action_id QUIT = text::hash("GamerRunner_QUIT");
+	event_action_id QUIT = hash("GamerRunner_QUIT");
 }
 
 
@@ -38,28 +42,16 @@ void removeEventHandlers(polymorph::sys::UISystem& uiSys)
 	uiSys.removeEventAction<polymorph::sys::event::Quit>(runner_action_id::QUIT);
 }
 
-
-GameRunner::ConstructionArgs::ConstructionArgs(polymorph::sys::UISystem& uiSys_,
-											   polymorph::sys::GraphicsSystem& grSys_)
-:	uiSys(uiSys_), grSys(grSys_)
-{
-}
-
-GameRunner::ConstructionArgs::ConstructionArgs(ConstructionArgs&& other)
-:	uiSys(other.uiSys), grSys(other.grSys)
-{
-}
-
-GameRunner::GameRunner(GameRunner::ConstructionArgs&& args,
+GameRunner::GameRunner(GameRunner::ConstructionArgs&&,
 					   polymorph::sys::NTSystem<GameRunner>& system)
-:	_uiSys(args.uiSys),
-	_grSys(args.grSys),
-	_parentSystem(system),
+:	_parentSystem(system),
 	_quitting(false),
+	_gameScene(sys::Systems::system<sys::GraphicsSystem>().meshes()),
 	_state(BeginState(*this)),
 	_nextState()
 {
-	setupEventHandlers(_uiSys, _parentSystem);
+	setupEventHandlers(polymorph::sys::Systems::system<polymorph::sys::UISystem>(), 
+					   _parentSystem);
 }
 
 GameRunner::~GameRunner()
@@ -67,7 +59,7 @@ GameRunner::~GameRunner()
 	if (_state)
 		_state.exitState();
 
-	removeEventHandlers(_uiSys);
+	removeEventHandlers(polymorph::sys::Systems::system<polymorph::sys::UISystem>());
 }
 
 bool GameRunner::update(TimeDuration dt)
@@ -84,6 +76,8 @@ bool GameRunner::update(TimeDuration dt)
 
 	_state.update(dt);
 
+	_gameScene.flush();
+
 	return true;
 }
 
@@ -98,4 +92,4 @@ void GameRunner::quit()
 	_quitting = true;
 }
 
-}
+} }

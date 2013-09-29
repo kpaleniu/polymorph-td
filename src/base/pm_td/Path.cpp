@@ -1,7 +1,7 @@
 #include "pm_td/Path.hpp"
 
 
-namespace pm_td {
+namespace polymorph { namespace pm_td {
 
 namespace {
 
@@ -117,4 +117,4 @@ PathPoint Path::getStart() const
 	return PathPoint(_checkPoints, _distanceView);
 }
 
-}
+} }

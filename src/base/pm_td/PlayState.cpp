@@ -4,8 +4,9 @@
 
 #include <Assert.hpp>
 
-#include <text/util.hpp>
 #include <gr/Mesh.hpp>
+
+#include <sys/Systems.hpp>
 
 #include <Assert.hpp>
 #include <Debug.hpp>
@@ -15,22 +16,24 @@
 
 #include <algorithm>
 
-namespace pm_td {
+namespace polymorph { namespace pm_td {
 
 PlayState::PlayState(GameRunner& runner)
 :	_runner(runner),
 	_enemies(),
 	_queuedForDestruction(),
-	_enemyCounter(0),
+	_towers(),
+	_objectCounter(0),
 	_level()
 {
 }
 
-PlayState::PlayState(PlayState&& other)
+PlayState::PlayState(PlayState && other)
 :	_runner(other._runner),
 	_enemies(std::move(other._enemies)),
 	_queuedForDestruction(std::move(other._queuedForDestruction)),
-	_enemyCounter(other._enemyCounter),
+	_towers(std::move(other._towers)),
+	_objectCounter(other._objectCounter),
 	_level(std::move(other._level))
 {
 }
@@ -41,21 +44,39 @@ void PlayState::enterState()
 {
 	_level = Level(this);
 
-	{
-		auto sceneMutator = _runner.graphicsSystem().sceneMutator();
+	_runner.gameScene().camera().projection = 
+		gr::Projection::ortho(-5, 5, -5, 5, 5, -5);
 
-		sceneMutator.scene.camera().projection = 
-			gr::Projection::ortho(-5, 5, -5, 5, 5, -5);
+	Enemy::loadMeshes(_runner.gameScene(), _level.indexLayerData());
+	
+	// TEST
 
-		Enemy::loadMeshes(sceneMutator.meshes, _level.indexLayerData());
-	}
+	++_objectCounter;
+
+	_towers.insert
+	(
+		std::make_pair
+		(
+			_objectCounter,
+			Tower
+			(
+				_runner.gameScene(),
+				{
+					1,
+					ColorType::RED
+				},
+				_objectCounter,
+				TimeDuration::millis(500)
+			)
+		)
+	);
 }
 
 void PlayState::exitState()
 {
 	_enemies.clear();
 	_queuedForDestruction.clear();
-	_enemyCounter = 0;
+	_objectCounter = 0;
 }
 
 void PlayState::update(TimeDuration dt)
@@ -69,6 +90,9 @@ void PlayState::update(TimeDuration dt)
 
 	for (auto& idEnemyPair : _enemies)
 		idEnemyPair.second.update(dt);
+
+	for (auto& idTowerPair : _towers)
+		idTowerPair.second.update(dt);
 }
 
 void PlayState::onReachedEnd(const Enemy& enemy)
@@ -79,19 +103,20 @@ void PlayState::onReachedEnd(const Enemy& enemy)
 void PlayState::spawnEnemy(const Path& path,
 						   const Enemy::LayerDatas& layerData)
 {
-	++_enemyCounter;
+	++_objectCounter;
 
 	_enemies.insert
 	(
 		std::make_pair
 		(
-			_enemyCounter,
+			_objectCounter,
 			std::move
 			(
 				Enemy
 				(
-					_runner.graphicsSystem(),
-					_enemyCounter,
+					_runner.gameScene(),
+					1.5f,
+					_objectCounter,
 					path,
 					layerData,
 					this
@@ -101,4 +126,4 @@ void PlayState::spawnEnemy(const Path& path,
 	);
 }
 
-}
+} }

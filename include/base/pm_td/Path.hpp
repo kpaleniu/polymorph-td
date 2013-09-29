@@ -1,11 +1,10 @@
-#ifndef PMTD_PATH_HPP_
-#define PMTD_PATH_HPP_
+#pragma once
 
 #include <gr/types.hpp>
 
 #include <vector>
 
-namespace pm_td {
+namespace polymorph { namespace pm_td {
 
 class PathPoint
 {
@@ -45,6 +44,4 @@ private:
 	std::vector<gr::real_t> _distanceView;
 };
 
-}
-
-#endif
+} }

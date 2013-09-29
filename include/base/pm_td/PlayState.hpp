@@ -1,10 +1,11 @@
-#ifndef PMTD_PLAY_STATE_HPP_
-#define PMTD_PLAY_STATE_HPP_
+#pragma once
 
 #include "pm_td/GameState.hpp"
 #include "pm_td/Enemy.hpp"
 #include "pm_td/Path.hpp"
 #include "pm_td/Level.hpp"
+
+#include "pm_td/Tower.hpp"
 
 #include <gr/Scene.hpp>
 
@@ -14,7 +15,7 @@
 #include <map>
 #include <set>
 
-namespace pm_td {
+namespace polymorph { namespace pm_td {
 
 class GameRunner;
 
@@ -41,11 +42,11 @@ private:
 	std::map<size_t, Enemy> _enemies;
 	std::set<size_t> _queuedForDestruction;
 
-	unsigned short _enemyCounter;
+	std::map<size_t, Tower> _towers;
+
+	unsigned short _objectCounter;
 	Level _level;
 };
 
 
-}
-
-#endif
+} }
