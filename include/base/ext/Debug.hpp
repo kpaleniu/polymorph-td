@@ -32,7 +32,7 @@ const Severity lowestSeverity = Severity::Verbose;
 
 // If verbosity level is not explicitly defined, default to lowest.
 #ifndef POLYMORPH_VERBOSITY
-#define POLYMORPH_VERBOSITY lowestSeverity
+#	define POLYMORPH_VERBOSITY lowestSeverity
 #endif
 
 // Helper template class for filtering output by severity.
@@ -51,25 +51,6 @@ void print_impl(Severity level, const char* file, long line, const char* tag, co
 template <Severity OutputLevel, bool Enabled = is_severity_enabled<OutputLevel>::value>
 struct print
 {
-#if defined(_MSC_VER)
-
-// use Microsoft's own hacks to implement variadic template emulation
-#define OUTPUT_IMPL(TEMPLATE_LIST, PADDING_LIST, LIST, COMMA, X1, X2, X3, X4) \
-	TEMPLATE_LIST(_CLASS_TYPE) \
-	static void output(const char* file, long line, const char* tag, \
-		const char* message COMMA \
-		LIST(_TYPE_REFREF_ARG)) \
-	{ \
-		print_impl(OutputLevel, file, line, tag, \
-			format(message COMMA LIST(_FORWARD_ARG))); \
-	}
-	
-	_VARIADIC_EXPAND_0X(OUTPUT_IMPL, , , , )
-#undef OUTPUT_IMPL
-
-#else
-
-	// all other reasonably up-to-date compilers should support variadic templates
 	template <typename ... Args>
 	static void output(const char* file, long line, const char* tag,
 		const char* message, Args&& ... args)
@@ -77,8 +58,6 @@ struct print
 		print_impl(OutputLevel, file, line, tag,
 			format(message, std::forward<Args>(args)...));
 	}
-
-#endif
 };
 
 // Explicit partial template specialization for disabled severity levels.
